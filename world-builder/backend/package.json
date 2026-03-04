@@ -1,0 +1,31 @@
+{
+  "name": "rom-world-builder-backend",
+  "version": "1.0.0",
+  "description": "Backend API for ROM 2.4 World Builder",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "node tests/RoundTripTester.js",
+    "test:area": "node tests/RoundTripTester.js"
+  },
+  "keywords": [
+    "rom",
+    "mud",
+    "world-builder",
+    "area-editor"
+  ],
+  "author": "GitHub Copilot",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "fs-extra": "^11.1.1",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}

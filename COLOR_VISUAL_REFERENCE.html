@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROM24 QuickMUD - Color Visual Reference</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        
+        h2 {
+            margin-top: 40px;
+            margin-bottom: 20px;
+            color: #ff00ff;
+            border-bottom: 2px solid #ff00ff;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            margin-top: 25px;
+            margin-bottom: 15px;
+            color: #00ffff;
+        }
+        
+        .color-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .color-box {
+            border: 1px solid #00ffff;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #0a0a0a;
+        }
+        
+        .color-code {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+        
+        .color-name {
+            color: #ffff00;
+            margin-bottom: 5px;
+        }
+        
+        .color-sample {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 3px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .display-section {
+            background-color: #0a0a0a;
+            border: 1px solid #00ffff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        
+        .mud-output {
+            background-color: #000000;
+            border-left: 4px solid #00ff00;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 0.95em;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .legend-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .legend-table th,
+        .legend-table td {
+            border: 1px solid #00ffff;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .legend-table th {
+            background-color: #1a0033;
+            color: #ff00ff;
+        }
+        
+        .legend-table tr:nth-child(even) {
+            background-color: #0a0a0a;
+        }
+        
+        .legend-table tr:hover {
+            background-color: #1a1a2e;
+        }
+        
+        /* Color definitions */
+        .white-text { color: #ffffff; }
+        .cyan-text { color: #00ffff; }
+        .green-text { color: #00ff00; }
+        .yellow-text { color: #ffff00; }
+        .magenta-text { color: #ff00ff; }
+        .blue-text { color: #0080ff; }
+        .red-text { color: #ff0000; }
+        .dark-grey-text { color: #808080; }
+        
+        .white-bg { background-color: #ffffff; color: #000000; }
+        .cyan-bg { background-color: #00ffff; color: #000000; }
+        .green-bg { background-color: #00ff00; color: #000000; }
+        .yellow-bg { background-color: #ffff00; color: #000000; }
+        .magenta-bg { background-color: #ff00ff; color: #ffffff; }
+        .blue-bg { background-color: #0080ff; color: #ffffff; }
+        .red-bg { background-color: #ff0000; color: #ffffff; }
+        .dark-grey-bg { background-color: #808080; color: #ffffff; }
+        
+        .feature-example {
+            background-color: #000000;
+            border-left: 3px solid #00ff00;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+        
+        .note {
+            background-color: #1a0a0a;
+            border-left: 4px solid #ffff00;
+            padding: 10px;
+            margin: 10px 0;
+            color: #ffff00;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #00ffff;
+            color: #808080;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 ROM24 QuickMUD Color Visual Reference</h1>
+        
+        <!-- Color Legend -->
+        <h2>Color Codes Legend</h2>
+        <table class="legend-table">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Color Name</th>
+                    <th>Visual Sample</th>
+                    <th>Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>{W</strong></td>
+                    <td>White (Bright)</td>
+                    <td><span class="white-text">████████████</span></td>
+                    <td>Primary text, values, names</td>
+                </tr>
+                <tr>
+                    <td><strong>{C</strong></td>
+                    <td>Cyan (Bright)</td>
+                    <td><span class="cyan-text">████████████</span></td>
+                    <td>Labels, headers, categories</td>
+                </tr>
+                <tr>
+                    <td><strong>{G</strong></td>
+                    <td>Green (Bright)</td>
+                    <td><span class="green-text">████████████</span></td>
+                    <td>Bonuses, positive, commands</td>
+                </tr>
+                <tr>
+                    <td><strong>{Y</strong></td>
+                    <td>Yellow (Bright)</td>
+                    <td><span class="yellow-text">████████████</span></td>
+                    <td>Resources, gold, XP, highlights</td>
+                </tr>
+                <tr>
+                    <td><strong>{M</strong></td>
+                    <td>Magenta (Bright)</td>
+                    <td><span class="magenta-text">████████████</span></td>
+                    <td>Borders, separators, decorative</td>
+                </tr>
+                <tr>
+                    <td><strong>{B</strong></td>
+                    <td>Blue (Bright)</td>
+                    <td><span class="blue-text">████████████</span></td>
+                    <td>HP, Mana, numeric data</td>
+                </tr>
+                <tr>
+                    <td><strong>{R</strong></td>
+                    <td>Red (Bright)</td>
+                    <td><span class="red-text">████████████</span></td>
+                    <td>Warnings, dangers, negative</td>
+                </tr>
+                <tr>
+                    <td><strong>{D</strong></td>
+                    <td>Dark Grey</td>
+                    <td><span class="dark-grey-text">████████████</span></td>
+                    <td>Disabled, empty, unavailable</td>
+                </tr>
+                <tr>
+                    <td><strong>{x</strong></td>
+                    <td>Reset</td>
+                    <td>Default</td>
+                    <td>Reset to default color</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- LOOK/ROOM DISPLAY -->
+        <h2>LOOK - Room Display</h2>
+        <h3>Visual Output:</h3>
+        <div class="mud-output">
+<span class="white-text">Storage Cellar [Indoors]</span>
+<span class="dark-grey-text"> The jet black walls come together here to make a corner.  Looking around
+the room you notice that the few pieces of what what was once stored here
+are now all but decay.  The only thing that is here that seems to be of any
+importace is the bugs and rodents scurring around on the floor here.</span>
+<span class="blue-text"> [Exits: east south]</span>
+
+<span class="cyan-text">A trapped prisoner cries aloud from the corner.</span>
+<span class="cyan-text">A trapped prisoner cries aloud from the corner.</span>
+<span class="cyan-text">A large cellar rat wanders through in search of food.</span>
+<span class="cyan-text">A trapped prisoner cries aloud from the corner.</span>
+<span class="cyan-text">A sleeping bat is here.</span>
+<span class="cyan-text">A sleeping bat is here.</span>
+<span class="cyan-text">A sleeping bat is here.</span>
+<span class="cyan-text">A sleeping bat is here.</span>
+<span class="cyan-text">A sleeping bat is here.</span>
+        </div>
+        
+        <!-- WHO LIST -->
+        <h2>WHO - Player List</h2>
+        <h3>Visual Output:</h3>
+        <div class="mud-output">
+<span class="white-text">-----------------------------------------------------------------------------</span>
+    <span class="magenta-text">[ -* Coder *- ]</span> <span class="white-text">DirtyJosh twitch.tv/bluntforcejosh</span>
+<span class="white-text">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+  [ <span class="red-text">Level 54</span> ] <span class="dark-grey-text">Glory is a Troll.</span>
+  [ <span class="red-text">Level  1</span> ] <span class="dark-grey-text">Nofx the Troll Adventurer</span>
+  [ <span class="red-text">Level 35</span> ] <span class="dark-grey-text">Arpollo The Minotaur Monk</span>
+  [ <span class="red-text">Level 65</span> ] <span class="dark-grey-text">Talon the Goblin Ninja</span>
+  [ <span class="red-text">Level 40</span> ] <span class="dark-grey-text">Warped -afk-</span>
+  [ <span class="red-text">Level 54</span> ] <span class="dark-grey-text">Mordrehl is on a Nicotine Patch</span>
+  [ <span class="red-text">Level 44</span> ] <span class="dark-grey-text">Caine is so troll it hurts</span>
+<span class="white-text">-----------------------------------------------------------------------------</span>
+<span class="white-text">There are 7 players visible to you and 7 total players.</span>
+        </div>
+        <div class="note">
+            <strong>💡 Format:</strong> The 7 players above are just examples. The WHO list will display all online 
+            players with their <span class="red-text">red level number</span> and <span class="dark-grey-text">dark grey player info</span>.
+        </div>
+        
+        <!-- EQUIPMENT -->
+        <h2>EQUIPMENT - Worn Items</h2>
+        <h3>Visual Output:</h3>
+        <div class="mud-output">
+<span class="blue-text">20/20hp</span> <span class="green-text">89/89mv</span> <span class="blue-text">24/33m</span> <span class="white-text">></span> eq
+You are using:
+<span class="cyan-text"><floating nearby></span>   <span class="white-text">A glowing orb</span> <span class="green-text">(brightly lit)</span>
+<span class="cyan-text"><worn as flair></span>     <span class="white-text">A blue ribbon bearing the words "Welcome, new player!"</span> <span class="green-text">(brand new)</span>
+<span class="cyan-text"><worn on head></span>      <span class="white-text">A hood made of thin cloth</span> <span class="green-text">(brand new)</span>
+<span class="cyan-text"><worn on body></span>      <span class="white-text">A thin cloth shirt</span> <span class="green-text">(brand new)</span>
+<span class="cyan-text"><primary hand></span>      <span class="white-text">A wooden stake</span> <span class="green-text">(brand new)</span>
+<span class="cyan-text"><secondary hand></span>    <span class="white-text">A wooden sword</span> <span class="green-text">(brand new)</span>
+<span class="cyan-text"><worn on legs></span>      <span class="white-text">A pair of thin cloth pants</span> <span class="green-text">(brand new)</span>
+<span class="cyan-text"><worn on feet></span>      <span class="white-text">A pair of thin cloth slippers</span> <span class="green-text">(brand new)</span>
+        </div>
+        
+        <!-- INVENTORY -->
+        <h2>INVENTORY - Carrying Items</h2>
+        <h3>Visual Output:</h3>
+        <div class="mud-output">
+<span class="cyan-text">--- <span class="white-text">[Inventory]</span> <span class="cyan-text">---</span>
+<span class="white-text">You are carrying:
+ [x1] 1000 copper coins
+ [x2] A massive turkey leg
+ [x1] A healing potion
+ [x3] A piece of bread
+ [x1] A small leather pouch</span>
+        </div>
+        
+        <!-- EXITS -->
+        <h2>EXITS - Available Directions</h2>
+        <h3>Visual Output:</h3>
+        <div class="mud-output">
+<span class="magenta-text">[<span class="cyan-text"> <span class="green-text">north</span> <span class="cyan-text">]</span> to <span class="yellow-text">The Temple Square</span> <span class="cyan-text">(<span class="blue-text">3001</span><span class="cyan-text">)</span>
+<span class="magenta-text">[<span class="cyan-text"> <span class="green-text">south</span> <span class="cyan-text">]</span> to <span class="yellow-text">The Town Gate</span> <span class="cyan-text">(<span class="blue-text">3002</span><span class="cyan-text">)</span>
+<span class="magenta-text">[<span class="cyan-text"> <span class="green-text">east</span>  <span class="cyan-text">]</span> to <span class="yellow-text">The Inn</span> <span class="cyan-text">(<span class="blue-text">3003</span><span class="cyan-text">)</span>
+<span class="magenta-text">[<span class="cyan-text"> <span class="green-text">west</span>  <span class="cyan-text">]</span> to <span class="yellow-text">The Armory</span> <span class="cyan-text">(<span class="blue-text">3004</span><span class="cyan-text">)</span>
+        </div>
+        
+        <!-- SCORE -->
+        <h2>SCORE - Character Statistics</h2>
+        <h3>Visual Output:</h3>
+        <div class="mud-output">
+<span class="white-text">[+]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[+]</span>
+<span class="white-text">                           --- Rites of Passage ---</span>
+<span class="white-text">[+]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[+]</span>
+    <span class="dark-grey-text">Thou art</span> <span class="red-text">PlayerName</span> <span class="dark-grey-text">the</span> <span class="red-text">RaceName</span> <span class="yellow-text">ClassName</span><span class="dark-grey-text">.</span>
+    <span class="dark-grey-text">Your deeds rank you as</span> <span class="yellow-text">rank title</span> <span class="dark-grey-text">amongst your</span> <span class="red-text">RaceName</span> <span class="dark-grey-text">ancestors.</span>
+
+   <span class="dark-grey-text">You are</span> <span class="white-text">18</span> <span class="dark-grey-text">years of age (</span><span class="white-text">0 Hours</span><span class="dark-grey-text">) and</span> <span class="white-text">5' 9"</span> <span class="dark-grey-text">tall.</span>
+   <span class="dark-grey-text">You have gained</span> <span class="white-text">0</span> <span class="dark-grey-text">experience and need</span> <span class="white-text">85</span> <span class="dark-grey-text">more to level.</span>
+
+   <span class="dark-grey-text">You can learn</span> <span class="white-text">20</span> <span class="dark-grey-text">more skills and</span> <span class="white-text">10</span> <span class="dark-grey-text">more spells.</span>
+   <span class="dark-grey-text">You have</span> <span class="white-text">1</span> <span class="dark-grey-text">practices to improve your skills and spells.</span>
+
+   <span class="dark-grey-text">Health :</span> <span class="blue-text">20</span>  <span class="dark-grey-text">/</span><span class="blue-text">20</span>        <span class="dark-grey-text">Attack Power Bonus:</span> <span class="white-text">6</span>       <span class="dark-grey-text">Total Kills :</span> <span class="red-text">0</span>
+   <span class="dark-grey-text">Stamina:</span> <span class="green-text">89</span>  <span class="dark-grey-text">/</span><span class="green-text">89</span>        <span class="dark-grey-text">Offensive Bonus   :</span> <span class="white-text">35</span>      <span class="dark-grey-text">Total Deaths:</span> <span class="red-text">0</span>
+   <span class="dark-grey-text">Mana   :</span> <span class="magenta-text">33</span>  <span class="dark-grey-text">/</span><span class="magenta-text">33</span>        <span class="dark-grey-text">Evasion Bonus     :</span> <span class="white-text">10</span>      <span class="dark-grey-text">War Points  :</span> <span class="white-text">0</span>
+                           <span class="dark-grey-text">Practices         :</span> <span class="white-text">1</span>       <span class="dark-grey-text">Wimpy       :</span> <span class="white-text">5</span>
+   <span class="dark-grey-text">Arcane :</span> <span class="white-text">0</span>              <span class="dark-grey-text">Magic Factor      :</span> <span class="white-text">0</span>       <span class="dark-grey-text">Level       :</span> <span class="white-text">1</span>
+   <span class="dark-grey-text">Mystic :</span> <span class="white-text">0</span>              <span class="dark-grey-text">Protection Factor :</span> <span class="white-text">0</span>       <span class="dark-grey-text">Remorts     :</span> <span class="white-text">0</span>
+
+   <span class="dark-grey-text">You are carrying</span> <span class="white-text">1000</span> <span class="dark-grey-text">coins and your lifetime savings is</span> <span class="white-text">50</span> <span class="dark-grey-text">coins.</span>
+   <span class="dark-grey-text">You are carrying</span> <span class="white-text">13</span> <span class="dark-grey-text">kg(s) of weight. (You are unburdened.)</span>
+
+<span class="white-text">[+]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[+]</span>
+        </div>
+        
+        <!-- WORTH -->
+        <h2>WORTH - Money and Experience</h2>
+        <h3>Visual Output:</h3>
+        <div class="mud-output">
+<span class="white-text">You have</span> <span class="yellow-text">1000 gold</span> <span class="white-text">and</span> <span class="yellow-text">500 silver</span>.
+<span class="white-text">You have</span> <span class="cyan-text">50000 experience</span>.
+<span class="white-text">You need</span> <span class="green-text">25000 more experience</span> <span class="white-text">to advance</span>.
+        </div>
+        
+        <!-- PURSE -->
+        <h2>PURSE - Check Your Wealth</h2>
+        <h3>Visual Output:</h3>
+        <div class="mud-output">
+<span class="blue-text">20/20hp</span> <span class="green-text">89/89mv</span> <span class="blue-text">33/33m</span> <span class="white-text">></span> purse
+<span class="dark-grey-text">You have</span> <span class="white-text">50</span> <span class="dark-grey-text">coins in the bank.</span>
+
+<span class="white-text">1000</span> <span class="dark-grey-text">copper coins.</span>
+        </div>
+        
+        <!-- HELP SYSTEM -->
+        <h2>HELP - Information System</h2>
+        <h3>Visual Output:</h3>
+        <div class="mud-output">
+<span class="magenta-text">========================================</span>
+<span class="white-text">              HELP SYSTEM</span>
+<span class="magenta-text">========================================</span>
+
+<span class="cyan-text">Movement Commands...        Grouping Commands...</span>
+<span class="white-text">north south east west up down   follow group gtell split
+exits recall                                    (optional text)</span>
+
+<span class="cyan-text">Object Commands...          Information Cmds...</span>
+<span class="white-text">get put drop give sacrifice    help credits commands areas
+wear wield hold                report score time weather where who</span>
+
+<span class="cyan-text">Combat Commands...          Misc Commands...</span>
+<span class="white-text">kill flee kick rescue disarm  ! save quit
+backstab cast wimpy           practice train</span>
+
+<span class="white-text">For more help, type</span> <span class="green-text">'help <topic>'</span> <span class="white-text">for any command, skill, or spell.</span>
+<span class="white-text">Also help on:</span> <span class="yellow-text">DAMAGE DEATH EXPERIENCE NEWS STORY TICK WIZLIST</span>
+        </div>
+        
+        <!-- PROMPT SYSTEM -->
+        <h2>PROMPT - Customization Options</h2>
+        <h3>Visual Output:</h3>
+        <div class="mud-output">
+<span class="magenta-text">========================================</span>
+<span class="cyan-text">            CUSTOMIZE YOUR PLAYER PROMPT</span>
+<span class="magenta-text">========================================</span>
+
+    <span class="green-text">Syntax:</span> <span class="white-text">prompt</span> <span class="green-text">- Show all default prompts</span>
+    <span class="green-text">Syntax:</span> <span class="white-text">prompt &lt;letter&gt;</span> <span class="green-text">- Use default prompt A-P</span>
+    <span class="green-text">Syntax:</span> <span class="white-text">prompt &lt;custom string&gt;</span> <span class="green-text">- Create your own prompt</span>
+
+    <span class="cyan-text">================== Default Prompts (prompt all) ==================</span>
+
+    <span class="green-text">[A]</span> <span class="blue-text">20</span><span class="white-text">/</span><span class="blue-text">20</span><span class="white-text">hp</span> <span class="green-text">89</span><span class="white-text">/</span><span class="green-text">89</span><span class="white-text">mv</span> <span class="magenta-text">33</span><span class="white-text">/</span><span class="magenta-text">33</span><span class="white-text">m &gt;</span>
+    <span class="green-text">[B]</span> <span class="blue-text">20</span><span class="white-text">/</span><span class="blue-text">20</span><span class="white-text">h</span> <span class="green-text">89</span><span class="white-text">/</span><span class="green-text">89</span><span class="white-text">mv</span> <span class="magenta-text">33</span><span class="white-text">/</span><span class="magenta-text">33</span><span class="white-text">m &gt;</span>
+    <span class="green-text">[C]</span> <span class="blue-text">20</span><span class="white-text">H</span> <span class="green-text">89</span><span class="white-text">Mv</span> <span class="magenta-text">33</span><span class="white-text">Ma&gt;</span>
+    <span class="green-text">[D]</span> <span class="blue-text">20</span><span class="white-text">H</span> <span class="green-text">89</span><span class="white-text">Mv</span> <span class="magenta-text">33</span><span class="white-text">Ma &gt;</span>
+    <span class="green-text">[E]</span> <span class="blue-text">20</span><span class="white-text">/</span><span class="blue-text">20</span><span class="white-text">H</span> <span class="green-text">89</span><span class="white-text">/</span><span class="green-text">89</span><span class="white-text">Mv</span> <span class="magenta-text">33</span><span class="white-text">Ma &gt;</span>
+    <span class="green-text">[F]</span> <span class="blue-text">20</span><span class="white-text">h</span> <span class="green-text">89</span><span class="white-text">m</span> <span class="yellow-text">XL:85</span><span class="white-text"> &gt;</span>
+    <span class="green-text">[G]</span> <span class="blue-text">20</span><span class="white-text">/</span><span class="blue-text">20</span><span class="white-text">H</span> <span class="green-text">89</span><span class="white-text">/</span><span class="green-text">89</span><span class="white-text">Mv</span> <span class="magenta-text">33</span><span class="white-text">Ma</span> <span class="yellow-text">XL(85)</span><span class="white-text"> &gt;</span>
+    <span class="green-text">[H]</span> <span class="blue-text">20</span><span class="white-text">hp</span> <span class="green-text">89</span><span class="white-text">mv</span> <span class="magenta-text">33</span><span class="white-text">ma (</span><span class="yellow-text">85</span><span class="white-text">) &gt;</span>
+    <span class="green-text">[I]</span> <span class="white-text">H:</span><span class="blue-text">20</span><span class="white-text">/</span><span class="blue-text">20</span> <span class="white-text">M:</span><span class="green-text">89</span><span class="white-text">/</span><span class="green-text">89</span> <span class="yellow-text">XL:85</span><span class="white-text"> &gt;</span>
+    <span class="green-text">[J]</span> <span class="white-text">H:</span><span class="blue-text">20</span> <span class="white-text">M:</span><span class="green-text">89</span> <span class="white-text">Ma:</span><span class="magenta-text">33</span> <span class="yellow-text">XL:85</span><span class="white-text"> &gt;</span>
+    <span class="green-text">[K]</span> <span class="blue-text">20</span><span class="white-text">h</span> <span class="green-text">89</span><span class="white-text">m (</span><span class="yellow-text">85</span><span class="white-text">) &gt;</span>
+    <span class="green-text">[L]</span> <span class="blue-text">20</span><span class="white-text">h</span> <span class="green-text">89</span><span class="white-text">m (</span><span class="yellow-text">85</span><span class="white-text">) &gt;</span>
+    <span class="green-text">[M]</span> <span class="blue-text">20</span><span class="white-text">h</span> <span class="green-text">89</span><span class="white-text">mv</span> <span class="magenta-text">33</span><span class="white-text">ma (</span><span class="yellow-text">85</span><span class="white-text">) &gt;</span>
+    <span class="green-text">[N]</span> <span class="white-text">H:</span><span class="blue-text">20</span><span class="white-text">/</span><span class="blue-text">20</span> <span class="white-text">M:</span><span class="green-text">89</span><span class="white-text">/</span><span class="green-text">89</span> <span class="yellow-text">XL:85</span><span class="white-text"> &gt;</span>
+    <span class="green-text">[O]</span> <span class="white-text">H:</span><span class="blue-text">20</span><span class="white-text">/</span><span class="blue-text">20</span> <span class="white-text">M:</span><span class="green-text">89</span><span class="white-text">/</span><span class="green-text">89</span> <span class="yellow-text">XL:85</span><span class="white-text"> &gt;</span>
+    <span class="green-text">[P]</span> <span class="white-text">H:</span><span class="blue-text">20</span><span class="white-text">/</span><span class="blue-text">20</span> <span class="white-text">M:</span><span class="green-text">89</span><span class="white-text">/</span><span class="green-text">89</span> <span class="yellow-text">XL:85</span><span class="white-text"> &gt;</span>
+        </div>
+        
+        <!-- COMMUNICATION CHANNELS -->
+        <h2>CHAT/GOSSIP - Communication Channels</h2>
+        <h3>Visual Output:</h3>
+        <div class="mud-output">
+<span class="magenta-text">========================================</span>
+<span class="cyan-text">              COMMUNICATION CHANNELS</span>
+<span class="magenta-text">========================================</span>
+
+<span class="green-text">Syntax: <span class="white-text">gossip <message>   <span class="green-text">- Send to all interested players</span>
+<span class="green-text">Syntax: <span class="white-text">question <message> <span class="green-text">- Ask a question to all</span>
+<span class="green-text">Syntax: <span class="white-text">answer <message>   <span class="green-text">- Answer the current question</span>
+<span class="green-text">Syntax: <span class="white-text">shout <message>    <span class="green-text">- Shout to all awake players</span>
+<span class="green-text">Syntax: <span class="white-text">yell <message>     <span class="green-text">- Yell to players in your area</span>
+
+<span class="cyan-text">GOSSIP / . (DOT)</span>
+   <span class="white-text">Sends your message to all players interested in gossip.
+   Type <span class="white-text">gossip<span class="white-text"> with no arguments to toggle whether you hear gossip.
+   The <span class="white-text">.<span class="white-text"> (dot) command is a quick shortcut for gossip.</span>
+        </div>
+        
+        <!-- ADMIN COMMUNICATION -->
+        <h2>PRAY - Communicate with Admins</h2>
+        <h3>Visual Output:</h3>
+        <div class="mud-output">
+<span class="magenta-text">========================================</span>
+<span class="cyan-text">                 COMMUNICATE WITH ADMINS</span>
+<span class="magenta-text">========================================</span>
+
+<span class="green-text">Syntax: <span class="white-text">immtalk <message>
+<span class="green-text">Syntax: <span class="white-text">: <message></span>
+
+<span class="green-text">** DO USE IMMTALK FOR:</span>
+    <span class="white-text">- Important rule questions
+    - Report bugs or exploits
+    - Report player harassment
+    - Emergency situations
+    - Issues requiring immediate admin attention</span>
+
+<span class="red-text">** DO NOT USE IMMTALK FOR:</span>
+    <span class="white-text">- Requesting battlegrounds (use gossip instead)
+    - General questions (use help or gossip)
+    - Spamming or testing
+    - Complaining about deaths or losses</span>
+        </div>
+        
+        <!-- NEW PLAYER HELP -->
+        <h2>HELP NEWBIE - Comprehensive Tutorial</h2>
+        <h3>Visual Output:</h3>
+        <div class="mud-output">
+<span class="magenta-text">========================================</span>
+<span class="cyan-text">          TOP 10 THINGS NEW PLAYERS SHOULD KNOW</span>
+<span class="magenta-text">========================================</span>
+
+<span class="cyan-text">1. Alignment Defines Your Allies and Enemies</span>
+   <span class="white-text">Your alignment (good or evil) determines who can attack you. Only
+   opposite alignments can PK each other. Type <span class="green-text">help alignment<span class="white-text"> to learn
+   more. You cannot change alignment after creation!</span>
+
+<span class="cyan-text">2. Use CONSIDER and SCAN Before Every Fight</span>
+   <span class="white-text">Always <span class="green-text">consider <mob><span class="white-text"> before attacking - it tells you if you can win.
+   Use <span class="green-text">scan<span class="white-text"> to see creatures in adjacent rooms. Sometimes consider fails,
+   so try again if you get no response. The command <span class="green-text">gconsider<span class="white-text"> works for
+   groups.</span>
+
+<span class="cyan-text">3. Death Penalties Scale With Level</span>
+   <span class="white-text">At level 1-20, death penalties are minimal - explore freely! Higher levels
+   lose more XP on death. Your corpse contains your gear, so retrieve it
+   quickly. Type <span class="green-text">help death<span class="white-text"> for full details.</span>
+
+<span class="green-text">======================== QUICK REFERENCE COMMANDS ========================</span>
+   <span class="green-text">help <topic><span class="white-text">      <span class="white-text">- Get help on any topic
+   <span class="green-text">commands<span class="white-text">          <span class="white-text">- List every command available to you
+   <span class="green-text">who<span class="white-text">               <span class="white-text">- See who's online
+   <span class="green-text">where<span class="white-text">             <span class="white-text">- See your current location
+   <span class="green-text">score<span class="white-text">             <span class="white-text">- View your character stats
+   <span class="green-text">inventory<span class="white-text">         <span class="white-text">- Check what you're carrying
+   <span class="green-text">equipment<span class="white-text">         <span class="white-text">- Check what you're wearing
+   <span class="green-text">weight<span class="white-text">            <span class="white-text">- Check your carry weight
+   <span class="green-text">socials<span class="white-text">           <span class="white-text">- Express yourself to players around you</span>
+        </div>
+        
+        <!-- Color Combinations -->
+        <h2>Color Combinations & Examples</h2>
+        <div class="display-section">
+            <h3>Example: Interface Element with All Colors</h3>
+            <div class="mud-output">
+<span class="magenta-text">╔════════════════════════════════════════╗</span>
+<span class="magenta-text">║                                        ║</span>
+<span class="magenta-text">║  </span><span class="cyan-text">Character Information Panel</span><span class="magenta-text">           ║</span>
+<span class="magenta-text">║                                        ║</span>
+<span class="magenta-text">║</span>  <span class="white-text">Name:</span>  <span class="cyan-text">PlayerName</span>               <span class="magenta-text">║</span>
+<span class="magenta-text">║</span>  <span class="green-text">Bonus:</span> <span class="green-text">+5 Strength</span>               <span class="magenta-text">║</span>
+<span class="magenta-text">║</span>  <span class="blue-text">Status:</span> <span class="blue-text">20/20 HP</span>                <span class="magenta-text">║</span>
+<span class="magenta-text">║</span>  <span class="yellow-text">Gold:</span>  <span class="yellow-text">10000 coins</span>             <span class="magenta-text">║</span>
+<span class="magenta-text">║</span>  <span class="red-text">Warning:</span> <span class="red-text">Low Mana!</span>              <span class="magenta-text">║</span>
+<span class="magenta-text">║</span>  <span class="dark-grey-text">Note:</span>    <span class="dark-grey-text">No available quests</span>      <span class="magenta-text">║</span>
+<span class="magenta-text">║                                        ║</span>
+<span class="magenta-text">╚════════════════════════════════════════╝</span>
+            </div>
+        </div>
+        
+        <!-- Quick Reference -->
+        <h2>Quick Color Reference</h2>
+        <div class="display-section">
+            <table class="legend-table">
+                <tr>
+                    <th>Use</th>
+                    <th>Color(s)</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td><strong>Borders/Decorative</strong></td>
+                    <td><span class="magenta-text">{M</span></td>
+                    <td><span class="magenta-text">════════════</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Headers/Labels</strong></td>
+                    <td><span class="cyan-text">{C</span></td>
+                    <td><span class="cyan-text">Character Information</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Main Text/Values</strong></td>
+                    <td><span class="white-text">{W</span></td>
+                    <td><span class="white-text">PlayerName the ClassName</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Numbers/Health</strong></td>
+                    <td><span class="blue-text">{B</span></td>
+                    <td><span class="blue-text">20/20</span> HP</td>
+                </tr>
+                <tr>
+                    <td><strong>Bonuses/Positive</strong></td>
+                    <td><span class="green-text">{G</span></td>
+                    <td>+<span class="green-text">5 Strength</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Resources/Gold</strong></td>
+                    <td><span class="yellow-text">{Y</span></td>
+                    <td><span class="yellow-text">10000 gold</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Warnings/Errors</strong></td>
+                    <td><span class="red-text">{R</span></td>
+                    <td><span class="red-text">DANGER!</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Unavailable/Disabled</strong></td>
+                    <td><span class="dark-grey-text">{D</span></td>
+                    <td><span class="dark-grey-text">No quests</span></td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- Notes -->
+        <div class="note">
+            <strong>💡 Tip:</strong> Colors only display if you have color enabled in the game. 
+            Type <span class="yellow-text">color on</span> or <span class="yellow-text">colour on</span> to enable colors if 
+            they're not showing.
+        </div>
+        
+        <footer>
+            <p>ROM24 QuickMUD Color System - Complete Visual Reference</p>
+            <p>Last Updated: March 3, 2026 | Status: ✅ Active</p>
+            <p style="font-size: 0.9em; margin-top: 20px;">Open this file in a web browser to see colors in action</p>
+        </footer>
+    </div>
+</body>
+</html>
