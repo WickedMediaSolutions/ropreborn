@@ -1,0 +1,695 @@
+#AREA
+sect_halls.are~
+Sect Halls~
+{40 50} RoP     The Eight Sect Halls~
+8000 8399
+
+#MOBILES
+#8000
+master_aethelhelm~
+Master Aethelhelm~
+The sect master stands here, enveloped in a protective aura.
+~
+The master of Aethelhelm is a tall, noble warrior radiating righteousness and 
+protection. His armor gleams with holy light, and his eyes reflect a deep 
+commitment to the forces of good. He stands at the heart of the sect, watching 
+over all who have pledged their loyalty.
+~
+human~
+ABTV CEFHIJK 1000 0
+45 20 1d1+999 1d1+399 2d6+30 crush
+-20 -15 -10 -5
+ACDEFHIJKLMNOT ABP CD 0
+stand stand male 0
+0 0 3 0
+#8001
+avatar_aethelhelm~
+Avatar of Aethelhelm~
+A celestial being radiates divine power.
+~
+This magnificent avatar embodies the essence of Aethelhelm - valiant, protective,
+and righteous. Its form shimmers with holy light, and its presence inspires 
+courage in all good-aligned beings who behold it.
+~
+human~
+ABTV CEFHIJKZ 1500 0
+50 30 1d1+19999 1d1+499 3d8+50 crush
+-25 -20 -15 -10
+ACDEFHIJKLMNOP ABP CD 0
+stand stand either 0
+0 0 3 0
+#8002
+trainer_holy~
+a holy trainer~
+A disciplined trainer teaches combat techniques.
+~
+This experienced trainer has dedicated their life to the martial and spiritual
+discipline required to serve Aethelhelm. They move with practiced grace and 
+teach their students with patience and wisdom.
+~
+human~
+ABV CFHIJK 500 0
+25 15 1d1+999 1d1+199 1d8+20 punch
+-15 -10 -5 -2
+ACEFHIJK ABD 0
+stand stand male 0
+0 0 2 0
+#8003
+scribe_aethelhelm~
+a holy scribe~
+A robed scholar copies ancient texts.
+~
+This dedicated scribe maintains the records of Aethelhelm's teachings and 
+accomplishments. Ink stains mark their fingers as they meticulously preserve 
+the sect's wisdom for future generations.
+~
+human~
+AB CFHIJK 400 0
+20 5 1d1+999 1d1+99 1d4+5 punch
+-10 -8 -5 0
+CFJ ABD 0
+stand stand male 0
+0 0 2 0
+#8010
+master_kiri~
+Master Kiri~
+The sacred priestess stands in meditation.
+~
+The master of Kiri radiates spiritual peace and healing power. Her form seems
+partially ethereal, as if she exists partially in this world and the divine 
+realm beyond. Her presence brings serenity to all who approach.
+~
+human~
+ABTV CFHIJK 1000 0
+45 20 1d1+999 1d1+399 2d6+25 crush
+-20 -15 -10 -5
+ACDEFHIJKLMNOT ABP CD 0
+stand stand female 0
+0 0 2 0
+#8011
+avatar_kiri~
+Avatar of Kiri~
+A shimmering goddess appears before you.
+~
+This celestial avatar embodies Kiri's sacred essence - healing, blessing, and
+divine grace. Her form radiates holy light that cleanses evil and heals wounds.
+~
+human~
+ABTV CEFHIJKZ 1500 0
+50 30 1d1+19999 1d1+499 3d8+45 crush
+-25 -20 -15 -10
+ACDEFHIJKLMNOP ABP CD 0
+stand stand female 0
+0 0 2 0
+#8012
+priestess_kiri~
+a holy priestess~
+A robed priestess tends to spiritual matters.
+~
+This devoted priestess of Kiri serves as healer and spiritual guide. Her 
+prayers have mended many wounds and her blessings have guided lost souls 
+back to the light.
+~
+human~
+ABV CFHIJK 500 0
+25 15 1d1+999 1d1+199 1d8+18 punch
+-15 -10 -5 -2
+ACEFHIJK ABD 0
+stand stand female 0
+0 0 2 0
+#8020
+master_baalzom~
+Master Baalzom~
+An ancient scholar studies forbidden knowledge.
+~
+The master of Baalzom is impossibly old, yet sharp-minded and powerful. Their
+robes are covered in runes and symbols of arcane knowledge. Their eyes gleam
+with centuries of accumulated wisdom.
+~
+human~
+ABTV CFHIJK 1000 0
+50 25 1d1+999 1d1+399 2d6+20 punch
+-20 -15 -10 -5
+ACDEFHIJKLMNOT ABP CD 0
+stand stand male 0
+0 0 2 0
+#8021
+avatar_baalzom~
+Avatar of Baalzom~
+An ethereal being of pure knowledge appears.
+~
+This avatar manifests as a swirling vortex of arcane power and ancient 
+knowledge. Its form shifts and changes constantly, reflecting the endless
+streams of wisdom flowing through it.
+~
+human~
+ABTV CFHIJKZ 1500 0
+50 30 1d1+19999 1d1+499 3d8+40 crush
+-25 -20 -15 -10
+ACDEFHIJKLMNOP ABP CD 0
+stand stand male 0
+0 0 3 0
+#8030
+master_ishta~
+Master Ishta~
+A robed druid communes with nature.
+~
+The master of Ishta embodies the benevolent forces of nature itself. Their
+form seems to blend with the plants and animals around them. A gentle aura
+of natural magic surrounds them.
+~
+human~
+ABTV CFHIJK 1000 0
+45 20 1d1+999 1d1+399 2d6+28 crush
+-20 -15 -10 -5
+ACDEFHIJKLMNOT ABP CD 0
+stand stand male 0
+0 0 2 0
+#8031
+avatar_ishta~
+Avatar of Ishta~
+The spirit of nature takes form.
+~
+This avatar appears as a magnificent fusion of human and nature - plants grow
+from its form, animals flock to its side, and the very air seems alive with
+the power of environmental benevolence.
+~
+human~
+ABTV CFHIJKZ 1500 0
+50 30 1d1+19999 1d1+499 3d8+48 crush
+-25 -20 -15 -10
+ACDEFHIJKLMNOP ABP CD 0
+stand stand male 0
+0 0 3 0
+#8040
+master_zod~
+Master Zod~
+A tyrannical warlord commands absolute obedience.
+~
+The master of Zod radiates malevolent authority and dominating power. His
+armor is wrought from black iron, and his eyes burn with the desire to rule
+and control. Those near him feel the weight of his absolute authority.
+~
+human~
+ABTV CEFHIJKZ -1000 0
+50 25 1d1+999 1d1+399 2d8+35 pound
+-20 -15 -10 -5
+ACDEFHIJKLMNOT ABP CD 0
+stand stand male 0
+0 0 3 0
+#8041
+avatar_zod~
+Avatar of Zod~
+A dark tyrant looms before you.
+~
+This avatar embodies Zod's essence of absolute domination and tyranny. Dark
+power crackles around it, and reality seems to bend to its will. Its presence
+is overwhelming and suffocating.
+~
+human~
+ABTV CEFHIJKZ -1500 0
+50 35 1d1+19999 1d1+599 3d8+50 pound
+-25 -20 -15 -10
+ACDEFHIJKLMNOP ABP CD 0
+stand stand male 0
+0 0 3 0
+#8050
+master_jalaal~
+Master Jalaal~
+A shadowed assassin waits in darkness.
+~
+The master of Jalaal is a figure of mystery and deadly precision. Their form
+seems to bend the shadows around them, and their movements are silent and 
+swift. Few have seen them and lived to tell the tale.
+~
+human~
+ACHS PQ -1000 0
+45 25 2d8+80 1d1+199 1d5+15 punch
+0 2 5 8
+EFJN 0 0 0
+stand stand male 100
+0 0 2 0
+#8051
+avatar_jalaal~
+Avatar of Jalaal~
+A shadow assassin coalesces from darkness.
+~
+This avatar manifests as living shadow and deception - a killer wrapped in
+pure darkness. Its movements are imperceptible, and its strikes are swift
+and lethal beyond measure.
+~
+human~
+ACHS PQZ -1500 0
+50 35 2d8+150 1d1+499 2d5+25 punch
+-5 0 10 15
+EFHJN 0 0 0
+stand stand male 100
+0 0 2 0
+#8060
+master_xix~
+Master Xix~
+A chaos-touched warlord radiates destruction.
+~
+The master of Xix is barely contained chaos incarnate. Their form flickers
+between states, and reality warps around them. They are the embodiment of
+destructive power and entropy.
+~
+human~
+ABTV CEFGHIJKZ -1000 0
+50 30 2d8+999 1d1+399 2d8+40 pound
+-20 -15 -10 -5
+ACDEFHIJKLMNOT ABP CD 0
+stand stand male 0
+0 0 3 0
+#8061
+avatar_xix~
+Avatar of Xix~
+Chaos itself takes terrible form.
+~
+This avatar is absolute destruction given shape - a tempest of destructive
+power that unmakes reality with every movement. It radiates chaos, entropy,
+and the fundamental desire to annihilate.
+~
+human~
+ABTV CEFGHIJKZ -1500 0
+50 40 2d8+19999 1d1+699 3d8+55 pound
+-25 -20 -15 -10
+ACDEFHIJKLMNOP ABP CD 0
+stand stand male 0
+0 0 3 0
+#8070
+master_talice~
+Master Talice~
+A deceiver shrouded in illusions sits regally.
+~
+The master of Talice appears different to every observer - some see beauty,
+others see horror, all see lies. Their form seems to phase in and out of
+focus, and nothing about them can be trusted.
+~
+human~
+ABTV CEFHIJKZ -1000 0
+48 22 1d1+999 1d1+399 2d6+25 punch
+-20 -15 -10 -5
+ACDEFHIJKLMNOT ABP CD 0
+stand stand male 0
+0 0 2 0
+#8071
+avatar_talice~
+Avatar of Talice~
+A trickster god materializes before you.
+~
+This avatar embodies deception incarnate - a master of illusions and tricks.
+Its form constantly shifts, and it is impossible to tell what is real and
+what is illusion. Reality bends to its will.
+~
+human~
+ABTV CEFHIJKZ -1500 0
+50 32 1d1+19999 1d1+499 3d8+42 punch
+-25 -20 -15 -10
+ACDEFHIJKLMNOP ABP CD 0
+stand stand male 0
+0 0 2 0
+#0
+
+#OBJECTS
+#0
+
+#ROOMS
+#8000
+Hall of Aethelhelm~
+You stand in a massive stone hall dedicated to the virtues of valor and 
+protection. Towering columns crafted from pure white marble stretch up toward
+a vaulted ceiling. Holy light seems to emanate from everywhere and nowhere,
+casting no shadows. Warriors in gleaming armor stand at attention, and the 
+very air crackles with righteous purpose.
+~
+0 DP 0
+D1
+Aethelhelm's training grounds lie to the east.
+~
+~
+0 -1 8001
+D2
+The library archives are to the south.
+~
+~
+0 -1 8002
+S
+#8001
+Training Grounds of Aethelhelm~
+A large open courtyard surrounded by high stone walls serves as the training
+grounds for Aethelhelm's warriors. Equipment racks line the walls, and the 
+sound of combat echoes constantly. Holy light imbues the area, strengthening
+the resolve of all who train here.
+~
+0 D 0
+D3
+The main hall is to the west.
+~
+~
+0 -1 8000
+S
+#8002
+Library Archives of Aethelhelm~
+Towering shelves of pristine stone hold sacred texts and battle records of 
+Aethelhelm's greatest achievements. The air is cool and dry, preserving the
+ancient knowledge within these walls. Scholars in white robes move silently
+between the shelves, maintaining the repository of divine wisdom.
+~
+0 D 0
+D0
+The main hall is to the north.
+~
+~
+0 -1 8000
+S
+#8010
+Shrine of Kiri~
+You stand before a crystalline shrine of breathtaking beauty. Water flows
+endlessly from a sacred spring, its surface reflecting divine light. Healing
+energies pulse through the shrine, mending body and spirit. Priestesses in 
+flowing white robes move gracefully, tending to those who seek healing.
+~
+0 DP 0
+D1
+Kiri's meditation chambers are to the east.
+~
+~
+0 -1 8011
+D2
+The healing pools are to the south.
+~
+~
+0 -1 8012
+S
+#8011
+Meditation Chambers~
+Peaceful chambers filled with the sound of flowing water and gentle music.
+Meditation cushions of silk line the floor, and the air is thick with 
+spiritual energy. Those who meditate here find their connection to the 
+divine greatly enhanced.
+~
+0 D 0
+D3
+The shrine is to the west.
+~
+~
+0 -1 8010
+S
+#8012
+Healing Pools~
+Luminous pools of sacred water glow with holy light. The water itself seems
+to pulse with healing power, and simply bathing in it mends wounds and 
+cures ailments. Priestesses of Kiri tend to those in need.
+~
+0 D 0
+D0
+The shrine is to the north.
+~
+~
+0 -1 8010
+S
+#8020
+Library of Baalzom~
+An impossibly vast library stretches in all directions, filled with ancient
+scrolls and forbidden tomes. The air crackles with arcane power. Runes glow
+on the shelves, and the very atmosphere seems heavy with knowledge. Silence
+reigns absolute in these halls of wisdom.
+~
+0 DP 0
+D1
+The vault of secrets is to the east.
+~
+~
+0 -1 8021
+D2
+The study halls are to the south.
+~
+~
+0 -1 8022
+S
+#8021
+Vault of Secrets~
+A chamber of immense power, protected by countless wards and enchantments.
+Within are stored the greatest secrets of Baalzom - knowledge too dangerous
+for the unprepared. The air shimmers with arcane defense, and only the most
+worthy can access the deepest mysteries.
+~
+0 D 0
+D3
+The library is to the west.
+~
+~
+0 -1 8020
+S
+#8022
+Study Halls~
+Long wooden tables stretch across this hall, where scholars contemplate the
+mysteries of existence. Candlelight flickers gently, and the scratching of
+quills fills the air. The accumulated weight of millennia of knowledge seems
+to permeate every stone.
+~
+0 D 0
+D0
+The library is to the north.
+~
+~
+0 -1 8020
+S
+#8030
+Grove of Ishta~
+A natural sanctuary where humans and nature exist in perfect balance. Trees
+of impossible height frame clearings of soft grass. Animals roam freely, and
+flowers bloom in eternal spring. The very ground seems alive with power, and
+the air carries the scent of growth and harmony.
+~
+0 DP 0
+D1
+The animal sanctuary is to the east.
+~
+~
+0 -1 8031
+D2
+The garden of healing herbs is to the south.
+~
+~
+0 -1 8032
+S
+#8031
+Animal Sanctuary~
+A vast enclosure where creatures of all kinds live in harmony under Ishta's
+blessing. Majestic beasts walk freely, and predators rest alongside prey.
+The natural order is inverted here - all serve the balance, and none hunts.
+The power of benevolence is tangible.
+~
+0 D 0
+D3
+The grove is to the west.
+~
+~
+0 -1 8030
+S
+#8032
+Garden of Healing Herbs~
+Terraced gardens cultivate thousands of rare and magical plants. Healing
+herbs, restorative roots, and life-giving flowers bloom in abundance. The
+garden is carefully tended, and its bounty is shared freely with those in
+need of nature's healing power.
+~
+0 D 0
+D0
+The grove is to the north.
+~
+~
+0 -1 8030
+S
+#8040
+Throne Room of Zod~
+A massive hall of black iron and dark stone, dominated by a towering throne
+of twisted metal and bone. The walls are adorned with instruments of control
+and domination. Dark power radiates from the throne, and the very air seems
+oppressive and heavy. Those who enter feel compelled to kneel and obey.
+~
+0 DP 0
+D1
+The war chamber is to the east.
+~
+~
+0 -1 8041
+D2
+The dungeons of compliance are to the south.
+~
+~
+0 -1 8042
+S
+#8041
+War Chamber~
+A hall of conquest where strategy of dominion is planned. Maps of conquered
+lands cover the walls, and trophies of subjugated foes are displayed with
+pride. Dark power pulses through the chamber, and all who enter feel the
+intoxicating energy of absolute power.
+~
+0 D 0
+D3
+The throne room is to the west.
+~
+~
+0 -1 8040
+S
+#8042
+Dungeons of Compliance~
+Dark stone chambers where obedience is enforced and will is broken. Chains
+and mechanisms of control line the walls. Dark energy suffuses these chambers,
+breaking resistance and enforcing submission. Those imprisoned here feel their
+will slowly crushed.
+~
+0 D 0
+D0
+The throne room is to the north.
+~
+~
+0 -1 8040
+S
+#8050
+Assassin's Sanctum~
+A hidden sanctuary shrouded in shadow and mystery. Darkness clings to every
+surface, and silence is absolute. The air is heavy with secrets and danger.
+Hidden passages and concealed entrances are scattered throughout. This is the
+heart of Jalaal's organization - where fate is decided and targets are marked.
+~
+0 DP 0
+D1
+The poison laboratory is to the east.
+~
+~
+0 -1 8051
+D2
+The shadow training grounds are to the south.
+~
+~
+0 -1 8052
+S
+#8051
+Poison Laboratory~
+A chamber of shadows where deadly concoctions are brewed. Vials of luminous
+poison glow in the darkness, and the air reeks of toxin. Alchemists work in
+silence, creating substances of legendary lethality. Death is cultivated here
+with meticulous care.
+~
+0 D 0
+D3
+The sanctum is to the west.
+~
+~
+0 -1 8050
+S
+#8052
+Shadow Training Grounds~
+A place where darkness itself teaches the art of assassination. Shadows take
+physical form and enemies materialize from thin air. The best assassins train
+here, honing their skills against opponents who can not be seen or predicted.
+Survival is achievement enough.
+~
+0 D 0
+D0
+The sanctum is to the north.
+~
+~
+0 -1 8050
+S
+#8060
+Volcano of Xix~
+You stand at the heart of a volcano of pure chaos. Lava flows in patterns
+that defy physics, and flames of impossible colors dance in the air. The
+ground itself seems unstable, and reality is bent by destructive power. All
+around is decay and entropy - the fundamental breakdown of all things.
+~
+0 DP 0
+D1
+The chamber of cataclysm is to the east.
+~
+~
+0 -1 8061
+D2
+The furnace of destruction is to the south.
+~
+~
+0 -1 8062
+S
+#8061
+Chamber of Cataclysm~
+A hall where chaos is manifest in its purest form. The very atoms of matter
+seem to vibrate on the edge of annihilation. Magical forces of devastating
+power course through the chamber in uncontrolled torrents. To stand here is
+to feel the imminence of total destruction.
+~
+0 D 0
+D3
+The volcano is to the west.
+~
+~
+0 -1 8060
+S
+#8062
+Furnace of Destruction~
+An inferno of apocalyptic proportions burns with flame and chaos. The heat
+is beyond measure, and the destruction is complete. This is where Xix forges
+instruments of annihilation. To gaze into this furnace is to see the end of
+all things written in fire.
+~
+0 D 0
+D0
+The volcano is to the north.
+~
+~
+0 -1 8060
+S
+#8070
+Hall of Illusions~
+A grand hall that appears different to every observer. The architecture shifts
+subtly, colors are never quite the same twice, and the very geometry seems to
+change when you're not looking directly. This is the heart of Talice's power -
+a place where nothing can be trusted and reality itself is a lie.
+~
+0 DP 0
+D1
+The mirror chamber is to the east.
+~
+~
+0 -1 8071
+D2
+The trick galleries are to the south.
+~
+~
+0 -1 8072
+S
+#8071
+Mirror Chamber~
+A hall of infinite mirrors that reflect not images but possibilities. Each
+reflection shows a different truth, and it is impossible to tell which is real.
+The air shimmers with illusion, and the mind struggles to make sense of what
+the eyes perceive. This is deception perfected.
+~
+0 D 0
+D3
+The hall is to the west.
+~
+~
+0 -1 8070
+S
+#8072
+Trick Galleries~
+A winding gallery filled with illusions of breathtaking complexity. Paths
+appear and disappear, walls shift and change, and gravity itself seems
+negotiable. Those who navigate these halls emerge changed, understanding the
+true nature of deception and the fluid nature of reality.
+~
+0 D 0
+D0
+The hall is to the north.
+~
+~
+0 -1 8070
+S
+#0
+
