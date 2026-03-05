@@ -60,9 +60,9 @@ app.ws('/ws', (ws, req) => {
       const data = JSON.parse(msg);
 
       if (data.type === 'command') {
-        // Send command to ROM
+        // Send command to ROM - data.command already has proper line endings from xterm
         if (telnetSocket && telnetSocket.writable) {
-          telnetSocket.write(data.command + '\r\n');
+          telnetSocket.write(data.command);
         }
       } else if (data.type === 'connect') {
         // Establish telnet connection to ROM
