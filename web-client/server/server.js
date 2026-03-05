@@ -292,11 +292,11 @@ function parsePlayerStats(text, stats) {
 
   // Parse equipment - look for equipment list format
   // Typical ROM format: "<wear location> : <item name>"
-  const equipmentMatches = cleanText.matchAll(/(head|neck|chest|arms|wrists|hands|waist|legs|feet|feet|mainhand|offhand|right hand|left hand|right finger|left finger|shield)\s*:\s*([^\n]+)/gi);
+  const equipmentMatches = cleanText.matchAll(/(head|neck|chest|arms|wrists|hands|waist|legs|feet|mainhand|offhand|right hand|left hand|right finger|left finger|shield)\s*:\s*([^\n]+)/gi);
   for (const match of equipmentMatches) {
     const slot = match[1].toLowerCase().replace(/\s/g, '_');
     const itemName = match[2].trim();
-    if (itemName && !itemName.includes('('), {}) {
+    if (itemName && itemName.length > 2) {
       stats.equipment[slot] = { slot, name: itemName };
     }
   }
