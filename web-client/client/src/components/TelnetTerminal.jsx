@@ -28,6 +28,7 @@ export function TelnetTerminal() {
       fontWeight: 'normal',
       cursorBlink: true,
       cursorStyle: 'block',
+      localEcho: true,  // Enable local echo - show typed characters immediately
     });
 
     terminalRef.current = term;
