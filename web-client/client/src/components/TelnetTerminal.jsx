@@ -29,6 +29,8 @@ export function TelnetTerminal() {
 
     let fitAddon = null;
     let handleResize = null;
+    let fitTimer = null;
+    let disposed = false;
 
     // Create xterm terminal
     const term = new Terminal({
@@ -56,22 +58,29 @@ export function TelnetTerminal() {
       fitAddon = new FitAddon();
       term.loadAddon(fitAddon);
       
-      // Fit with a small delay to ensure DOM is ready
-      setTimeout(() => {
+      const safeFit = () => {
+        if (disposed || !fitAddon || !terminalRef.current || !containerRef.current) {
+          return;
+        }
+
+        // xterm fit requires a laid-out container.
+        if (containerRef.current.clientWidth === 0 || containerRef.current.clientHeight === 0) {
+          return;
+        }
+
         try {
           fitAddon.fit();
         } catch (e) {
           console.warn('FitAddon fit error (non-critical):', e);
         }
-      }, 100);
+      };
+
+      // Fit with a small delay to ensure DOM/layout is ready.
+      fitTimer = window.setTimeout(safeFit, 120);
 
       // Handle window resize
       handleResize = () => {
-        try {
-          fitAddon.fit();
-        } catch (e) {
-          console.warn('FitAddon resize error:', e);
-        }
+        safeFit();
       };
 
       window.addEventListener('resize', handleResize);
@@ -80,6 +89,10 @@ export function TelnetTerminal() {
     }
 
     return () => {
+      disposed = true;
+      if (fitTimer) {
+        window.clearTimeout(fitTimer);
+      }
       if (handleResize) {
         window.removeEventListener('resize', handleResize);
       }
