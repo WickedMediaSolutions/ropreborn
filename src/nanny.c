@@ -155,6 +155,76 @@ static ROOM_INDEX_DATA *get_homeland_start_room(CHAR_DATA *ch)
     return room;
 }
 
+/* Pretty display name for race list in character creation. */
+static void format_race_name(const char *in, char *out, size_t out_size)
+{
+    size_t i;
+
+    if (out_size == 0)
+        return;
+
+    if (in == NULL || in[0] == '\0')
+    {
+        out[0] = '\0';
+        return;
+    }
+
+    snprintf(out, out_size, "%s", in);
+    out[0] = UPPER(out[0]);
+
+    for (i = 1; out[i] != '\0'; i++)
+    {
+        if (out[i - 1] == '-' || out[i - 1] == ' ')
+            out[i] = UPPER(out[i]);
+    }
+}
+
+/* Print a 2-column race list grouped by homeland alignment. */
+static void send_race_selection_table(DESCRIPTOR_DATA *d)
+{
+    int race;
+    int good_count = 0;
+    int evil_count = 0;
+    int row;
+    int rows;
+    int good_races[MAX_PC_RACE];
+    int evil_races[MAX_PC_RACE];
+    char left_name[32];
+    char right_name[32];
+    char line[128];
+
+    for (race = 1; race_table[race].name != NULL; race++)
+    {
+        if (!race_table[race].pc_race)
+            continue;
+
+        if (race_uses_evil_homeland(race_table[race].name))
+            evil_races[evil_count++] = race;
+        else
+            good_races[good_count++] = race;
+    }
+
+    send_to_desc("\n\rRace Selection\n\r", d);
+    send_to_desc("------------------------------\n\r", d);
+    send_to_desc("Good Races                Evil Races\n\r", d);
+    send_to_desc("----------------------    ----------------------\n\r", d);
+
+    rows = (good_count > evil_count) ? good_count : evil_count;
+    for (row = 0; row < rows; row++)
+    {
+        left_name[0] = '\0';
+        right_name[0] = '\0';
+
+        if (row < good_count)
+            format_race_name(race_table[good_races[row]].name, left_name, sizeof(left_name));
+        if (row < evil_count)
+            format_race_name(race_table[evil_races[row]].name, right_name, sizeof(right_name));
+
+        snprintf(line, sizeof(line), "%-22s    %-22s\n\r", left_name, right_name);
+        send_to_desc(line, d);
+    }
+}
+
 
 /*
  * Deal with sockets that haven't logged in yet.
@@ -483,17 +553,8 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
             }
 
             write_to_buffer (d, echo_on_str, 0);
-            send_to_desc ("The following races are available:\n\r  ", d);
-            for (race = 1; race_table[race].name != NULL; race++)
-            {
-                if (!race_table[race].pc_race)
-                    break;
-                write_to_buffer (d, race_table[race].name, 0);
-                write_to_buffer (d, " ", 1);
-            }
-            write_to_buffer (d, "\n\r", 0);
-            send_to_desc ("What is your race (help for more information)? ",
-                          d);
+            send_race_selection_table(d);
+            send_to_desc ("\n\rWhat is your race? (type 'help <race>' for details) ", d);
             d->connected = CON_GET_NEW_RACE;
             break;
 
@@ -503,12 +564,15 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
             if (!strcmp (arg, "help"))
             {
                 argument = one_argument (argument, arg);
-                if (argument[0] == '\0')
-                    do_function (ch, &do_help, "race help");
+                if (arg[0] == '\0')
+                {
+                    send_to_desc ("Use: help <race>   Example: help drow\n\r", d);
+                    send_race_selection_table(d);
+                }
                 else
-                    do_function (ch, &do_help, argument);
-                send_to_desc
-                    ("What is your race (help for more information)? ", d);
+                    do_function (ch, &do_help, arg);
+
+                send_to_desc ("\n\rWhat is your race? (type 'help <race>' for details) ", d);
                 break;
             }
 
@@ -517,17 +581,8 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
             if (race == 0 || !race_table[race].pc_race)
             {
                 send_to_desc ("That is not a valid race.\n\r", d);
-                send_to_desc ("The following races are available:\n\r  ", d);
-                for (race = 1; race_table[race].name != NULL; race++)
-                {
-                    if (!race_table[race].pc_race)
-                        break;
-                    write_to_buffer (d, race_table[race].name, 0);
-                    write_to_buffer (d, " ", 1);
-                }
-                write_to_buffer (d, "\n\r", 0);
-                send_to_desc
-                    ("What is your race? (help for more information) ", d);
+                send_race_selection_table(d);
+                send_to_desc ("\n\rWhat is your race? (type 'help <race>' for details) ", d);
                 break;
             }
 
