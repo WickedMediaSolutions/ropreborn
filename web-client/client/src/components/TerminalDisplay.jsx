@@ -15,7 +15,7 @@ export function TerminalDisplay() {
   return (
     <div className="terminal-container">
       <div className="terminal-header">
-        <span className="terminal-title">⚔️ ROM MUD - Rites of Passage</span>
+        <span className="terminal-title">⚔️ ROP MUD - Rites of Passage twitch.tv/bluntforcejosh for help.</span>
         <span className="terminal-info">Connected • Active</span>
       </div>
       <div className="terminal-display" ref={scrollRef}>
