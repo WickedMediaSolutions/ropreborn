@@ -13,7 +13,33 @@ tmux kill-session -t web-ui 2>/dev/null
 tmux kill-session -t wb-api 2>/dev/null
 tmux kill-session -t wb-ui 2>/dev/null
 
-echo "📦 Installing dependencies..."
+echo "� Compiling ROM server..."
+cd "$REPO_DIR/src"
+if [ ! -f rom ]; then
+    echo "   ROM binary not found, compiling..."
+    make clean
+    make
+    if [ $? -ne 0 ]; then
+        echo "   ❌ Compilation failed! Fix errors and try again."
+        exit 1
+    fi
+else
+    echo "   ROM binary found. Ensuring it's current..."
+    make
+    if [ $? -ne 0 ]; then
+        echo "   ❌ Compilation failed! Fix errors and try again."
+        exit 1
+    fi
+fi
+# Copy ROM binary to area directory where startup script expects it
+echo "   Copying ROM binary to area directory..."
+cp -f "$REPO_DIR/src/rom" "$REPO_DIR/area/rom"
+chmod +x "$REPO_DIR/area/rom"
+chmod +x "$REPO_DIR/area/startup"
+# Create log directory if it doesn't exist
+mkdir -p "$REPO_DIR/log"
+
+echo "�📦 Installing dependencies..."
 
 # Install web client dependencies
 cd "$REPO_DIR/web-client/server" && npm install --silent
@@ -24,7 +50,7 @@ cd "$REPO_DIR/world-builder/backend" && npm install --silent
 cd "$REPO_DIR/world-builder/frontend" && npm install --silent
 
 echo "🎮 Starting ROM server..."
-tmux new -d -s rom -c "$REPO_DIR/src" './startup'
+tmux new -d -s rom -c "$REPO_DIR/area" './startup'
 
 echo "🌐 Starting web client backend (port 5001)..."
 tmux new -d -s web-api -c "$REPO_DIR/web-client/server" 'npm start'
