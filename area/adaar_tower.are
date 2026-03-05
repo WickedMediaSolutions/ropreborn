@@ -1,0 +1,57 @@
+#AREA
+adaar_tower.are~
+Adaar Tower~
+{ 1 20} Homeland Start (Good)~
+18500 18524
+
+#MOBILES
+#0
+
+#OBJECTS
+#0
+
+#ROOMS
+#18500
+Adaar Tower - Hall of Dawn~
+Warm golden light spills through tall crystal windows and dances across
+white-stone floors veined with silver. Banners of the allied good races
+hang from the high vaults, and the scent of cedar and incense steadies
+new adventurers as they take their first steps into the wider world.
+~
+0 D 1
+D2
+A staircase descends toward the tower's outer gate.
+~
+~
+0 -1 18501
+S
+#18501
+Adaar Tower - Pilgrim Gate~
+At the foot of the tower, a broad gate opens onto the world road.
+Carved oaths on the arch read: Courage, Mercy, and Resolve.
+Beyond this threshold lies Midgaard and the long war ahead.
+~
+0 D 1
+D0
+The Hall of Dawn rises above to the north.
+~
+~
+0 -1 18500
+D1
+The world road leads east toward Midgaard.
+~
+~
+0 -1 3001
+S
+#0
+
+#RESETS
+S
+
+#SHOPS
+0
+
+#SPECIALS
+S
+
+#$

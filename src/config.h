@@ -206,6 +206,10 @@
 /* RoP onboarding room for new characters */
 #define ROOM_VNUM_STARTING_VILLAGE 18400
 
+/* Homeland starts by race alignment */
+#define ROOM_VNUM_ADAAR_TOWER      18500
+#define ROOM_VNUM_OBSIDIAN_TOWER   18550
+
 /* Altar room vnum (default clan/sect halls meeting point) */
 #ifndef ROOM_VNUM_ALTAR
 #define ROOM_VNUM_ALTAR         3001

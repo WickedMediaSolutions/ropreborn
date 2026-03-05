@@ -109,6 +109,52 @@ extern bool newlock;                    /* Game is newlocked        */
 extern char str_boot_time[MAX_INPUT_LENGTH];
 extern time_t current_time;            /* time of this pulse */
 
+/* Returns TRUE if a player race belongs to the evil homeland. */
+static bool race_uses_evil_homeland(const char *race_name)
+{
+    if (race_name == NULL || race_name[0] == '\0')
+        return FALSE;
+
+    /* Evil roster (supports both legacy and ROP naming variants). */
+    if (!str_cmp(race_name, "troll")
+        || !str_cmp(race_name, "ogre")
+        || !str_cmp(race_name, "duergar")
+        || !str_cmp(race_name, "orc")
+        || !str_cmp(race_name, "skaven")
+        || !str_cmp(race_name, "illithid")
+        || !str_cmp(race_name, "drow")
+        || !str_cmp(race_name, "lich")
+        || !str_cmp(race_name, "kenku")
+        || !str_cmp(race_name, "revenant")
+        || !str_cmp(race_name, "minotaur")
+        || !str_cmp(race_name, "goblin")
+        || !str_cmp(race_name, "undead")
+        || !str_cmp(race_name, "gnoll")
+        || !str_cmp(race_name, "void-touched"))
+        return TRUE;
+
+    return FALSE;
+}
+
+/* Resolve homeland start room by race, with safe fallbacks. */
+static ROOM_INDEX_DATA *get_homeland_start_room(CHAR_DATA *ch)
+{
+    ROOM_INDEX_DATA *room = NULL;
+    const char *race_name = race_table[ch->race].name;
+
+    if (race_uses_evil_homeland(race_name))
+        room = get_room_index(ROOM_VNUM_OBSIDIAN_TOWER);
+    else
+        room = get_room_index(ROOM_VNUM_ADAAR_TOWER);
+
+    if (room == NULL)
+        room = get_room_index(ROOM_VNUM_STARTING_VILLAGE);
+    if (room == NULL)
+        room = get_room_index(ROOM_VNUM_SCHOOL);
+
+    return room;
+}
+
 
 /*
  * Deal with sockets that haven't logged in yet.
@@ -909,10 +955,13 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
                 obj_to_char (create_object (get_obj_index (OBJ_VNUM_MAP), 0),
                              ch);
 
-                if (get_room_index (ROOM_VNUM_STARTING_VILLAGE) != NULL)
-                    char_to_room (ch, get_room_index (ROOM_VNUM_STARTING_VILLAGE));
-                else
-                    char_to_room (ch, get_room_index (ROOM_VNUM_SCHOOL));
+                {
+                    ROOM_INDEX_DATA *start_room = get_homeland_start_room(ch);
+                    if (start_room != NULL)
+                        char_to_room(ch, start_room);
+                    else
+                        char_to_room(ch, get_room_index(ROOM_VNUM_TEMPLE));
+                }
                 send_to_char ("\n\r", ch);
                 do_function (ch, &do_help, "newbie info");
                 send_to_char ("\n\r", ch);

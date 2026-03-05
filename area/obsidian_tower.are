@@ -1,0 +1,56 @@
+#AREA
+obsidian_tower.are~
+The Obsidian Tower~
+{ 1 20} Homeland Start (Evil)~
+18550 18574
+
+#MOBILES
+#0
+
+#OBJECTS
+#0
+
+#ROOMS
+#18550
+The Obsidian Tower - Black Vestibule~
+Black glass walls drink the torchlight and return it as a dim crimson glow.
+Iron braziers crackle with bitter smoke while scarred standards of the dark
+races mark this hall as a place of ruthless oaths and grim beginnings.
+~
+0 D 1
+D2
+A narrow stair coils downward to the tower's outer breach.
+~
+~
+0 -1 18551
+S
+#18551
+The Obsidian Tower - War Breach~
+Jagged stone teeth frame the lower breach where recruits step into the ash
+wind of the frontier. The road beyond bends toward Midgaard, where blood,
+gold, and reputation are taken, never given.
+~
+0 D 1
+D0
+The Black Vestibule looms up the stair to the north.
+~
+~
+0 -1 18550
+D1
+The road runs east toward Midgaard.
+~
+~
+0 -1 3001
+S
+#0
+
+#RESETS
+S
+
+#SHOPS
+0
+
+#SPECIALS
+S
+
+#$
