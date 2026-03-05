@@ -82,12 +82,21 @@ function App() {
 
     // Keyboard shortcuts
     const handleKeyDown = (e) => {
+      // Don't trigger shortcuts if user is typing in an input field
+      const activeElement = document.activeElement;
+      const isTyping = activeElement?.tagName === 'INPUT' || activeElement?.tagName === 'TEXTAREA';
+      
+      // Function keys work anywhere
       if (e.key === 'F1') { e.preventDefault(); executeMacro('F1'); }
       if (e.key === 'F2') { e.preventDefault(); executeMacro('F2'); }
       if (e.key === 'F3') { e.preventDefault(); executeMacro('F3'); }
-      if (e.key === 'e' && e.ctrlKey === false) { e.preventDefault(); setShowEquipment(!showEquipment); }
-      if (e.key === 'i' && e.ctrlKey === false) { e.preventDefault(); setShowParty(!showParty); }
-      if (e.key === 'm' && e.ctrlKey === false) { e.preventDefault(); setShowMap(!showMap); }
+      
+      // Letter shortcuts only work when NOT typing in input fields
+      if (!isTyping) {
+        if (e.key === 'e' && e.ctrlKey === false) { e.preventDefault(); setShowEquipment(!showEquipment); }
+        if (e.key === 'i' && e.ctrlKey === false) { e.preventDefault(); setShowParty(!showParty); }
+        if (e.key === 'm' && e.ctrlKey === false) { e.preventDefault(); setShowMap(!showMap); }
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
