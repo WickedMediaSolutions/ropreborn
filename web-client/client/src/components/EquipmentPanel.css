@@ -1,0 +1,129 @@
+.equipment-panel {
+  background: linear-gradient(135deg, #1a1f3a 0%, #0f1220 100%);
+  border: 2px solid #ff9800;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 0 15px rgba(255, 152, 0, 0.2);
+}
+
+.equipment-panel h4 {
+  margin: 0 0 10px 0;
+  color: #ffb74d;
+  font-size: 12px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #ff9800;
+  padding-bottom: 8px;
+  text-shadow: 0 0 10px rgba(255, 152, 0, 0.3);
+}
+
+.equipment-slots {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.equipment-slot {
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px dashed #ff9800;
+  border-radius: 4px;
+  padding: 10px;
+  text-align: center;
+  cursor: move;
+  transition: all 0.2s ease;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.equipment-slot:hover {
+  background: rgba(255, 152, 0, 0.1);
+  border-style: solid;
+}
+
+.slot-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.slot-label {
+  font-size: 9px;
+  color: #888;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.equipped-item {
+  font-size: 10px;
+  color: #ffb74d;
+  background: rgba(255, 152, 0, 0.2);
+  padding: 4px;
+  border-radius: 2px;
+  margin-top: 4px;
+  border-left: 2px solid #ffb74d;
+}
+
+.inventory-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.inventory-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-left: 3px solid #ffb74d;
+  border-radius: 3px;
+  cursor: grab;
+  transition: all 0.2s ease;
+  font-size: 11px;
+}
+
+.inventory-item:hover {
+  background: rgba(255, 152, 0, 0.1);
+  transform: translateX(4px);
+}
+
+.inventory-item:active {
+  cursor: grabbing;
+}
+
+.item-icon {
+  font-size: 14px;
+}
+
+.item-name {
+  flex: 1;
+  color: #fff;
+  font-weight: bold;
+}
+
+.item-type {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 2px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.item-type.weapon {
+  background: rgba(244, 67, 54, 0.3);
+  color: #f44336;
+}
+
+.item-type.armor {
+  background: rgba(76, 175, 80, 0.3);
+  color: #4caf50;
+}
+
+.item-type.consumable {
+  background: rgba(63, 81, 181, 0.3);
+  color: #3f51b5;
+}

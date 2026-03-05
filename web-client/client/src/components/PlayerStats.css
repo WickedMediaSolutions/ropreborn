@@ -1,0 +1,139 @@
+.stats-panel {
+  background: linear-gradient(135deg, #1a1f3a 0%, #0f1220 100%);
+  border: 2px solid #ff6b6b;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 0 15px rgba(255, 107, 107, 0.2), inset 0 0 10px rgba(255, 107, 107, 0.05);
+  font-family: 'Courier New', monospace;
+  color: #fff;
+}
+
+.stats-header {
+  margin-bottom: 15px;
+  border-bottom: 2px solid #ff6b6b;
+  padding-bottom: 10px;
+}
+
+.stats-header h3 {
+  margin: 0 0 8px 0;
+  color: #ff6b6b;
+  font-size: 16px;
+  text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+}
+
+.stats-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.badge.level {
+  background: rgba(255, 193, 7, 0.3);
+  color: #ffc107;
+  border: 1px solid #ffc107;
+}
+
+.badge.race {
+  background: rgba(76, 175, 80, 0.3);
+  color: #4caf50;
+  border: 1px solid #4caf50;
+}
+
+.badge.class {
+  background: rgba(63, 81, 181, 0.3);
+  color: #3f51b5;
+  border: 1px solid #3f51b5;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stat-item {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  border-radius: 6px;
+  border-left: 3px solid #ff6b6b;
+}
+
+.stat-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #bbb;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+.stat-bar {
+  height: 16px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.stat-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.hp-bar .stat-fill {
+  background: linear-gradient(90deg, #ff4444 0%, #ff6b6b 100%);
+  box-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+}
+
+.mana-bar .stat-fill {
+  background: linear-gradient(90deg, #4444ff 0%, #6b6bff 100%);
+  box-shadow: 0 0 10px rgba(68, 68, 255, 0.5);
+}
+
+.moves-bar .stat-fill {
+  background: linear-gradient(90deg, #44ff44 0%, #6bff6b 100%);
+  box-shadow: 0 0 10px rgba(68, 255, 68, 0.5);
+}
+
+.exp-bar .stat-fill {
+  background: linear-gradient(90deg, #ffaa00 0%, #ffcc33 100%);
+  box-shadow: 0 0 10px rgba(255, 170, 0, 0.5);
+}
+
+.stat-value {
+  font-size: 10px;
+  color: #aaa;
+  text-align: center;
+}
+
+.stat-box {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  border-radius: 6px;
+  border-left: 3px solid #ffd700;
+  text-align: center;
+}
+
+.stat-box-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: #aaa;
+  margin-bottom: 6px;
+}
+
+.stat-box-value {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}

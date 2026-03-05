@@ -1,0 +1,78 @@
+.terminal-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+  border: 2px solid #00ff41;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.2), inset 0 0 10px rgba(0, 255, 65, 0.05);
+  font-family: 'Courier New', monospace;
+  color: #00ff41;
+}
+
+.terminal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background: rgba(0, 255, 65, 0.1);
+  border-bottom: 1px solid #00ff41;
+  border-radius: 6px 6px 0 0;
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.terminal-title {
+  color: #00ff41;
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+}
+
+.terminal-info {
+  font-size: 10px;
+  color: #00dd33;
+  opacity: 0.8;
+}
+
+.terminal-display {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.terminal-line {
+  margin-bottom: 2px;
+}
+
+/* ANSI color styles */
+.ansi-default { color: #00ff41; }
+.ansi-red { color: #ff4444; }
+.ansi-green { color: #44ff44; }
+.ansi-yellow { color: #ffff44; }
+.ansi-blue { color: #4444ff; }
+.ansi-magenta { color: #ff44ff; }
+.ansi-cyan { color: #44ffff; }
+.ansi-white { color: #ffffff; }
+.ansi-bright { font-weight: bold; }
+
+/* Scrollbar styling */
+.terminal-display::-webkit-scrollbar {
+  width: 8px;
+}
+
+.terminal-display::-webkit-scrollbar-track {
+  background: rgba(0, 255, 65, 0.05);
+}
+
+.terminal-display::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 65, 0.3);
+  border-radius: 4px;
+}
+
+.terminal-display::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 65, 0.5);
+}
