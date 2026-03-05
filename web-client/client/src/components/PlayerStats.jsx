@@ -5,10 +5,11 @@ import './PlayerStats.css';
 export function PlayerStats() {
   const stats = useGameStore((state) => state.playerStats);
 
-  const hpPercent = (stats.hp / stats.maxHp) * 100;
-  const manaPercent = (stats.mana / stats.maxMana) * 100;
-  const movesPercent = (stats.moves / stats.maxMoves) * 100;
-  const expPercent = (stats.experience / stats.nextLevel) * 100;
+  const hpPercent = stats.maxHp > 0 ? (stats.hp / stats.maxHp) * 100 : 0;
+  const manaPercent = stats.maxMana > 0 ? (stats.mana / stats.maxMana) * 100 : 0;
+  const movesPercent = stats.maxMoves > 0 ? (stats.moves / stats.maxMoves) * 100 : 0;
+  const totalExpForLevel = (stats.experience || 0) + (stats.nextLevel || 0);
+  const expPercent = totalExpForLevel > 0 ? (stats.experience / totalExpForLevel) * 100 : 0;
 
   return (
     <div className="stats-panel">
@@ -47,11 +48,21 @@ export function PlayerStats() {
         </div>
 
         <div className="stat-item">
-          <div className="stat-label">Experience</div>
+          <div className="stat-label">Experience Progress</div>
           <div className="stat-bar exp-bar">
             <div className="stat-fill" style={{ width: `${expPercent}%` }}></div>
           </div>
-          <div className="stat-value">{stats.experience}/{stats.nextLevel}</div>
+          <div className="stat-value">{Math.round(expPercent)}%</div>
+        </div>
+
+        <div className="stat-box">
+          <div className="stat-box-label">Current EXP</div>
+          <div className="stat-box-value">{(stats.experience || 0).toLocaleString()}</div>
+        </div>
+
+        <div className="stat-box">
+          <div className="stat-box-label">EXP To Level</div>
+          <div className="stat-box-value">{(stats.nextLevel || 0).toLocaleString()}</div>
         </div>
 
         <div className="stat-box">
@@ -104,19 +115,20 @@ export function PlayerStats() {
           <div className="stat-box-value">{stats.remorts}</div>
         </div>
 
-        {stats.playtime > 0 && (
-          <div className="stat-box">
-            <div className="stat-box-label">Playtime</div>
-            <div className="stat-box-value">{stats.playtime}h</div>
-          </div>
-        )}
+        <div className="stat-box">
+          <div className="stat-box-label">Age</div>
+          <div className="stat-box-value">{stats.age || 0}</div>
+        </div>
 
-        {stats.weight > 0 && (
-          <div className="stat-box">
-            <div className="stat-box-label">Weight</div>
-            <div className="stat-box-value">{stats.weight}kg</div>
-          </div>
-        )}
+        <div className="stat-box">
+          <div className="stat-box-label">Playtime</div>
+          <div className="stat-box-value">{stats.playtime || 0}h</div>
+        </div>
+
+        <div className="stat-box">
+          <div className="stat-box-label">Weight</div>
+          <div className="stat-box-value">{stats.weight || 0}kg</div>
+        </div>
       </div>
     </div>
   );
