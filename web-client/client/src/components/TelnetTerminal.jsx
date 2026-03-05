@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
+import { useGameStore } from '../store';
 import 'xterm/css/xterm.css';
 import './TelnetTerminal.css';
 
@@ -8,7 +9,12 @@ export function TelnetTerminal() {
   const containerRef = useRef(null);
   const terminalRef = useRef(null);
   const wsRef = useRef(null);
-  const [connected, setConnected] = useState(false);
+  
+  // Get store functions
+  const updateStats = useGameStore((state) => state.updateStats);
+  const setConnected = useGameStore((state) => state.setConnected);
+  const connected = useGameStore((state) => state.connected);
+  const updateRoom = useGameStore((state) => state.updateRoom);
 
   useEffect(() => {
     // Ensure container exists and has dimensions
@@ -94,10 +100,17 @@ export function TelnetTerminal() {
         if (data.type === 'output') {
           // Write raw data to terminal - xterm handles ANSI
           term.write(data.data);
+          
+          // If stats came with the output, update the store
+          if (data.stats) {
+            updateStats(data.stats);
+          }
         } else if (data.type === 'status') {
           term.writeln(`\r\n[${data.message}]\r\n`);
+          setConnected(true);
         } else if (data.type === 'error') {
           term.writeln(`\r\n❌ ERROR: ${data.message}\r\n`);
+          setConnected(false);
         }
       } catch (err) {
         console.error('Message error:', err);
