@@ -1694,39 +1694,152 @@ frost can break objects, and acid can damage armor.
 High level mages may learn and cast these spells as well.
 ~
 
-0 RACE RACES~
+0 RACE RACES RACEHELP 'RACE HELP'~
 Syntax: help races
+Syntax: help <race>
 
 Rites of Passage Reborn supports 24 player races:
 
-human        - balanced baseline
-elf          - agile and magic-leaning
-dwarf        - sturdy and resilient
-giant        - high strength bruiser
-skyborn      - aerial, fast utility race
-feline       - stealth and speed
-lizard       - poison-resistant reptilian
-dragon       - durable, high-impact hybrid
-undead       - dark-resistant with holy weakness
-orc          - aggressive frontline fighter
-goblin       - quick skirmisher
-gnome        - nimble utility race
-halfling     - evasive and stealthy
-troll        - regeneration-focused bruiser
-minotaur     - heavy melee specialist
-centaur      - mobile melee hybrid
-faerie       - small, evasive caster hybrid
-drow         - shadow-leaning elf variant
-aarakocra    - winged scout/caster hybrid
-naga         - serpent-bodied hybrid
-kender       - nimble trickster profile
-pixie        - tiny stealth/caster profile
-gnoll        - feral melee profile
-changeling   - adaptive utility profile
-void-touched - high-risk, high-power arcane profile
+human        elf          dwarf        giant
+skyborn      feline       lizard       dragon
+undead       orc          goblin       gnome
+halfling     troll        minotaur     centaur
+faerie       drow         aarakocra    naga
+kender       pixie        gnoll        changeling
+void-touched
+
+Type HELP <RACE> for details, for example:
+        help drow
+        help naga
+        help changeling
 
 Use WHO with race filters (example: who drow), and use SCORE to review your
 current character profile after creation.
+~
+
+0 HUMAN~
+Human is the balanced baseline race with no severe strengths or weaknesses.
+It is a versatile choice for all professions and playstyles.
+~
+
+0 ELF~
+Elf is a nimble, magic-leaning race with strong intelligence and dexterity.
+Elves favor stealth and caster-adjacent styles.
+~
+
+0 DWARF~
+Dwarf is a sturdy, resilient race with strong durability and toughness.
+It is a strong choice for front-line and support-combat builds.
+~
+
+0 GIANT~
+Giant is a high-strength bruiser race with powerful physical presence.
+It excels in direct melee combat and sustained brawling.
+~
+
+0 SKYBORN~
+Skyborn is an aerial utility race with speed and mobility advantages.
+It performs well in hit-and-run and evasive combat patterns.
+~
+
+0 FELINE~
+Feline is a speed-and-stealth race with strong evasive play potential.
+It favors precision and mobility over brute durability.
+~
+
+0 LIZARD~
+Lizard is a reptilian race with poison resilience and good survivability.
+It supports steady melee and hybrid utility gameplay.
+~
+
+0 DRAGON~
+Dragon is a durable high-impact hybrid race with broad combat potential.
+It combines toughness and offensive power.
+~
+
+0 UNDEAD~
+Undead is resistant to dark effects but vulnerable to holy pressure.
+It is a specialized race for disciplined, matchup-aware play.
+~
+
+0 ORC~
+Orc is an aggressive frontline race with strong direct-combat identity.
+It is effective for pressure-heavy melee builds.
+~
+
+0 GOBLIN~
+Goblin is a quick skirmisher race built around agility and opportunism.
+It excels at mobility and tactical engagement.
+~
+
+0 GNOME~
+Gnome is a nimble utility race with flexible role coverage.
+It performs well in tactical and support-oriented play.
+~
+
+0 HALFLING~
+Halfling is an evasive stealth-leaning race with strong dexterity profile.
+It is well suited for scouting and finesse combat.
+~
+
+0 TROLL~
+Troll is a regeneration-focused bruiser race with high staying power.
+It excels in sustained melee exchanges.
+~
+
+0 MINOTAUR~
+Minotaur is a heavy melee specialist race with strong physical pressure.
+It favors direct engagement and battlefield control.
+~
+
+0 CENTAUR~
+Centaur is a mobile melee hybrid race with strong movement identity.
+It balances offense and repositioning.
+~
+
+0 FAERIE~
+Faerie is a small evasive caster-hybrid race with high utility potential.
+It rewards careful positioning and timing.
+~
+
+0 DROW~
+Drow is a shadow-leaning elf variant with strong arcane/stealth flavor.
+It is a classic choice for dark finesse and magic styles.
+~
+
+0 AARAKOCRA~
+Aarakocra is a winged scout/caster hybrid race with strong mobility.
+It excels at vision, movement, and tactical openings.
+~
+
+0 NAGA~
+Naga is a serpent-bodied hybrid race with distinctive survivability profile.
+It supports controlled combat and specialized builds.
+~
+
+0 KENDER~
+Kender is a nimble trickster race focused on mobility and utility.
+It rewards creative tactical play.
+~
+
+0 PIXIE~
+Pixie is a tiny stealth/caster profile race with evasive strengths.
+It is high finesse and benefits from careful execution.
+~
+
+0 GNOLL~
+Gnoll is a feral melee profile race with aggressive combat tendencies.
+It favors pressure and straightforward engagement.
+~
+
+0 CHANGELING~
+Changeling is an adaptive utility race with broad flexible options.
+It supports varied builds and role switching.
+~
+
+0 VOID-TOUCHED VOIDTOUCHED~
+Void-Touched is a high-risk, high-power arcane-leaning race.
+It offers strong upside for players who can manage its volatility.
 ~
 
 0 CLASS CLASSES PROFESSION PROFESSIONS~
