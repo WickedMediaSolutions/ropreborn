@@ -11,11 +11,10 @@ Build and run directly on Linux (including Chromebook Penguin):
 
 ```bash
 cd src
-make -f Makefile.linux clean
+rm -f *.o rom
 make -f Makefile.linux rom
-cp rom ../area/rom
 cd ..
-./startup
+./startup-linux.sh
 ```
 
 Connect with:

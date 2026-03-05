@@ -1,0 +1,83 @@
+Thu Mar  5 01:51:03 2026 :: Loading configuration settings from ../area/qmconfig.rc.
+Thu Mar  5 01:51:03 2026 :: Set IP address to 0.0.0.0
+Thu Mar  5 01:51:03 2026 :: Loading area immort.are
+Thu Mar  5 01:51:03 2026 :: Loading area ofcol2.are
+Thu Mar  5 01:51:03 2026 :: Loading area shire.are
+Thu Mar  5 01:51:03 2026 :: Loading area midgaard.are
+Thu Mar  5 01:51:03 2026 :: Loading area plains.are
+Thu Mar  5 01:51:03 2026 :: Loading area haon.are
+Thu Mar  5 01:51:03 2026 :: Loading area air.are
+Thu Mar  5 01:51:03 2026 :: Loading area arachnos.are
+Thu Mar  5 01:51:03 2026 :: Loading area astral.are
+Thu Mar  5 01:51:03 2026 :: Loading area canyon.are
+Thu Mar  5 01:51:03 2026 :: Loading area catacomb.are
+Thu Mar  5 01:51:03 2026 :: Loading area chapel.are
+Thu Mar  5 01:51:03 2026 :: Loading area daycare.are
+Thu Mar  5 01:51:03 2026 :: Loading area draconia.are
+Thu Mar  5 01:51:03 2026 :: Loading area dream.are
+Thu Mar  5 01:51:03 2026 :: Loading area drow.are
+Thu Mar  5 01:51:03 2026 :: Loading area thalos.are
+Thu Mar  5 01:51:03 2026 :: Loading area dwarven.are
+Thu Mar  5 01:51:03 2026 :: Loading area dylan.are
+Thu Mar  5 01:51:03 2026 :: Loading area eastern.are
+Thu Mar  5 01:51:03 2026 :: Loading area galaxy.are
+Thu Mar  5 01:51:03 2026 :: Loading area gnome.are
+Thu Mar  5 01:51:03 2026 :: Loading area grave.are
+Thu Mar  5 01:51:03 2026 :: Loading area grove.are
+Thu Mar  5 01:51:03 2026 :: Loading area hitower.are
+Thu Mar  5 01:51:03 2026 :: Loading area hood.are
+Thu Mar  5 01:51:03 2026 :: Loading area limbo.are
+Thu Mar  5 01:51:03 2026 :: Loading area mahntor.are
+Thu Mar  5 01:51:03 2026 :: Loading area marsh.are
+Thu Mar  5 01:51:03 2026 :: Loading area mega1.are
+Thu Mar  5 01:51:03 2026 :: Loading area sect_halls.are
+Thu Mar  5 01:51:03 2026 :: Loading area starting_village.are
+Thu Mar  5 01:51:03 2026 :: Loading area midennir.are
+Thu Mar  5 01:51:03 2026 :: Loading area mirror.are
+Thu Mar  5 01:51:03 2026 :: Loading area mobfact.are
+Thu Mar  5 01:51:03 2026 :: Loading area moria.are
+Thu Mar  5 01:51:03 2026 :: Loading area newthalos.are
+Thu Mar  5 01:51:03 2026 :: Loading area nirvana.are
+Thu Mar  5 01:51:03 2026 :: Loading area ofcol.are
+Thu Mar  5 01:51:03 2026 :: Loading area olympus.are
+Thu Mar  5 01:51:03 2026 :: Loading area pyramid.are
+Thu Mar  5 01:51:03 2026 :: Loading area quifael.are
+Thu Mar  5 01:51:03 2026 :: Loading area sewer.are
+Thu Mar  5 01:51:03 2026 :: Loading area redferne.are
+Thu Mar  5 01:51:03 2026 :: Loading area school.are
+Thu Mar  5 01:51:03 2026 :: Loading area smurf.are
+Thu Mar  5 01:51:03 2026 :: Loading area tohell.are
+Thu Mar  5 01:51:03 2026 :: Loading area trollden.are
+Thu Mar  5 01:51:03 2026 :: Loading area valley.are
+Thu Mar  5 01:51:03 2026 :: Loading area wyvern.are
+Thu Mar  5 01:51:03 2026 :: Check Levels:
+Thu Mar  5 01:51:03 2026 ::   Object: (VNUM  9217)(Level  7) an elemental rod of earthquake
+Thu Mar  5 01:51:03 2026 ::      Mob: (VNUM  9217)(Level  3) a small rock
+Thu Mar  5 01:51:03 2026 :: Check Levels:
+Thu Mar  5 01:51:03 2026 ::   Object: (VNUM  9218)(Level 27) elemental wand of wind and air
+Thu Mar  5 01:51:03 2026 ::      Mob: (VNUM  9234)(Level 13) an alchemist
+Thu Mar  5 01:51:03 2026 :: Check Levels:
+Thu Mar  5 01:51:03 2026 ::   Object: (VNUM  9216)(Level 25) an ice staff
+Thu Mar  5 01:51:03 2026 ::      Mob: (VNUM  9214)(Level  8) a puddle
+Thu Mar  5 01:51:03 2026 :: Check Levels:
+Thu Mar  5 01:51:03 2026 ::   Object: (VNUM  9227)(Level 28) an icicle
+Thu Mar  5 01:51:03 2026 ::      Mob: (VNUM  9228)(Level 24) the Ice Bandit
+Thu Mar  5 01:51:03 2026 :: Check Levels:
+Thu Mar  5 01:51:03 2026 ::   Object: (VNUM  9215)(Level 16) elemental wand of fire
+Thu Mar  5 01:51:03 2026 ::      Mob: (VNUM  9215)(Level  4) a flame
+Thu Mar  5 01:51:03 2026 :: Check Levels:
+Thu Mar  5 01:51:03 2026 ::   Object: (VNUM  9215)(Level 16) elemental wand of fire
+Thu Mar  5 01:51:03 2026 ::      Mob: (VNUM  9215)(Level  4) a flame
+Thu Mar  5 01:51:03 2026 :: Check Levels:
+Thu Mar  5 01:51:03 2026 ::   Object: (VNUM  9218)(Level 27) elemental wand of wind and air
+Thu Mar  5 01:51:03 2026 ::      Mob: (VNUM  9218)(Level  4) a small spark
+Thu Mar  5 01:51:03 2026 :: Check Levels:
+Thu Mar  5 01:51:03 2026 ::   Object: (VNUM  9218)(Level 27) elemental wand of wind and air
+Thu Mar  5 01:51:03 2026 ::      Mob: (VNUM  9225)(Level  2) an eddie
+Thu Mar  5 01:51:03 2026 :: Check Levels:
+Thu Mar  5 01:51:03 2026 ::   Object: (VNUM  9216)(Level 25) an ice staff
+Thu Mar  5 01:51:03 2026 ::      Mob: (VNUM  9235)(Level 16) a baby rainbow dragon
+Thu Mar  5 01:51:03 2026 :: Check Levels:
+Thu Mar  5 01:51:03 2026 ::   Object: (VNUM  8010)(Level  5) a wet noodle
+Thu Mar  5 01:51:03 2026 ::      Mob: (VNUM  8002)(Level 17) a Futsie
+Thu Mar  5 01:51:03 2026 :: ROP is ready to rock on port 4000 (0.0.0.0).
