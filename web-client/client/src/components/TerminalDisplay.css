@@ -7,7 +7,6 @@
   border-radius: 8px;
   box-shadow: 0 0 20px rgba(0, 255, 65, 0.2), inset 0 0 10px rgba(0, 255, 65, 0.05);
   font-family: 'Courier New', monospace;
-  color: #00ff41;
 }
 
 .terminal-header {
@@ -42,6 +41,7 @@
   line-height: 1.4;
   white-space: pre-wrap;
   word-wrap: break-word;
+  color: #00ff41;
 }
 
 .terminal-line {

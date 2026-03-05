@@ -49,7 +49,7 @@ export function CommandInput() {
   };
 
   return (
-    <form className="command-input-form" onSubmit={handleSubmit}>
+    <form className="command-input-form" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
       <div className="input-wrapper">
         <span className="input-prompt">></span>
         <input
