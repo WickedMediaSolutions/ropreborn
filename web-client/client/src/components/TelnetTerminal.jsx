@@ -5,33 +5,70 @@ import 'xterm/css/xterm.css';
 import './TelnetTerminal.css';
 
 export function TelnetTerminal() {
+  const containerRef = useRef(null);
   const terminalRef = useRef(null);
   const wsRef = useRef(null);
-  const terminalRef2 = useRef(null);
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
+    // Ensure container exists and has dimensions
+    if (!containerRef.current) return;
+
     // Create xterm terminal
     const term = new Terminal({
-      cols: 120,
-      rows: 30,
+      cols: 140,
+      rows: 40,
       theme: {
         background: '#0a0e27',
         foreground: '#00ff41',
       },
       fontFamily: 'Courier New, monospace',
-      fontSize: 13,
+      fontSize: 12,
+      fontWeight: 'normal',
       cursorBlink: true,
+      cursorStyle: 'block',
     });
 
-    // Apply fit addon
-    const fitAddon = new FitAddon();
-    term.loadAddon(fitAddon);
+    terminalRef.current = term;
 
-    // Open terminal in container
-    term.open(terminalRef.current);
-    fitAddon.fit();
-    terminalRef2.current = term;
+    // Open terminal FIRST
+    term.open(containerRef.current);
+
+    // Apply fit addon AFTER opening
+    try {
+      const fitAddon = new FitAddon();
+      term.loadAddon(fitAddon);
+      
+      // Fit with a small delay to ensure DOM is ready
+      setTimeout(() => {
+        try {
+          fitAddon.fit();
+        } catch (e) {
+          console.warn('FitAddon fit error (non-critical):', e);
+        }
+      }, 100);
+
+      // Handle window resize
+      const handleResize = () => {
+        try {
+          fitAddon.fit();
+        } catch (e) {
+          console.warn('FitAddon resize error:', e);
+        }
+      };
+
+      window.addEventListener('resize', handleResize);
+
+      return () => window.removeEventListener('resize', handleResize);
+    } catch (e) {
+      console.error('FitAddon error:', e);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!terminalRef.current) return;
+
+    const term = terminalRef.current;
 
     // Connect to WebSocket
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -78,10 +115,10 @@ export function TelnetTerminal() {
       setConnected(false);
     };
 
-    // Handle terminal input
+    // Handle terminal input - raw key data
     term.onData((data) => {
       if (ws && ws.readyState === WebSocket.OPEN) {
-        // Send data to backend
+        // Send raw data to backend (includes Enter as \r)
         ws.send(JSON.stringify({
           type: 'command',
           command: data
@@ -89,19 +126,10 @@ export function TelnetTerminal() {
       }
     });
 
-    // Handle window resize
-    const handleResize = () => {
-      fitAddon.fit();
-    };
-
-    window.addEventListener('resize', handleResize);
-
     return () => {
-      window.removeEventListener('resize', handleResize);
       if (ws.readyState === WebSocket.OPEN) {
         ws.close();
       }
-      term.dispose();
     };
   }, []);
 
@@ -114,7 +142,7 @@ export function TelnetTerminal() {
           {connected ? 'Connected' : 'Disconnected'}
         </div>
       </div>
-      <div ref={terminalRef} className="telnet-terminal"></div>
+      <div ref={containerRef} className="telnet-terminal-inner"></div>
     </div>
   );
 }
