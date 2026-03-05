@@ -1694,6 +1694,60 @@ frost can break objects, and acid can damage armor.
 High level mages may learn and cast these spells as well.
 ~
 
+0 RACE RACES~
+Syntax: help races
+
+Rites of Passage Reborn supports 24 player races:
+
+human        - balanced baseline
+elf          - agile and magic-leaning
+dwarf        - sturdy and resilient
+giant        - high strength bruiser
+skyborn      - aerial, fast utility race
+feline       - stealth and speed
+lizard       - poison-resistant reptilian
+dragon       - durable, high-impact hybrid
+undead       - dark-resistant with holy weakness
+orc          - aggressive frontline fighter
+goblin       - quick skirmisher
+gnome        - nimble utility race
+halfling     - evasive and stealthy
+troll        - regeneration-focused bruiser
+minotaur     - heavy melee specialist
+centaur      - mobile melee hybrid
+faerie       - small, evasive caster hybrid
+drow         - shadow-leaning elf variant
+aarakocra    - winged scout/caster hybrid
+naga         - serpent-bodied hybrid
+kender       - nimble trickster profile
+pixie        - tiny stealth/caster profile
+gnoll        - feral melee profile
+changeling   - adaptive utility profile
+void-touched - high-risk, high-power arcane profile
+
+Use WHO with race filters (example: who drow), and use SCORE to review your
+current character profile after creation.
+~
+
+0 CLASS CLASSES PROFESSION PROFESSIONS~
+Syntax: help classes
+
+RoP uses 9 playable professions:
+
+warrior   - weapon specialist frontline
+cleric    - divine support and survivability
+templar   - divine battle hybrid
+monk      - mobile martial combatant
+warlock   - dark arcane specialist
+thief     - stealth and utility combat
+ninja     - precision stealth striker
+mage      - pure arcane caster
+alchemist - hybrid arcane utility caster
+
+Your class/profession drives progression, combat scaling, and available
+training paths. Use PRACTICE and TRAIN at guild trainers to develop skills.
+~
+
 0 $~
 
 
