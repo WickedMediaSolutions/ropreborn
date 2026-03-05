@@ -10,28 +10,35 @@ export function CommandInput() {
   const inputRef = useRef(null);
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+    if (e) e.preventDefault();
+    const trimmedInput = input.trim();
+    
+    if (!trimmedInput) return;
 
+    console.log('Submitting command:', trimmedInput); // DEBUG
+    
     // Send command to server
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify({
         type: 'command',
-        command: input
+        command: trimmedInput
       }));
-      addCommand(input);
-      addOutput(`> ${input}`);
+      addCommand(trimmedInput);
+      addOutput(`> ${trimmedInput}`);
       setInput('');
+      inputRef.current?.focus();
     } else {
       addOutput('ERROR: Not connected to server');
+      console.error('WebSocket not connected'); // DEBUG
     }
   };
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
+      console.log('Enter key pressed'); // DEBUG
       e.preventDefault();
       e.stopPropagation();
-      handleSubmit(e);
+      handleSubmit();
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       // TODO: implement command history navigation

@@ -36,6 +36,7 @@ function parseAnsi(text) {
   const parts = [];
   let lastIndex = 0;
   let currentColor = 'default';
+  let currentBright = false;
 
   // ROM color code map: {X} format
   const romColorMap = {
@@ -55,11 +56,12 @@ function parseAnsi(text) {
 
   let match;
   while ((match = colorRegex.exec(text)) !== null) {
-    // Add text before this color code
+    // Add text before this color code with current color
     if (match.index > lastIndex) {
       const part = text.substring(lastIndex, match.index);
+      const className = currentBright ? `${currentColor}-bright` : currentColor;
       parts.push(
-        <span key={`text_${lastIndex}`} className={`ansi-${currentColor}`}>
+        <span key={`text_${lastIndex}`} className={`ansi-${className}`}>
           {part}
         </span>
       );
@@ -68,33 +70,35 @@ function parseAnsi(text) {
     // Handle ROM color code {X}
     if (match[1]) {
       const romCode = match[1];
-      currentColor = romColorMap[romCode] || 'default';
+      if (romCode === 'x') {
+        currentColor = 'default';
+        currentBright = false;
+      } else {
+        currentColor = romColorMap[romCode] || 'default';
+        currentBright = false;
+      }
+      console.log('ROM color code:', romCode, '-> color:', currentColor); // DEBUG
     }
     // Handle ANSI escape sequence
-    else if (match[2]) {
-      const ansiCode = match[2];
-      const codes = ansiCode.split(';');
-      let newColor = currentColor;
-
-      for (const code of codes) {
-        // Standard ANSI colors
-        if (code === '31' || code === '1;31') newColor = 'red';
-        else if (code === '32' || code === '1;32') newColor = 'green';
-        else if (code === '33' || code === '1;33') newColor = 'yellow';
-        else if (code === '34' || code === '1;34') newColor = 'blue';
-        else if (code === '35' || code === '1;35') newColor = 'magenta';
-        else if (code === '36' || code === '1;36') newColor = 'cyan';
-        else if (code === '37' || code === '1;37') newColor = 'white';
-        else if (code === '30' || code === '1;30') newColor = 'dark-grey';
-        else if (code === '0') newColor = 'default'; // Reset
-        else if (code === '1') {
-          // Bright/bold - enhance current color if not reset
-          if (currentColor !== 'default' && !currentColor.includes('bright')) {
-            newColor = currentColor + '-bright';
-          }
+    else if (match[2] !== undefined) {
+      const ansiCodes = match[2].split(';').filter(c => c);
+      
+      for (const code of ansiCodes) {
+        // Standard ANSI color codes
+        switch(code) {
+          case '30': currentColor = 'dark-grey'; currentBright = false; break;
+          case '31': currentColor = 'red'; currentBright = false; break;
+          case '32': currentColor = 'green'; currentBright = false; break;
+          case '33': currentColor = 'yellow'; currentBright = false; break;
+          case '34': currentColor = 'blue'; currentBright = false; break;
+          case '35': currentColor = 'magenta'; currentBright = false; break;
+          case '36': currentColor = 'cyan'; currentBright = false; break;
+          case '37': currentColor = 'white'; currentBright = false; break;
+          case '1': currentBright = true; break; // Bold
+          case '0': currentColor = 'default'; currentBright = false; break; // Reset
         }
       }
-      currentColor = newColor;
+      console.log('ANSI codes:', ansiCodes, '-> color:', currentColor, 'bright:', currentBright); // DEBUG
     }
 
     lastIndex = match.index + match[0].length;
@@ -102,9 +106,11 @@ function parseAnsi(text) {
 
   // Add remaining text
   if (lastIndex < text.length) {
+    const remaining = text.substring(lastIndex);
+    const className = currentBright ? `${currentColor}-bright` : currentColor;
     parts.push(
-      <span key={`text_${lastIndex}`} className={`ansi-${currentColor}`}>
-        {text.substring(lastIndex)}
+      <span key={`text_${lastIndex}`} className={`ansi-${className}`}>
+        {remaining}
       </span>
     );
   }

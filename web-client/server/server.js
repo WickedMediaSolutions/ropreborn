@@ -82,7 +82,12 @@ app.ws('/ws', (ws, req) => {
         telnetSocket.on('data', (data) => {
           const text = data.toString('utf-8');
           
-          // Parse player stats from mud output (simplified)
+          // Log sample of data for debugging (check for color codes)
+          if (text.includes('{') || text.includes('\x1b[')) {
+            console.log(`[${connectionId}] Color codes detected in ROM output - Sample:`, text.substring(0, 200));
+          }
+          
+          // Parse player stats from mud output
           parsePlayerStats(text, playerStats);
 
           ws.send(JSON.stringify({
