@@ -286,6 +286,23 @@ static void send_race_info_card(DESCRIPTOR_DATA *d, int race)
     send_to_desc("------------------------------------------------------------\n\r", d);
 }
 
+/* Show full built-in race help for all playable races. */
+static void send_full_race_help(DESCRIPTOR_DATA *d)
+{
+    int race;
+
+    send_to_desc("\n\rRace Help (All Playable Races)\n\r", d);
+    send_to_desc("============================================================\n\r", d);
+    send_to_desc("Type 'help <race>' for a focused single-race view.\n\r\n\r", d);
+
+    for (race = 1; race_table[race].name != NULL; race++)
+    {
+        if (!race_table[race].pc_race)
+            continue;
+        send_race_info_card(d, race);
+    }
+}
+
 
 /*
  * Deal with sockets that haven't logged in yet.
@@ -627,7 +644,7 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
                 argument = one_argument (argument, arg);
                 if (arg[0] == '\0')
                 {
-                    send_to_desc ("Use: help <race>   Example: help drow\n\r", d);
+                    send_full_race_help(d);
                     send_race_selection_table(d);
                 }
                 else
