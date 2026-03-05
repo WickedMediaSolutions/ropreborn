@@ -225,6 +225,67 @@ static void send_race_selection_table(DESCRIPTOR_DATA *d)
     }
 }
 
+/* Show race details even if the helpfile entry does not exist. */
+static void send_race_info_card(DESCRIPTOR_DATA *d, int race)
+{
+    char buf[256];
+    char race_name[32];
+    int i;
+    bool first_skill = TRUE;
+
+    if (race <= 0 || race_table[race].name == NULL)
+        return;
+
+    format_race_name(race_table[race].name, race_name, sizeof(race_name));
+
+    send_to_desc("\n\r", d);
+    send_to_desc("------------------------------------------------------------\n\r", d);
+    snprintf(buf, sizeof(buf), "Race: %s\n\r", race_name);
+    send_to_desc(buf, d);
+    snprintf(buf, sizeof(buf), "Homeland: %s\n\r",
+             race_uses_evil_homeland(race_table[race].name)
+             ? "The Obsidian Tower (Evil)"
+             : "Adaar Tower (Good)");
+    send_to_desc(buf, d);
+    snprintf(buf, sizeof(buf), "Creation Cost: %d points\n\r", pc_race_table[race].points);
+    send_to_desc(buf, d);
+
+    snprintf(buf, sizeof(buf),
+             "Base Stats: STR %d  INT %d  WIS %d  DEX %d  CON %d\n\r",
+             pc_race_table[race].stats[STAT_STR],
+             pc_race_table[race].stats[STAT_INT],
+             pc_race_table[race].stats[STAT_WIS],
+             pc_race_table[race].stats[STAT_DEX],
+             pc_race_table[race].stats[STAT_CON]);
+    send_to_desc(buf, d);
+
+    snprintf(buf, sizeof(buf),
+             "Max Stats : STR %d  INT %d  WIS %d  DEX %d  CON %d\n\r",
+             pc_race_table[race].max_stats[STAT_STR],
+             pc_race_table[race].max_stats[STAT_INT],
+             pc_race_table[race].max_stats[STAT_WIS],
+             pc_race_table[race].max_stats[STAT_DEX],
+             pc_race_table[race].max_stats[STAT_CON]);
+    send_to_desc(buf, d);
+
+    send_to_desc("Bonus Skills: ", d);
+    for (i = 0; i < 5; i++)
+    {
+        const char *sk = pc_race_table[race].skills[i];
+        if (sk == NULL || sk[0] == '\0')
+            continue;
+        if (!first_skill)
+            send_to_desc(", ", d);
+        send_to_desc(sk, d);
+        first_skill = FALSE;
+    }
+    if (first_skill)
+        send_to_desc("none", d);
+    send_to_desc("\n\r", d);
+    send_to_desc("Tip: type the race name to choose it.\n\r", d);
+    send_to_desc("------------------------------------------------------------\n\r", d);
+}
+
 
 /*
  * Deal with sockets that haven't logged in yet.
@@ -570,7 +631,16 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
                     send_race_selection_table(d);
                 }
                 else
-                    do_function (ch, &do_help, arg);
+                {
+                    race = race_lookup(arg);
+                    if (race > 0 && race_table[race].pc_race)
+                        send_race_info_card(d, race);
+                    else
+                    {
+                        /* Fallback for non-race help topics. */
+                        do_function (ch, &do_help, arg);
+                    }
+                }
 
                 send_to_desc ("\n\rWhat is your race? (type 'help <race>' for details) ", d);
                 break;
