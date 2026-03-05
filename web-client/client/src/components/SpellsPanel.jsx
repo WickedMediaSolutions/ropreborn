@@ -3,8 +3,11 @@ import { useGameStore } from '../store';
 import './SpellsPanel.css';
 
 export function SpellsPanel() {
-  const spells = useGameStore((state) => state.spells);
   const playerStats = useGameStore((state) => state.playerStats);
+  const fallbackSpells = useGameStore((state) => state.spells);
+  const spells = (playerStats.skills && playerStats.skills.length > 0)
+    ? playerStats.skills
+    : fallbackSpells;
 
   return (
     <div className="spells-panel">
@@ -14,6 +17,7 @@ export function SpellsPanel() {
           spells.map((spell) => (
             <div key={spell.id} className="spell-button" title={spell.description}>
               <div className="spell-name">{spell.name}</div>
+              {typeof spell.percent === 'number' && <div className="spell-cost">{spell.percent}%</div>}
               {spell.mana && <div className="spell-cost">⚡ {spell.mana}</div>}
               {spell.cooldown && spell.cooldown > 0 && <div className="spell-cooldown">{spell.cooldown}s</div>}
             </div>

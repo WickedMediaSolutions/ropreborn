@@ -37,7 +37,10 @@ export const useGameStore = create((set, get) => ({
     remorts: 0,
     age: 0,
     playtime: 0,
-    weight: 0
+    weight: 0,
+    equipment: {},
+    inventory: [],
+    skills: []
   },
   updateStats: (stats) => set({ playerStats: stats }),
 

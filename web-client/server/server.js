@@ -21,6 +21,7 @@ const connections = {};
 app.ws('/ws', (ws, req) => {
   const connectionId = `conn_${Date.now()}`;
   let telnetSocket = null;
+  let initialSyncSent = false;
   let playerName = null;
   let playerStats = {
     name: '',
@@ -50,7 +51,8 @@ app.ws('/ws', (ws, req) => {
     weight: 0,
     online: 0,
     equipment: {},
-    inventory: []
+    inventory: [],
+    skills: []
   };
 
   console.log(`[${connectionId}] WebSocket client connected`);
@@ -74,6 +76,7 @@ app.ws('/ws', (ws, req) => {
 
         telnetSocket = net.createConnection(ROM_PORT, ROM_HOST, () => {
           console.log(`[${connectionId}] Connected to ROM at ${ROM_HOST}:${ROM_PORT}`);
+          initialSyncSent = false;
           ws.send(JSON.stringify({
             type: 'status',
             message: 'Connected to server'
@@ -106,6 +109,19 @@ app.ws('/ws', (ws, req) => {
           
           // Parse player stats from mud output
           parsePlayerStats(text, playerStats);
+
+          // After first in-game prompt, auto-sync key panels once.
+          if (!initialSyncSent && /<\s*\d+\s*hp\s+\d+\s*m\s+\d+\s*mv\s*>/i.test(text) && telnetSocket && telnetSocket.writable) {
+            initialSyncSent = true;
+            const syncCommands = ['score', 'i', 'eq', 'skills'];
+            syncCommands.forEach((cmd, idx) => {
+              setTimeout(() => {
+                if (telnetSocket && telnetSocket.writable) {
+                  telnetSocket.write(`${cmd}\r\n`);
+                }
+              }, 80 + idx * 140);
+            });
+          }
 
           ws.send(JSON.stringify({
             type: 'output',
@@ -172,6 +188,14 @@ app.get('*', (req, res) => {
 function parsePlayerStats(text, stats) {
   // Remove ANSI escape sequences for cleaner parsing
   const cleanText = text.replace(/\x1b\[[0-9;]*m/g, '').replace(/\{[xRBGMWYDC]\}/g, '');
+
+  // Parse prompt stats from lines like: <20hp 100m 100mv>
+  const promptMatch = cleanText.match(/<\s*(\d+)\s*hp\s+(\d+)\s*m\s+(\d+)\s*mv\s*>/i);
+  if (promptMatch) {
+    stats.hp = parseInt(promptMatch[1], 10);
+    stats.mana = parseInt(promptMatch[2], 10);
+    stats.moves = parseInt(promptMatch[3], 10);
+  }
   
   // Parse character info from top section (name, race, class)
   // Pattern: "Thou art <name> the <race> <class>."
@@ -290,33 +314,114 @@ function parsePlayerStats(text, stats) {
     stats.alignment = parseInt(alignmentMatch[1]);
   }
 
-  // Parse equipment - look for equipment list format
-  // Typical ROM format: "<wear location> : <item name>"
-  const equipmentMatches = cleanText.matchAll(/(head|neck|chest|arms|wrists|hands|waist|legs|feet|mainhand|offhand|right hand|left hand|right finger|left finger|shield)\s*:\s*([^\n]+)/gi);
-  for (const match of equipmentMatches) {
-    const slot = match[1].toLowerCase().replace(/\s/g, '_');
-    const itemName = match[2].trim();
-    if (itemName && itemName.length > 2) {
-      stats.equipment[slot] = { slot, name: itemName };
+  // Parse equipment from ROM format:
+  // <worn on torso>      a sub issue vest
+  // <worn as shield>     a sub issue shield
+  // <wielded>            a sub issue sword
+  if (/You are using:/i.test(cleanText)) {
+    const nextEquipment = {};
+    const equipmentLineMatches = cleanText.matchAll(/^<([^>]+)>\s+(.+)$/gm);
+    for (const match of equipmentLineMatches) {
+      const rawSlot = match[1].trim().toLowerCase();
+      const itemName = match[2].trim();
+      if (!itemName) {
+        continue;
+      }
+
+      let slot = rawSlot.replace(/\s+/g, '_');
+      if (rawSlot.includes('wielded')) slot = 'mainhand';
+      else if (rawSlot.includes('shield')) slot = 'offhand';
+      else if (rawSlot.includes('used as light')) slot = 'light';
+      else if (rawSlot.includes('torso')) slot = 'chest';
+      else if (rawSlot.includes('head')) slot = 'head';
+      else if (rawSlot.includes('neck')) slot = 'neck';
+      else if (rawSlot.includes('hands')) slot = 'hands';
+      else if (rawSlot.includes('wrists')) slot = 'wrists';
+      else if (rawSlot.includes('waist')) slot = 'waist';
+      else if (rawSlot.includes('legs')) slot = 'legs';
+      else if (rawSlot.includes('feet')) slot = 'feet';
+
+      nextEquipment[slot] = { slot, name: itemName };
+    }
+
+    if (Object.keys(nextEquipment).length > 0) {
+      stats.equipment = nextEquipment;
     }
   }
 
-  // Parse inventory - look for "You are carrying:" section
-  const invStartIdx = cleanText.indexOf('You are carrying:');
-  if (invStartIdx !== -1) {
-    const invSection = cleanText.substring(invStartIdx);
-    // Extract items - typically formatted as "  - item name (type) { level }"
-    const itemMatches = invSection.matchAll(/^\s*[-•]\s+([^\(\{]+)/gm);
-    stats.inventory = [];
-    for (const match of itemMatches) {
-      const itemName = match[1].trim();
-      if (itemName && itemName.length > 2) {
-        stats.inventory.push({
-          id: Math.random(),
-          name: itemName,
+  // Parse inventory from ROM format:
+  // --- [Inventory] ---
+  // You are carrying:
+  //      a map of the city of Midgaard
+  if (/You are carrying:/i.test(cleanText)) {
+    const lines = cleanText.split(/\r?\n/);
+    const nextInventory = [];
+    let inInventory = false;
+
+    for (const rawLine of lines) {
+      const line = rawLine.replace(/\t/g, '    ');
+      const trimmed = line.trim();
+
+      if (/^You are carrying:/i.test(trimmed)) {
+        inInventory = true;
+        continue;
+      }
+
+      if (!inInventory) {
+        continue;
+      }
+
+      if (trimmed.length === 0 || /^<\s*\d+\s*hp/i.test(trimmed) || /^---\s*\[/i.test(trimmed)) {
+        break;
+      }
+
+      if (/^you are carrying nothing\./i.test(trimmed)) {
+        continue;
+      }
+
+      if (line.startsWith('  ') || line.startsWith('     ')) {
+        nextInventory.push({
+          id: `${trimmed}-${nextInventory.length}`,
+          name: trimmed,
           type: 'item'
         });
       }
+    }
+
+    stats.inventory = nextInventory;
+  }
+
+  // Parse skills from ROM format lines like:
+  // Level  1: axe 1% dagger 1%
+  //          sword 40%
+  if (/\bLevel\s+\d+\s*:/i.test(cleanText)) {
+    const lines = cleanText.split(/\r?\n/);
+    const parsedSkills = [];
+
+    for (const line of lines) {
+      if (!/\d+%/.test(line)) {
+        continue;
+      }
+
+      const normalized = line.replace(/^\s*Level\s+\d+\s*:\s*/i, '');
+      const skillMatches = normalized.matchAll(/([A-Za-z][A-Za-z\s'\-]+?)\s+(\d+)%/g);
+      for (const match of skillMatches) {
+        const name = match[1].trim();
+        const percent = parseInt(match[2], 10);
+        if (!name) {
+          continue;
+        }
+        parsedSkills.push({
+          id: `${name.toLowerCase()}-${percent}`,
+          name,
+          percent,
+          description: `Proficiency ${percent}%`
+        });
+      }
+    }
+
+    if (parsedSkills.length > 0) {
+      stats.skills = parsedSkills;
     }
   }
 }
