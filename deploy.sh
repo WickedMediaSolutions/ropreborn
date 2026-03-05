@@ -30,13 +30,13 @@ echo "🌐 Starting web client backend (port 5001)..."
 tmux new -d -s web-api -c "$REPO_DIR/web-client/server" 'npm start'
 
 echo "🖥️  Starting web client frontend (port 3000)..."
-tmux new -d -s web-ui -c "$REPO_DIR/web-client/client" 'npm start'
+tmux new -d -s web-ui -c "$REPO_DIR/web-client/client" 'HOST=0.0.0.0 PORT=3000 npm start'
 
 echo "🔧 Starting world builder API (port 5000)..."
 tmux new -d -s wb-api -c "$REPO_DIR/world-builder/backend" 'npm start'
 
 echo "🏗️  Starting world builder UI (port 3001)..."
-tmux new -d -s wb-ui -c "$REPO_DIR/world-builder/frontend" 'PORT=3001 npm start'
+tmux new -d -s wb-ui -c "$REPO_DIR/world-builder/frontend" 'HOST=0.0.0.0 PORT=3001 npm start'
 
 # Wait a moment for services to initialize
 sleep 2

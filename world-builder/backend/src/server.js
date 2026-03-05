@@ -79,13 +79,13 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`
 ╔════════════════════════════════════════════╗
 ║  ROM World Builder API                     ║
 ║  Server running on port ${PORT}                  ║
-║  http://localhost:${PORT}                         ║
-║  API: http://localhost:${PORT}/api               ║
+║  http://0.0.0.0:${PORT}                         ║
+║  API: http://0.0.0.0:${PORT}/api               ║
 ╚════════════════════════════════════════════╝
   `);
 });
