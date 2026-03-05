@@ -354,12 +354,12 @@ function parsePlayerStats(text, stats) {
   // You are carrying:
   //      a map of the city of Midgaard
   if (/You are carrying:/i.test(cleanText)) {
-    const lines = cleanText.split(/\r?\n/);
+    const lines = cleanText.split(/\r\n|\n\r|\n|\r/);
     const nextInventory = [];
     let inInventory = false;
 
     for (const rawLine of lines) {
-      const line = rawLine.replace(/\t/g, '    ');
+      const line = rawLine.replace(/\t/g, '    ').replace(/^\r+/, '');
       const trimmed = line.trim();
 
       if (/^You are carrying:/i.test(trimmed)) {
@@ -379,7 +379,8 @@ function parsePlayerStats(text, stats) {
         continue;
       }
 
-      if (line.startsWith('  ') || line.startsWith('     ')) {
+      // Any non-header text line in inventory block is an item line.
+      if (trimmed.length > 0) {
         nextInventory.push({
           id: `${trimmed}-${nextInventory.length}`,
           name: trimmed,
