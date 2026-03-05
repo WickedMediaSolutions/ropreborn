@@ -80,22 +80,22 @@ app.ws('/ws', (ws, req) => {
 
         // Handle data from ROM
         telnetSocket.on('data', (data) => {
-          let text = data.toString('utf-8', 0, data.length);
-          
-          // Filter out telnet protocol control sequences (IAC and related bytes)
-          // This removes garbage characters from telnet negotiations
-          // IAC = 0xFF (255), and related control codes
-          const filtered = Buffer.from(text, 'utf-8')
-            .filter((byte, i, arr) => {
-              // Skip telnet protocol bytes (IAC and its options)
-              if (byte === 0xFF) return false; // IAC - skip this and next
-              if (i > 0 && arr[i-1] === 0xFF) return false; // Skip the byte after IAC
-              // Allow everything else
-              return true;
+          // Filter out telnet protocol control sequences
+          // Keep only: printable ASCII (32-126), ANSI escapes (27), and whitespace (9,10,13)
+          const filtered = Buffer.from(data)
+            .filter((byte) => {
+              // Allow printable ASCII (32-126)
+              if (byte >= 32 && byte <= 126) return true;
+              // Allow ESC (27) for ANSI color codes
+              if (byte === 27) return true;
+              // Allow whitespace: tab (9), LF (10), CR (13)
+              if (byte === 9 || byte === 10 || byte === 13) return true;
+              // Block everything else (telnet control codes, etc)
+              return false;
             })
             .toString('utf-8');
           
-          text = filtered;
+          const text = filtered;
           
           // Log sample of data for debugging (check for color codes)
           if (text.includes('{') || text.includes('\x1b[')) {

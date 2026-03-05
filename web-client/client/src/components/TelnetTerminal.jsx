@@ -28,7 +28,6 @@ export function TelnetTerminal() {
       fontWeight: 'normal',
       cursorBlink: true,
       cursorStyle: 'block',
-      localEcho: true,  // Enable local echo - show typed characters immediately
     });
 
     terminalRef.current = term;
@@ -119,6 +118,18 @@ export function TelnetTerminal() {
 
     // Handle terminal input - raw key data
     term.onData((data) => {
+      // Echo characters back to terminal (local echo)
+      // For printable characters, show them; for special keys (Enter, Backspace, etc.) just send
+      if (data.length === 1 && data.charCodeAt(0) >= 32 && data.charCodeAt(0) < 127) {
+        // Printable ASCII - echo it back to terminal
+        term.write(data);
+      } else if (data === '\r') {
+        // Enter - echo newline but don't echo the character
+        term.write('\r\n');
+      } else if (data === '\x7f' || data === '\b') {
+        // Backspace - xterm handles this visually already
+      }
+      
       if (ws && ws.readyState === WebSocket.OPEN) {
         // Send raw data to backend (includes Enter as \r)
         ws.send(JSON.stringify({
