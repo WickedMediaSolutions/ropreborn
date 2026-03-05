@@ -199,7 +199,7 @@ export function TelnetTerminal() {
   return (
     <div className="telnet-terminal-container">
       <div className="telnet-terminal-header">
-        <h2>⚔️ ROM MUD - Rites of Passage</h2>
+        <h2>⚔️ ROP MUD - Rites of Passage twitch.tv/bluntforcejosh for help.</h2>
         <div className="telnet-status">
           <span className={`status-indicator ${connected ? 'connected' : 'disconnected'}`}></span>
           {connected ? 'Connected' : 'Disconnected'}
