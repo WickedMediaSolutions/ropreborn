@@ -60,9 +60,63 @@ export function PlayerStats() {
         </div>
 
         <div className="stat-box">
-          <div className="stat-box-label">Alignment</div>
-          <div className="stat-box-value">{stats.alignment}</div>
+          <div className="stat-box-label">Silver</div>
+          <div className="stat-box-value">{stats.silver.toLocaleString()}</div>
         </div>
+
+        <div className="stat-box">
+          <div className="stat-box-label">Alignment</div>
+          <div className="stat-box-value">{stats.alignment > 0 ? '+' : ''}{stats.alignment}</div>
+        </div>
+
+        <div className="stat-box">
+          <div className="stat-box-label">Practices</div>
+          <div className="stat-box-value">{stats.practice}</div>
+        </div>
+
+        <div className="stat-box">
+          <div className="stat-box-label">Damage Bonus</div>
+          <div className="stat-box-value">{stats.damroll > 0 ? '+' : ''}{stats.damroll}</div>
+        </div>
+
+        <div className="stat-box">
+          <div className="stat-box-label">Hit Bonus</div>
+          <div className="stat-box-value">{stats.hitroll > 0 ? '+' : ''}{stats.hitroll}</div>
+        </div>
+
+        <div className="stat-box">
+          <div className="stat-box-label">Evasion</div>
+          <div className="stat-box-value">{stats.evasion}</div>
+        </div>
+
+        <div className="stat-box">
+          <div className="stat-box-label">War Points</div>
+          <div className="stat-box-value">{stats.warpoint}</div>
+        </div>
+
+        <div className="stat-box">
+          <div className="stat-box-label">Wimpy</div>
+          <div className="stat-box-value">{stats.wimpy}%</div>
+        </div>
+
+        <div className="stat-box">
+          <div className="stat-box-label">Remorts</div>
+          <div className="stat-box-value">{stats.remorts}</div>
+        </div>
+
+        {stats.playtime > 0 && (
+          <div className="stat-box">
+            <div className="stat-box-label">Playtime</div>
+            <div className="stat-box-value">{stats.playtime}h</div>
+          </div>
+        )}
+
+        {stats.weight > 0 && (
+          <div className="stat-box">
+            <div className="stat-box-label">Weight</div>
+            <div className="stat-box-value">{stats.weight}kg</div>
+          </div>
+        )}
       </div>
     </div>
   );

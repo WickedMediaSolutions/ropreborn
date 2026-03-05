@@ -18,6 +18,7 @@ export const useGameStore = create((set, get) => ({
     experience: 0,
     nextLevel: 1000,
     gold: 0,
+    silver: 0,
     alignment: 0,
     race: 'Human',
     class: 'Warrior',
@@ -26,7 +27,17 @@ export const useGameStore = create((set, get) => ({
     wis: 10,
     dex: 10,
     con: 10,
-    luk: 10
+    luk: 10,
+    practice: 0,
+    damroll: 0,
+    hitroll: 0,
+    evasion: 0,
+    warpoint: 0,
+    wimpy: 10,
+    remorts: 0,
+    age: 0,
+    playtime: 0,
+    weight: 0
   },
   updateStats: (stats) => set({ playerStats: stats }),
 

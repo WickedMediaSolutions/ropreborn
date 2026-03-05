@@ -34,9 +34,20 @@ app.ws('/ws', (ws, req) => {
     experience: 0,
     nextLevel: 1000,
     gold: 0,
+    silver: 0,
     alignment: 0,
     race: 'Human',
     class: 'Warrior',
+    practice: 0,
+    damroll: 0,
+    hitroll: 0,
+    evasion: 0,
+    warpoint: 0,
+    wimpy: 10,
+    remorts: 0,
+    age: 0,
+    playtime: 0,
+    weight: 0,
     online: 0
   };
 
@@ -135,40 +146,126 @@ app.get('*', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
 });
 
-// Parse player stats from MUD output (simple regex parsing)
+// Enhanced ROM stat parser - handles ROM 2.4 color codes and stat format
 function parsePlayerStats(text, stats) {
-  // This is a simplified parser - you can enhance it based on your MUD's output
+  // Remove ANSI escape sequences for cleaner parsing
+  const cleanText = text.replace(/\x1b\[[0-9;]*m/g, '').replace(/\{[xRBGMWYDC]\}/g, '');
   
-  // Look for patterns like "HP: 50/100"
-  const hpMatch = text.match(/HP:\s*(\d+)\/(\d+)/i);
-  if (hpMatch) {
-    stats.hp = parseInt(hpMatch[1]);
-    stats.maxHp = parseInt(hpMatch[2]);
+  // Parse character info from top section (name, race, class)
+  // Pattern: "Thou art <name> the <race> <class>."
+  const charMatch = cleanText.match(/Thou art\s+(\S+)\s+the\s+(\w+)\s+(\w+)/i);
+  if (charMatch) {
+    stats.name = charMatch[1];
+    stats.race = charMatch[2];
+    stats.class = charMatch[3];
   }
 
-  // Look for "Mana: 75/100"
-  const manaMatch = text.match(/Mana:\s*(\d+)\/(\d+)/i);
+  // Parse level from "level <number>"
+  const levelMatch = cleanText.match(/level\s+(\d+)\./i);
+  if (levelMatch) {
+    stats.level = parseInt(levelMatch[1]);
+  }
+
+  // Parse experience - "You have gained <exp> experience"
+  const expMatch = cleanText.match(/gained\s+(\d+)\s+experience/i);
+  if (expMatch) {
+    stats.experience = parseInt(expMatch[1]);
+  }
+
+  // Parse exp to next level - "and need <exp> more to level"
+  const nextLevelMatch = cleanText.match(/need\s+(\d+)\s+more to level/i);
+  if (nextLevelMatch) {
+    stats.nextLevel = parseInt(nextLevelMatch[1]);
+  }
+
+  // Parse practices - "You have <n> practices to"
+  const practiceMatch = cleanText.match(/You have\s+(\d+)\s+practices/i);
+  if (practiceMatch) {
+    stats.practice = parseInt(practiceMatch[1]);
+  }
+
+  // Parse Health (current/max) - "Health :<space><number>  /<space><number>"
+  const healthMatch = cleanText.match(/Health\s*:\s*(\d+)\s*\/\s*(\d+)/i);
+  if (healthMatch) {
+    stats.hp = parseInt(healthMatch[1]);
+    stats.maxHp = parseInt(healthMatch[2]);
+  }
+
+  // Parse Stamina (Moves) - "Stamina:<space><number>  /<space><number>"
+  const stamMatch = cleanText.match(/Stamina\s*:\s*(\d+)\s*\/\s*(\d+)/i);
+  if (stamMatch) {
+    stats.moves = parseInt(stamMatch[1]);
+    stats.maxMoves = parseInt(stamMatch[2]);
+  }
+
+  // Parse Mana - "Mana   :<space><number>  /<space><number>"
+  const manaMatch = cleanText.match(/Mana\s*:\s*(\d+)\s*\/\s*(\d+)/i);
   if (manaMatch) {
     stats.mana = parseInt(manaMatch[1]);
     stats.maxMana = parseInt(manaMatch[2]);
   }
 
-  // Look for "Level: 10"
-  const levelMatch = text.match(/Level:\s*(\d+)/i);
-  if (levelMatch) {
-    stats.level = parseInt(levelMatch[1]);
+  // Parse bonuses
+  // "Attack Power Bonus:" followed by number
+  const damrollMatch = cleanText.match(/Attack Power Bonus\s*:\s*(\d+)/i);
+  if (damrollMatch) {
+    stats.damroll = parseInt(damrollMatch[1]);
   }
 
-  // Look for "Gold: 5000"
-  const goldMatch = text.match(/Gold:\s*(\d+)/i);
-  if (goldMatch) {
-    stats.gold = parseInt(goldMatch[1]);
+  // "Offensive Bonus" followed by number
+  const hitrollMatch = cleanText.match(/Offensive Bonus\s*:\s*(-?\d+)/i);
+  if (hitrollMatch) {
+    stats.hitroll = parseInt(hitrollMatch[1]);
   }
 
-  // Look for "Exp: 12345"
-  const expMatch = text.match(/Exp:\s*(\d+)/i);
-  if (expMatch) {
-    stats.experience = parseInt(expMatch[1]);
+  // "Evasion Bonus" followed by number
+  const evasionMatch = cleanText.match(/Evasion Bonus\s*:\s*(\d+)/i);
+  if (evasionMatch) {
+    stats.evasion = parseInt(evasionMatch[1]);
+  }
+
+  // Parse War Points - "War Points:" followed by number
+  const warMatch = cleanText.match(/War Points\s*:\s*(\d+)/i);
+  if (warMatch) {
+    stats.warpoint = parseInt(warMatch[1]);
+  }
+
+  // Parse Wimpy percentage - "Wimpy" followed by number and percent
+  const wimpyMatch = cleanText.match(/Wimpy\s*:\s*(\d+)/i);
+  if (wimpyMatch) {
+    stats.wimpy = parseInt(wimpyMatch[1]);
+  }
+
+  // Parse Remorts - "Remorts:" followed by number
+  const remortMatch = cleanText.match(/Remorts\s*:\s*(\d+)/i);
+  if (remortMatch) {
+    stats.remorts = parseInt(remortMatch[1]);
+  }
+
+  // Parse gold - "carrying <gold> gold and <silver> silver"
+  const moneyMatch = cleanText.match(/carrying\s+(\d+)\s+gold\s+and\s+(\d+)\s+silver/i);
+  if (moneyMatch) {
+    stats.gold = parseInt(moneyMatch[1]);
+    stats.silver = parseInt(moneyMatch[2]);
+  }
+
+  // Parse age/hours - "You are <age> years of age (<hours> Hours)"
+  const ageMatch = cleanText.match(/You are\s+(\d+)\s+years of age\s+\((\d+)\s+Hours\)/i);
+  if (ageMatch) {
+    stats.age = parseInt(ageMatch[1]);
+    stats.playtime = parseInt(ageMatch[2]);
+  }
+
+  // Parse weight - "carrying <weight> kg(s) of weight"
+  const weightMatch = cleanText.match(/carrying\s+(\d+(?:\.\d+)?)\s+kg/i);
+  if (weightMatch) {
+    stats.weight = parseFloat(weightMatch[1]);
+  }
+
+  // Parse alignment (if displayed) - "Alignment:" or similar
+  const alignmentMatch = cleanText.match(/Alignment\s*:\s*(-?\d+)/i);
+  if (alignmentMatch) {
+    stats.alignment = parseInt(alignmentMatch[1]);
   }
 }
 
