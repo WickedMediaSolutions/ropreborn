@@ -13,6 +13,7 @@ export function TelnetTerminal() {
   // Get store functions
   const updateStats = useGameStore((state) => state.updateStats);
   const setConnected = useGameStore((state) => state.setConnected);
+  const setWs = useGameStore((state) => state.setWs);
   const connected = useGameStore((state) => state.connected);
   const updateRoom = useGameStore((state) => state.updateRoom);
 
@@ -87,6 +88,7 @@ export function TelnetTerminal() {
       console.log('✓ Connected to ROM bridge');
       term.writeln('\r\n⚔️ Connecting to ROM server...\r\n');
       setConnected(true);
+      setWs(ws);  // Store WebSocket in store for spells/inventory panels
       wsRef.current = ws;
       
       // Send connect command
