@@ -29,48 +29,72 @@ export function TerminalDisplay() {
   );
 }
 
-// Parse ANSI color codes and render as styled text
+// Parse both ROM color codes {R}, {G}, etc. and ANSI escape sequences
 function parseAnsi(text) {
-  // ANSI color codes: \x1b[0m (reset), \x1b[31m (red), \x1b[32m (green), etc.
-  const ansiRegex = /\x1b\[([0-9;]*)m/g;
+  if (!text) return '';
+  
   const parts = [];
   let lastIndex = 0;
-  let currentColor = null;
+  let currentColor = 'default';
 
-  const colorMap = {
-    '0': 'reset',
-    '31': 'red',
-    '32': 'green',
-    '33': 'yellow',
-    '34': 'blue',
-    '35': 'magenta',
-    '36': 'cyan',
-    '37': 'white',
-    '1': 'bright'
+  // ROM color code map: {X} format
+  const romColorMap = {
+    'R': 'red',      // {R} = Red
+    'G': 'green',    // {G} = Green
+    'B': 'blue',     // {B} = Blue
+    'Y': 'yellow',   // {Y} = Yellow
+    'M': 'magenta',  // {M} = Magenta
+    'C': 'cyan',     // {C} = Cyan
+    'W': 'white',    // {W} = White
+    'D': 'dark-grey',// {D} = Dark Grey
+    'x': 'default'   // {x} = Reset
   };
 
+  // Combined regex to match both ROM codes {X} and ANSI codes \x1b[...m
+  const colorRegex = /\{([RGBYMCWDx])\}|\x1b\[([0-9;]*)m/g;
+
   let match;
-  while ((match = ansiRegex.exec(text)) !== null) {
-    // Add text before this ANSI code
+  while ((match = colorRegex.exec(text)) !== null) {
+    // Add text before this color code
     if (match.index > lastIndex) {
       const part = text.substring(lastIndex, match.index);
       parts.push(
-        <span key={`text_${lastIndex}`} className={`ansi-${currentColor || 'default'}`}>
+        <span key={`text_${lastIndex}`} className={`ansi-${currentColor}`}>
           {part}
         </span>
       );
     }
 
-    // Update current color based on ANSI code
-    const codes = match[1].split(';');
-    for (const code of codes) {
-      if (colorMap[code]) {
-        if (code === '0') {
-          currentColor = null;
-        } else {
-          currentColor = colorMap[code];
+    // Handle ROM color code {X}
+    if (match[1]) {
+      const romCode = match[1];
+      currentColor = romColorMap[romCode] || 'default';
+    }
+    // Handle ANSI escape sequence
+    else if (match[2]) {
+      const ansiCode = match[2];
+      const codes = ansiCode.split(';');
+      let newColor = currentColor;
+
+      for (const code of codes) {
+        // Standard ANSI colors
+        if (code === '31' || code === '1;31') newColor = 'red';
+        else if (code === '32' || code === '1;32') newColor = 'green';
+        else if (code === '33' || code === '1;33') newColor = 'yellow';
+        else if (code === '34' || code === '1;34') newColor = 'blue';
+        else if (code === '35' || code === '1;35') newColor = 'magenta';
+        else if (code === '36' || code === '1;36') newColor = 'cyan';
+        else if (code === '37' || code === '1;37') newColor = 'white';
+        else if (code === '30' || code === '1;30') newColor = 'dark-grey';
+        else if (code === '0') newColor = 'default'; // Reset
+        else if (code === '1') {
+          // Bright/bold - enhance current color if not reset
+          if (currentColor !== 'default' && !currentColor.includes('bright')) {
+            newColor = currentColor + '-bright';
+          }
         }
       }
+      currentColor = newColor;
     }
 
     lastIndex = match.index + match[0].length;
@@ -79,7 +103,7 @@ function parseAnsi(text) {
   // Add remaining text
   if (lastIndex < text.length) {
     parts.push(
-      <span key={`text_${lastIndex}`} className={`ansi-${currentColor || 'default'}`}>
+      <span key={`text_${lastIndex}`} className={`ansi-${currentColor}`}>
         {text.substring(lastIndex)}
       </span>
     );

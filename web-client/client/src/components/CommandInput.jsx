@@ -29,6 +29,8 @@ export function CommandInput() {
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
       handleSubmit(e);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();

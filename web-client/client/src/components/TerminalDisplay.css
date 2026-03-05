@@ -48,16 +48,24 @@
   margin-bottom: 2px;
 }
 
-/* ANSI color styles */
+/* ANSI color styles - ROM {X} format and standard ANSI codes */
 .ansi-default { color: #00ff41; }
 .ansi-red { color: #ff4444; }
+.ansi-red-bright { color: #ff6666; font-weight: bold; }
 .ansi-green { color: #44ff44; }
+.ansi-green-bright { color: #66ff66; font-weight: bold; }
 .ansi-yellow { color: #ffff44; }
+.ansi-yellow-bright { color: #ffff66; font-weight: bold; }
 .ansi-blue { color: #4444ff; }
+.ansi-blue-bright { color: #6666ff; font-weight: bold; }
 .ansi-magenta { color: #ff44ff; }
+.ansi-magenta-bright { color: #ff66ff; font-weight: bold; }
 .ansi-cyan { color: #44ffff; }
+.ansi-cyan-bright { color: #66ffff; font-weight: bold; }
 .ansi-white { color: #ffffff; }
-.ansi-bright { font-weight: bold; }
+.ansi-white-bright { color: #ffffff; font-weight: bold; }
+.ansi-dark-grey { color: #888888; }
+.ansi-dark-grey-bright { color: #aaaaaa; font-weight: bold; }
 
 /* Scrollbar styling */
 .terminal-display::-webkit-scrollbar {
