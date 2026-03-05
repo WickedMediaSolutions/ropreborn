@@ -48,7 +48,9 @@ app.ws('/ws', (ws, req) => {
     age: 0,
     playtime: 0,
     weight: 0,
-    online: 0
+    online: 0,
+    equipment: {},
+    inventory: []
   };
 
   console.log(`[${connectionId}] WebSocket client connected`);
@@ -286,6 +288,36 @@ function parsePlayerStats(text, stats) {
   const alignmentMatch = cleanText.match(/Alignment\s*:\s*(-?\d+)/i);
   if (alignmentMatch) {
     stats.alignment = parseInt(alignmentMatch[1]);
+  }
+
+  // Parse equipment - look for equipment list format
+  // Typical ROM format: "<wear location> : <item name>"
+  const equipmentMatches = cleanText.matchAll(/(head|neck|chest|arms|wrists|hands|waist|legs|feet|feet|mainhand|offhand|right hand|left hand|right finger|left finger|shield)\s*:\s*([^\n]+)/gi);
+  for (const match of equipmentMatches) {
+    const slot = match[1].toLowerCase().replace(/\s/g, '_');
+    const itemName = match[2].trim();
+    if (itemName && !itemName.includes('('), {}) {
+      stats.equipment[slot] = { slot, name: itemName };
+    }
+  }
+
+  // Parse inventory - look for "You are carrying:" section
+  const invStartIdx = cleanText.indexOf('You are carrying:');
+  if (invStartIdx !== -1) {
+    const invSection = cleanText.substring(invStartIdx);
+    // Extract items - typically formatted as "  - item name (type) { level }"
+    const itemMatches = invSection.matchAll(/^\s*[-•]\s+([^\(\{]+)/gm);
+    stats.inventory = [];
+    for (const match of itemMatches) {
+      const itemName = match[1].trim();
+      if (itemName && itemName.length > 2) {
+        stats.inventory.push({
+          id: Math.random(),
+          name: itemName,
+          type: 'item'
+        });
+      }
+    }
   }
 }
 

@@ -1,37 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useGameStore } from '../store';
 import './EquipmentPanel.css';
 
 export function EquipmentPanel() {
-  const equipment = useGameStore((state) => state.equipment);
-  const inventory = useGameStore((state) => state.inventory);
-  const equipItem = useGameStore((state) => state.equipItem);
-  const [draggedItem, setDraggedItem] = useState(null);
+  const playerStats = useGameStore((state) => state.playerStats);
+  const equipment = playerStats.equipment || {};
+  const inventory = playerStats.inventory || [];
 
   const slots = [
     'head', 'neck', 'chest', 'hands', 'wrists',
-    'waist', 'legs', 'feet', 'mainHand', 'offHand'
+    'waist', 'legs', 'feet', 'mainhand', 'offhand'
   ];
-
-  const handleDragStart = (item) => {
-    setDraggedItem(item);
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (slot) => {
-    if (draggedItem && draggedItem.slot === slot) {
-      equipItem(draggedItem.id);
-      setDraggedItem(null);
-    }
-  };
 
   const getSlotIcon = (slot) => {
     const icons = {
       head: '👑', neck: '💍', chest: '🛡️', hands: '🤚', wrists: '⌚',
-      waist: '⚔️', legs: '🦵', feet: '👢', mainHand: '⚔️', offHand: '🛡️'
+      waist: '⚔️', legs: '🦵', feet: '👢', mainhand: '⚔️', offhand: '🛡️'
     };
     return icons[slot] || '📦';
   };
@@ -41,12 +25,7 @@ export function EquipmentPanel() {
       <h4>Equipment</h4>
       <div className="equipment-slots">
         {slots.map((slot) => (
-          <div
-            key={slot}
-            className="equipment-slot"
-            onDragOver={handleDragOver}
-            onDrop={() => handleDrop(slot)}
-          >
+          <div key={slot} className="equipment-slot">
             <div className="slot-icon">{getSlotIcon(slot)}</div>
             <div className="slot-label">{slot}</div>
             {equipment[slot] && (
@@ -56,20 +35,18 @@ export function EquipmentPanel() {
         ))}
       </div>
 
-      <h4 style={{ marginTop: '15px' }}>Inventory</h4>
+      <h4 style={{ marginTop: '15px' }}>Inventory ({inventory.length})</h4>
       <div className="inventory-list">
-        {inventory.map((item) => (
-          <div
-            key={item.id}
-            className="inventory-item"
-            draggable
-            onDragStart={() => handleDragStart(item)}
-          >
-            <span className="item-icon">📦</span>
-            <span className="item-name">{item.name}</span>
-            <span className={`item-type ${item.type}`}>{item.type}</span>
-          </div>
-        ))}
+        {inventory.length > 0 ? (
+          inventory.map((item, idx) => (
+            <div key={idx} className="inventory-item">
+              <span className="item-icon">📦</span>
+              <span className="item-name">{item.name}</span>
+            </div>
+          ))
+        ) : (
+          <p className="empty-inventory">No items in inventory</p>
+        )}
       </div>
     </div>
   );
