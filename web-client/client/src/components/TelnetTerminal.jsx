@@ -21,6 +21,15 @@ export function TelnetTerminal() {
     // Ensure container exists and has dimensions
     if (!containerRef.current) return;
 
+    // Prevent duplicate xterm mounts in React StrictMode/dev remount cycles.
+    if (terminalRef.current) return;
+
+    // If anything was previously rendered in this host, clear it first.
+    containerRef.current.innerHTML = '';
+
+    let fitAddon = null;
+    let handleResize = null;
+
     // Create xterm terminal
     const term = new Terminal({
       cols: 140,
@@ -44,7 +53,7 @@ export function TelnetTerminal() {
 
     // Apply fit addon AFTER opening
     try {
-      const fitAddon = new FitAddon();
+      fitAddon = new FitAddon();
       term.loadAddon(fitAddon);
       
       // Fit with a small delay to ensure DOM is ready
@@ -57,7 +66,7 @@ export function TelnetTerminal() {
       }, 100);
 
       // Handle window resize
-      const handleResize = () => {
+      handleResize = () => {
         try {
           fitAddon.fit();
         } catch (e) {
@@ -66,11 +75,22 @@ export function TelnetTerminal() {
       };
 
       window.addEventListener('resize', handleResize);
-
-      return () => window.removeEventListener('resize', handleResize);
     } catch (e) {
       console.error('FitAddon error:', e);
     }
+
+    return () => {
+      if (handleResize) {
+        window.removeEventListener('resize', handleResize);
+      }
+      if (terminalRef.current) {
+        terminalRef.current.dispose();
+        terminalRef.current = null;
+      }
+      if (containerRef.current) {
+        containerRef.current.innerHTML = '';
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -132,7 +152,7 @@ export function TelnetTerminal() {
     };
 
     // Handle terminal input - raw key data
-    term.onData((data) => {
+    const dataDisposable = term.onData((data) => {
       // Echo characters back to terminal (local echo)
       // For printable characters, show them; for special keys (Enter, Backspace, etc.) just send
       if (data.length === 1 && data.charCodeAt(0) >= 32 && data.charCodeAt(0) < 127) {
@@ -155,11 +175,13 @@ export function TelnetTerminal() {
     });
 
     return () => {
+      dataDisposable.dispose();
       if (ws.readyState === WebSocket.OPEN) {
         ws.close();
       }
+      setWs(null);
     };
-  }, []);
+  }, [setConnected, setWs, updateStats]);
 
   return (
     <div className="telnet-terminal-container">
