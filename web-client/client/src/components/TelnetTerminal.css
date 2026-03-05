@@ -63,32 +63,51 @@
 }
 
 /* XTerm CSS customization */
-.telnet-terminal-inner :global(.xterm) {
+.telnet-terminal-inner .xterm {
   width: 100% !important;
   height: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
 }
 
-.telnet-terminal-inner :global(.xterm-viewport) {
+.telnet-terminal-inner .xterm-viewport {
   background-color: #0a0e27 !important;
 }
 
-.telnet-terminal-inner :global(.xterm-screen) {
+.telnet-terminal-inner .xterm-screen {
   background-color: #0a0e27 !important;
 }
 
-.telnet-terminal-inner :global(.xterm-cursor-block) {
+.telnet-terminal-inner .xterm-cursor-block {
   background-color: #00ff41 !important;
   color: #0a0e27 !important;
   opacity: 0.8;
 }
 
-.telnet-terminal-inner :global(.xterm-cursor-bar) {
+.telnet-terminal-inner .xterm-cursor-bar {
   background-color: #00ff41 !important;
 }
 
 /* Text selection */
-.telnet-terminal-inner :global(.xterm-selection) {
+.telnet-terminal-inner .xterm-selection {
   background-color: rgba(0, 255, 65, 0.3) !important;
+}
+
+/* Keep screen-reader/helper layers from bleeding into layout */
+.telnet-terminal-inner .xterm {
+  position: relative;
+  overflow: hidden;
+}
+
+.telnet-terminal-inner .xterm-helpers,
+.telnet-terminal-inner .xterm-accessibility,
+.telnet-terminal-inner .xterm-char-measure-element {
+  position: absolute !important;
+  left: -10000px !important;
+  top: auto !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
