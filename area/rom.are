@@ -245,11 +245,12 @@ Thanks to Ezra for drawing the originals of several maps on ROM.
 
 -1 GREETING~
 .
-THIS IS A MUD BASED ON.....Rom 2.4
+THIS IS A MUD BASED ON.....Rom 2.4 codebase
 
-                                ROP Cd 1.1 beta
+                            ROPCode 1.1 Beta (2024)
+                        Heavily modified by Josh Rundle
 
-               Welcome to Rites of Passage Reborn
+                      Welcome to Rites of Passage Reborn
 
 ? ~
  
@@ -358,7 +359,7 @@ from the city guard.
 ~
 
 -1 RULES~
-These are the rules of ROM.  For other matters, use common sense.
+These are the rules of Rites of Passage.  For other matters, use common sense.
 
 * Limited player stealing or player killing.
 
@@ -366,9 +367,6 @@ These are the rules of ROM.  For other matters, use common sense.
   you will be fine.  Deletion does not require a reason, appeals are to be sent
   to the implementors.
  
-* Sitting around idle with a client is hazardous to your health. If we catch
-  you doing it, you will lose half your playing time.
-
 * No multiple logins, multiple playing, or helping your own characters with 
   other characters you own -- by any arrangment.
  
