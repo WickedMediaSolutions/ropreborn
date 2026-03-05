@@ -20,7 +20,8 @@ export function TelnetTerminal() {
       rows: 40,
       theme: {
         background: '#0a0e27',
-        foreground: '#00ff41',
+        // Don't set foreground - let ANSI codes control text color
+        cursor: '#00ff41',
       },
       fontFamily: 'Courier New, monospace',
       fontSize: 12,
