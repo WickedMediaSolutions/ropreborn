@@ -176,7 +176,6 @@ int    listen        args( ( int s, int backlog ) );
 */
 
 int close args ((int fd));
-int gettimeofday args ((struct timeval * tp, struct timezone * tzp));
 /* int    read        args( ( int fd, char *buf, int nbyte ) ); */
 int select args ((int width, fd_set * readfds, fd_set * writefds,
                   fd_set * exceptfds, struct timeval * timeout));
@@ -446,7 +445,7 @@ int main (int argc, char **argv)
         control = init_socket (port);
 
     boot_db ();
-    log_f ("ROM is ready to rock on port %d (%s).", port, mud_ipaddress);
+    log_f ("ROP is ready to rock on port %d (%s).", port, mud_ipaddress);
 
 #ifdef IMC
    /* Initialize and connect to IMC2 */
@@ -2144,16 +2143,14 @@ void show_string (struct descriptor_data *d, char *input)
             *scan = '\0';
             write_to_buffer (d, buffer, strlen (buffer));
             for (chk = d->showstr_point; isspace (*chk); chk++);
+            if (!*chk)
             {
-                if (!*chk)
+                if (d->showstr_head)
                 {
-                    if (d->showstr_head)
-                    {
-                        free_mem (d->showstr_head, strlen (d->showstr_head));
-                        d->showstr_head = 0;
-                    }
-                    d->showstr_point = 0;
+                    free_mem (d->showstr_head, strlen (d->showstr_head));
+                    d->showstr_head = 0;
                 }
+                d->showstr_point = 0;
             }
             return;
         }
@@ -2187,7 +2184,6 @@ void act_new (const char *format, CHAR_DATA * ch, const void *arg1,
     char *point;
     char *pbuff;
     char buffer[MSL * 2];
-    bool fColour = FALSE;
 
 
     /*
@@ -2240,7 +2236,6 @@ void act_new (const char *format, CHAR_DATA * ch, const void *arg1,
                 *point++ = *str++;
                 continue;
             }
-            fColour = TRUE;
             ++str;
             i = " <@@@> ";
 

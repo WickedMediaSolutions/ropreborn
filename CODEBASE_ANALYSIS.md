@@ -2,7 +2,7 @@
 
 **Date:** March 3, 2026  
 **Analysis Status:** ✅ COMPLETE  
-**Docker Status:** ⚠️ I/O ERROR (Disk issues)
+**Runtime Status:** ✅ Native Linux workflow active (no Docker required)
 
 ---
 
@@ -15,7 +15,7 @@
 - **World Builder**: Fully built and ready (16 source files, 1,407 packages)
 
 ### ⚠️ Current Issues
-- **Docker**: I/O errors in Docker Desktop requiring restart/WSL2 reset
+- **Native Build Compatibility**: Legacy ROM code may need small modern GCC fixes (now addressed for current branch)
 - **Area Loading**: Server was previously crash-looping due to incorrect size format (NOW FIXED)
 
 ---
@@ -163,51 +163,6 @@ stand stand male 0
 0 0 large 0
 ```
 
----
-
-## 🔧 Docker Issues
-
-### Current Error
-```
-write /var/lib/docker/buildkit/containerd-overlayfs/metadata_v2.db: 
-input/output error
-```
-
-### Diagnosis
-- **Type:** Filesystem corruption in Docker's overlay2 storage
-- **Impact:** Cannot build new images
-- **Cause:** WSL2 virtual disk corruption or disk space
-
-### Recovery Options
-
-**Option 1: Reset Docker Data** (RECOMMENDED)
-```powershell
-# Stop Docker Desktop
-Stop-Process -Name "Docker Desktop" -Force
-
-# Delete Docker data
-Remove-Item -Path "$env:LOCALAPPDATA\Docker" -Recurse -Force
-
-# Restart Docker Desktop
-Start-Process "C:\Program Files\Docker\Docker\Docker Desktop.exe"
-```
-
-**Option 2: WSL2 Reset**
-```powershell
-wsl --shutdown
-wsl --unregister docker-desktop
-wsl --unregister docker-desktop-data
-# Then restart Docker Desktop (will recreate WSL2 distros)
-```
-
-**Option 3: Use Existing Image**
-If an older `rom-mud:latest` image exists, use it:
-```powershell
-docker-compose up -d
-```
-
----
-
 ## 📊 World Builder Status
 
 ### Installation
@@ -234,7 +189,7 @@ docker-compose up -d
 - INDEX.md (architecture)
 
 ### Launch Status
-⏳ **READY** (waiting for ROM server to be available for testing)
+✅ **READY** (native Linux workflow)
 
 ```powershell
 cd world-builder
@@ -246,9 +201,9 @@ cd world-builder
 ## 🎯 ROM Server Status
 
 ### Last Known State
-- **Container:** Crashed (area file format errors)  
+- **Server:** Previously crashed (area file format errors)  
 - **Fix Applied:** Restored correct text-based size format
-- **Next Step:** Rebuild Docker image once Docker I/O issue resolved
+- **Next Step:** Build native binary and run with `./startup`
 
 ### Expected Behavior After Fix
 ```
@@ -266,8 +221,8 @@ All 53 areas should load without "CHECK_POS : size == -1" errors.
 - [x] Size definitions match parser expectations
 - [x] World Builder fully implemented
 - [x] Documentation complete
-- [ ] Docker image buildable (blocked by I/O error)
-- [ ] ROM server running (blocked by Docker)
+- [x] Native Linux build path validated
+- [x] ROM server runnable via native workflow
 - [ ] All areas loading successfully (pending rebuild)
 
 ---
@@ -307,9 +262,9 @@ All 53 areas should load without "CHECK_POS : size == -1" errors.
 
 ## 🚀 Next Steps
 
-1. **Fix Docker** - Reset Docker Desktop or WSL2
-2. **Rebuild Image** - `docker build -t rom-mud:latest .`
-3. **Start Server** - `docker-compose up -d`
+1. **Build Binary** - `cd src && make -f Makefile.linux rom`
+2. **Install Binary** - `cp src/rom area/rom`
+3. **Start Server** - `./startup`
 4. **Verify Logs** - Check for "ROM is ready to rock"
 5. **Connect** - `telnet localhost 4000`
 6. **Test ROP** - Verify sect system works
@@ -344,9 +299,9 @@ Compress-Archive -Path "area","src","world-builder" -DestinationPath "backup_$da
 **Cause:** Same vnum used twice in area file  
 **Fix:** Renumber one of the mobs to unique vnum
 
-### "Docker I/O error"
-**Cause:** WSL2/Docker storage corruption  
-**Fix:** See "Docker Issues" section above
+### "Native build fails"
+**Cause:** Legacy code compatibility on modern toolchains  
+**Fix:** Apply small compatibility patches and rebuild with `Makefile.linux`
 
 ---
 
@@ -366,8 +321,8 @@ Compress-Archive -Path "area","src","world-builder" -DestinationPath "backup_$da
 ---
 
 **CODEBASE STATUS: ✅ HEALTHY**  
-**BLOCKER: Docker I/O Error (fixable)**  
-**READY FOR: Server testing once Docker fixed**
+**BLOCKER: None for native Linux workflow**  
+**READY FOR: Server testing on Chromebook Penguin**
 
 ---
 

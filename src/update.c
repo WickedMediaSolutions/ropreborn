@@ -34,6 +34,7 @@
 #include <string.h>
 #include <time.h>
 #include "merc.h"
+#include "config.h"
 #include "interp.h"
 #include "music.h"
 
@@ -53,6 +54,73 @@ void aggr_update args ((void));
 
 int save_number = 0;
 
+const char *rop_world_event_name (void)
+{
+    if (time_info.day >= WORLD_EVENT_ASCENDANT_START
+        && time_info.day <= WORLD_EVENT_ASCENDANT_END)
+        return "Ascendant Trials";
+
+    if (time_info.day >= WORLD_EVENT_HARMONY_START
+        && time_info.day <= WORLD_EVENT_HARMONY_END)
+        return "Harmony Convergence";
+
+    if (time_info.day >= WORLD_EVENT_BLOODMOON_START
+        && time_info.day <= WORLD_EVENT_BLOODMOON_END)
+        return "Bloodmoon Skirmishes";
+
+    return "None";
+}
+
+int rop_world_event_damage_percent (void)
+{
+    if (time_info.day >= WORLD_EVENT_BLOODMOON_START
+        && time_info.day <= WORLD_EVENT_BLOODMOON_END)
+        return 10;
+
+    return 0;
+}
+
+int rop_world_event_mana_scale_percent (void)
+{
+    if (time_info.day >= WORLD_EVENT_HARMONY_START
+        && time_info.day <= WORLD_EVENT_HARMONY_END)
+        return 90;
+
+    return 100;
+}
+
+int rop_world_event_xp_percent (void)
+{
+    if (time_info.day >= WORLD_EVENT_ASCENDANT_START
+        && time_info.day <= WORLD_EVENT_ASCENDANT_END)
+        return 15;
+
+    return 0;
+}
+
+static void announce_world_event (void)
+{
+    DESCRIPTOR_DATA *d;
+    char buf[MAX_STRING_LENGTH];
+    const char *event_name = rop_world_event_name ();
+
+    if (!str_cmp (event_name, "None"))
+    {
+        snprintf (buf, sizeof (buf), "{Y[World Event]{x No special world event is active.\n\r");
+    }
+    else
+    {
+        snprintf (buf, sizeof (buf), "{Y[World Event]{x %s is now active across the world.\n\r",
+                  event_name);
+    }
+
+    for (d = descriptor_list; d != NULL; d = d->next)
+    {
+        if (d->connected == CON_PLAYING && d->character != NULL)
+            send_to_char (buf, d->character);
+    }
+}
+
 
 
 /*
@@ -61,6 +129,7 @@ int save_number = 0;
 void advance_level (CHAR_DATA * ch, bool hide)
 {
     char buf[MAX_STRING_LENGTH];
+    const struct profession_type *profession;
     int add_hp;
     int add_mana;
     int add_move;
@@ -74,13 +143,22 @@ void advance_level (CHAR_DATA * ch, bool hide)
                                                SEX_FEMALE ? 1 : 0]);
     set_title (ch, buf);
 
+    profession = get_profession (ch);
+
     add_hp =
         con_app[get_curr_stat (ch, STAT_CON)].hitp +
-        number_range (class_table[ch->class].hp_min,
-                      class_table[ch->class].hp_max);
+        number_range (profession != NULL ? profession->hp_min : class_table[ch->class].hp_min,
+                      profession != NULL ? profession->hp_max : class_table[ch->class].hp_max);
     add_mana = number_range (2, (2 * get_curr_stat (ch, STAT_INT)
                                  + get_curr_stat (ch, STAT_WIS)) / 5);
-    if (!class_table[ch->class].fMana)
+    if (profession != NULL)
+    {
+        if (profession->mana_mult > 0)
+            add_mana = add_mana * profession->mana_mult / 100;
+        else
+            add_mana /= 2;
+    }
+    else if (!class_table[ch->class].fMana)
         add_mana /= 2;
     add_move = number_range (1, (get_curr_stat (ch, STAT_CON)
                                  + get_curr_stat (ch, STAT_DEX)) / 6);
@@ -120,9 +198,14 @@ void advance_level (CHAR_DATA * ch, bool hide)
 void gain_exp (CHAR_DATA * ch, int gain)
 {
     char buf[MAX_STRING_LENGTH];
+    int event_bonus;
 
     if (IS_NPC (ch) || ch->level >= LEVEL_HERO)
         return;
+
+    event_bonus = rop_world_event_xp_percent ();
+    if (event_bonus > 0 && gain > 0)
+        gain = gain * (100 + event_bonus) / 100;
 
     ch->exp = UMAX (exp_per_level (ch, ch->pcdata->points), ch->exp + gain);
     while (ch->level < LEVEL_HERO && ch->exp >=
@@ -150,6 +233,7 @@ int hit_gain (CHAR_DATA * ch)
 {
     int gain;
     int number;
+    const struct profession_type *profession;
 
     if (ch->in_room == NULL)
         return 0;
@@ -179,8 +263,9 @@ int hit_gain (CHAR_DATA * ch)
     }
     else
     {
+        profession = get_profession (ch);
         gain = UMAX (3, get_curr_stat (ch, STAT_CON) - 3 + ch->level / 2);
-        gain += class_table[ch->class].hp_max - 10;
+        gain += (profession != NULL ? profession->hp_max : class_table[ch->class].hp_max) - 10;
         number = number_percent ();
         if (number < get_skill (ch, gsn_fast_healing))
         {
@@ -235,6 +320,7 @@ int mana_gain (CHAR_DATA * ch)
 {
     int gain;
     int number;
+    const struct profession_type *profession;
 
     if (ch->in_room == NULL)
         return 0;
@@ -259,6 +345,7 @@ int mana_gain (CHAR_DATA * ch)
     }
     else
     {
+        profession = get_profession (ch);
         gain = (get_curr_stat (ch, STAT_WIS)
                 + get_curr_stat (ch, STAT_INT) + ch->level) / 2;
         number = number_percent ();
@@ -268,7 +355,14 @@ int mana_gain (CHAR_DATA * ch)
             if (ch->mana < ch->max_mana)
                 check_improve (ch, gsn_meditation, TRUE, 8);
         }
-        if (!class_table[ch->class].fMana)
+        if (profession != NULL)
+        {
+            if (profession->mana_mult > 0)
+                gain = gain * profession->mana_mult / 100;
+            else
+                gain /= 2;
+        }
+        else if (!class_table[ch->class].fMana)
             gain /= 2;
 
         switch (ch->position)
@@ -369,6 +463,12 @@ void gain_condition (CHAR_DATA * ch, int iCond, int value)
     int condition;
 
     if (value == 0 || IS_NPC (ch) || ch->level >= LEVEL_IMMORTAL)
+        return;
+
+    if ((iCond == COND_HUNGER || iCond == COND_FULL) && ch->remort_no_food)
+        return;
+
+    if (iCond == COND_THIRST && ch->remort_no_drink)
         return;
 
     condition = ch->pcdata->condition[iCond];
@@ -524,8 +624,10 @@ void weather_update (void)
     char buf[MAX_STRING_LENGTH];
     DESCRIPTOR_DATA *d;
     int diff;
+    bool advanced_day;
 
     buf[0] = '\0';
+    advanced_day = FALSE;
 
     switch (++time_info.hour)
     {
@@ -552,6 +654,7 @@ void weather_update (void)
         case 24:
             time_info.hour = 0;
             time_info.day++;
+            advanced_day = TRUE;
             break;
     }
 
@@ -559,6 +662,7 @@ void weather_update (void)
     {
         time_info.day = 0;
         time_info.month++;
+        advanced_day = TRUE;
     }
 
     if (time_info.month >= 17)
@@ -650,6 +754,9 @@ void weather_update (void)
         }
     }
 
+    if (advanced_day)
+        announce_world_event ();
+
     return;
 }
 
@@ -717,6 +824,14 @@ void char_update (void)
         if (!IS_NPC (ch) && ch->level < LEVEL_IMMORTAL)
         {
             OBJ_DATA *obj;
+
+            if (ch->sect_number >= 0 && ch->sect_number < MAX_SECT)
+            {
+                if (sect_table[ch->sect_number].alignment == 1)
+                    ch->alignment = 1000;
+                else if (sect_table[ch->sect_number].alignment == -1)
+                    ch->alignment = -1000;
+            }
 
             if ((obj = get_eq_char (ch, WEAR_LIGHT)) != NULL
                 && obj->item_type == ITEM_LIGHT && obj->value[2] > 0)

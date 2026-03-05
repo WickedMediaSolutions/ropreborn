@@ -39,11 +39,20 @@
 #include <ctype.h>
 #include <time.h>
 #include "merc.h"
+#include "config.h"
 #include "interp.h"
 #include "magic.h"
 #include "recycle.h"
 #include "tables.h"
 #include "lookup.h"
+
+#ifndef MIN_REMORT_LEVEL
+#define MIN_REMORT_LEVEL 50
+#endif
+
+#ifndef MAX_REMORTS
+#define MAX_REMORTS 5
+#endif
 
 char *const where_name[] = {
     "<used as light>     ",
@@ -81,6 +90,185 @@ void show_char_to_char_0 args ((CHAR_DATA * victim, CHAR_DATA * ch));
 void show_char_to_char_1 args ((CHAR_DATA * victim, CHAR_DATA * ch));
 void show_char_to_char args ((CHAR_DATA * list, CHAR_DATA * ch));
 bool check_blind args ((CHAR_DATA * ch));
+
+static bool npc_should_be_pink (CHAR_DATA * victim)
+{
+    if (!IS_NPC (victim))
+        return FALSE;
+
+    if (victim->pIndexData != NULL && victim->pIndexData->pShop != NULL)
+        return FALSE;
+
+    if (IS_SET (victim->act, ACT_PET)
+        || IS_SET (victim->act, ACT_NOPURGE)
+        || IS_SET (victim->act, ACT_TRAIN)
+        || IS_SET (victim->act, ACT_PRACTICE)
+        || IS_SET (victim->act, ACT_IS_HEALER)
+        || IS_SET (victim->act, ACT_GAIN)
+        || IS_SET (victim->act, ACT_IS_CHANGER))
+        return FALSE;
+
+    if (!IS_SET (victim->act, ACT_AGGRESSIVE) && victim->fighting == NULL)
+        return FALSE;
+
+    return TRUE;
+}
+
+static const char *sect_passive_summary (int sect)
+{
+    switch (sect)
+    {
+        default:
+            return "No special passive bonuses.";
+        case 0:
+            return "+2 cast level and 5% mana reduction on support spells; 6% less spell damage taken.";
+        case 1:
+            return "+2 cast level and 8% mana reduction on support spells; 5% less damage taken.";
+        case 2:
+            return "10% lower mana costs on all spells; +1 cast level baseline.";
+        case 3:
+            return "+3 cast level and 12% mana reduction on support spells.";
+        case 4:
+            return "+3 cast level on offensive spells; +15% melee damage.";
+        case 5:
+            return "+2 cast level and 5% mana reduction on offensive spells; 12% melee crit for +20% damage.";
+        case 6:
+            return "+4 cast level on offensive spells; +12% spell damage (with +5% mana strain).";
+        case 7:
+            return "+2 cast level and 5% mana reduction on support spells; 10% chance to reduce incoming damage by 20%.";
+    }
+}
+
+static const char *sect_active_name (int sect)
+{
+    switch (sect)
+    {
+        default:
+            return "Unknown Invocation";
+        case 0:
+            return "Aegis of Aethelhelm";
+        case 1:
+            return "Crisis Heal";
+        case 2:
+            return "Transmute";
+        case 3:
+            return "Renewal Bloom";
+        case 4:
+            return "Tyrant's Brand";
+        case 5:
+            return "Shadow Clone";
+        case 6:
+            return "Frost Nova";
+        case 7:
+            return "Storm Step";
+    }
+}
+
+static const char *sect_active_summary (int sect)
+{
+    switch (sect)
+    {
+        default:
+            return "No sect active available.";
+        case 0:
+            return "Defensive ward: grants sanctuary to self for a short duration.";
+        case 1:
+            return "Emergency healing: restores a large amount of hit points to an ally.";
+        case 2:
+            return "Arcane exchange: sacrifice health to recover mana.";
+        case 3:
+            return "Nature renewal: restore hit points and movement to an ally.";
+        case 4:
+            return "Domination strike: heavy damage and temporary strength penalty.";
+        case 5:
+            return "Shadow clone: grants a short agility surge to self.";
+        case 6:
+            return "Frost nova: burst spell damage that can briefly stagger a target.";
+        case 7:
+            return "Storm step: veil yourself in speed and invisibility.";
+    }
+}
+
+static int sect_active_mana_cost (int sect)
+{
+    switch (sect)
+    {
+        default:
+            return 30;
+        case 0:
+            return 40;
+        case 1:
+            return 45;
+        case 2:
+            return 20;
+        case 3:
+            return 35;
+        case 4:
+            return 45;
+        case 5:
+            return 30;
+        case 6:
+            return 50;
+        case 7:
+            return 35;
+    }
+}
+
+static const char *warpoint_season_name (void)
+{
+    if (time_info.month >= 0 && time_info.month <= 3)
+        return "Spring";
+    if (time_info.month >= 4 && time_info.month <= 7)
+        return "Summer";
+    if (time_info.month >= 8 && time_info.month <= 11)
+        return "Autumn";
+    return "Winter";
+}
+
+static int warpoint_season_bonus_percent (void)
+{
+    if (time_info.month >= 0 && time_info.month <= 3)
+        return WARPOINT_SEASON_SPRING_BONUS;
+    if (time_info.month >= 4 && time_info.month <= 7)
+        return WARPOINT_SEASON_SUMMER_BONUS;
+    if (time_info.month >= 8 && time_info.month <= 11)
+        return WARPOINT_SEASON_AUTUMN_BONUS;
+    return WARPOINT_SEASON_WINTER_BONUS;
+}
+
+static const char *warpoint_event_name (void)
+{
+    if (time_info.day >= WARPOINT_EVENT_FINALE_START
+        && time_info.day <= WARPOINT_EVENT_FINALE_END)
+        return "Finale Clash";
+
+    if (time_info.day >= WARPOINT_EVENT_MID_START
+        && time_info.day <= WARPOINT_EVENT_MID_END)
+        return "Midseason Surge";
+
+    if (time_info.day >= WARPOINT_EVENT_OPENING_START
+        && time_info.day <= WARPOINT_EVENT_OPENING_END)
+        return "Opening Clash";
+
+    return "None";
+}
+
+static int warpoint_event_bonus_percent (void)
+{
+    if (time_info.day >= WARPOINT_EVENT_FINALE_START
+        && time_info.day <= WARPOINT_EVENT_FINALE_END)
+        return WARPOINT_EVENT_FINALE_BONUS;
+
+    if (time_info.day >= WARPOINT_EVENT_MID_START
+        && time_info.day <= WARPOINT_EVENT_MID_END)
+        return WARPOINT_EVENT_MID_BONUS;
+
+    if (time_info.day >= WARPOINT_EVENT_OPENING_START
+        && time_info.day <= WARPOINT_EVENT_OPENING_END)
+        return WARPOINT_EVENT_OPENING_BONUS;
+
+    return 0;
+}
 
 
 
@@ -140,9 +328,12 @@ void show_list_to_char (OBJ_DATA * list, CHAR_DATA * ch, bool fShort,
     int iShow;
     int count;
     bool fCombine;
+    bool fRoomObjects;
 
     if (ch->desc == NULL)
         return;
+
+    fRoomObjects = (!fShort && !fShowNothing);
 
     /*
      * Alloc space for output lines.
@@ -219,7 +410,11 @@ void show_list_to_char (OBJ_DATA * list, CHAR_DATA * ch, bool fShort,
                 add_buf (output, "     ");
             }
         }
+        if (fRoomObjects)
+            add_buf (output, "{Y");
         add_buf (output, prgpstrShow[iShow]);
+        if (fRoomObjects)
+            add_buf (output, "{x");
         add_buf (output, "\n\r");
         free_string (prgpstrShow[iShow]);
     }
@@ -277,7 +472,11 @@ void show_char_to_char_0 (CHAR_DATA * victim, CHAR_DATA * ch)
     if (victim->position == victim->start_pos
         && victim->long_descr[0] != '\0')
     {
+        if (npc_should_be_pink (victim))
+            strcat (buf, "{C");
         strcat (buf, victim->long_descr);
+        if (npc_should_be_pink (victim))
+            strcat (buf, "{x");
         send_to_char (buf, ch);
         return;
     }
@@ -419,6 +618,13 @@ void show_char_to_char_0 (CHAR_DATA * victim, CHAR_DATA * ch)
 
     strcat (buf, "\n\r");
     buf[0] = UPPER (buf[0]);
+    if (npc_should_be_pink (victim))
+    {
+        char color_buf[MAX_STRING_LENGTH * 2];
+        snprintf (color_buf, sizeof (color_buf), "{C%s{x", buf);
+        strncpy (buf, color_buf, sizeof (buf) - 1);
+        buf[sizeof (buf) - 1] = '\0';
+    }
     send_to_char (buf, ch);
     return;
 }
@@ -613,7 +819,7 @@ void do_socials (CHAR_DATA * ch, char *argument)
 
     for (iSocial = 0; social_table[iSocial].name[0] != '\0'; iSocial++)
     {
-        sprintf (buf, "%-12s", social_table[iSocial].name);
+        snprintf (buf, sizeof (buf), "%-12.12s", social_table[iSocial].name);
         send_to_char (buf, ch);
         if (++col % 6 == 0)
             send_to_char ("\n\r", ch);
@@ -669,61 +875,61 @@ void do_autolist (CHAR_DATA * ch, char *argument)
     if (IS_SET (ch->act, PLR_AUTOASSIST))
         send_to_char ("{GON{x\n\r", ch);
     else
-        send_to_char ("{ROFF{x\n\r", ch);
+        send_to_char ("{DOFF{x\n\r", ch);
 
     send_to_char ("autoexit       ", ch);
     if (IS_SET (ch->act, PLR_AUTOEXIT))
         send_to_char ("{GON{x\n\r", ch);
     else
-        send_to_char ("{ROFF{x\n\r", ch);
+        send_to_char ("{DOFF{x\n\r", ch);
 
     send_to_char ("autogold       ", ch);
     if (IS_SET (ch->act, PLR_AUTOGOLD))
         send_to_char ("{GON{x\n\r", ch);
     else
-        send_to_char ("{ROFF{x\n\r", ch);
+        send_to_char ("{DOFF{x\n\r", ch);
 
     send_to_char ("autoloot       ", ch);
     if (IS_SET (ch->act, PLR_AUTOLOOT))
         send_to_char ("{GON{x\n\r", ch);
     else
-        send_to_char ("{ROFF{x\n\r", ch);
+        send_to_char ("{DOFF{x\n\r", ch);
 
     send_to_char ("autosac        ", ch);
     if (IS_SET (ch->act, PLR_AUTOSAC))
         send_to_char ("{GON{x\n\r", ch);
     else
-        send_to_char ("{ROFF{x\n\r", ch);
+        send_to_char ("{DOFF{x\n\r", ch);
 
     send_to_char ("autosplit      ", ch);
     if (IS_SET (ch->act, PLR_AUTOSPLIT))
         send_to_char ("{GON{x\n\r", ch);
     else
-        send_to_char ("{ROFF{x\n\r", ch);
+        send_to_char ("{DOFF{x\n\r", ch);
 
     send_to_char ("telnetga       ", ch);
     if (IS_SET (ch->comm, COMM_TELNET_GA))
 	    send_to_char ("{GON{x\n\r", ch);
     else
-	    send_to_char ("{ROFF{x\n\r",ch);
+	    send_to_char ("{DOFF{x\n\r",ch);
 
     send_to_char ("compact mode   ", ch);
     if (IS_SET (ch->comm, COMM_COMPACT))
         send_to_char ("{GON{x\n\r", ch);
     else
-        send_to_char ("{ROFF{x\n\r", ch);
+        send_to_char ("{DOFF{x\n\r", ch);
 
     send_to_char ("prompt         ", ch);
     if (IS_SET (ch->comm, COMM_PROMPT))
         send_to_char ("{GON{x\n\r", ch);
     else
-        send_to_char ("{ROFF{x\n\r", ch);
+        send_to_char ("{DOFF{x\n\r", ch);
 
     send_to_char ("combine items  ", ch);
     if (IS_SET (ch->comm, COMM_COMBINE))
         send_to_char ("{GON{x\n\r", ch);
     else
-        send_to_char ("{ROFF{x\n\r", ch);
+        send_to_char ("{DOFF{x\n\r", ch);
 
     if (!IS_SET (ch->act, PLR_CANLOOT))
         send_to_char ("Your corpse is safe from thieves.\n\r", ch);
@@ -794,35 +1000,95 @@ void do_autogold (CHAR_DATA * ch, char *argument)
 
 void do_autoloot (CHAR_DATA * ch, char *argument)
 {
+    char arg[MAX_INPUT_LENGTH];
+
     if (IS_NPC (ch))
         return;
 
+    one_argument (argument, arg);
+
+    if (arg[0] != '\0')
+    {
+        if (!str_cmp (arg, "on"))
+        {
+            if (!IS_SET (ch->act, PLR_AUTOLOOT))
+                SET_BIT (ch->act, PLR_AUTOLOOT);
+            send_to_char ("{CAutoloot:{x {GON{x {W- automatic corpse looting enabled.{x\n\r", ch);
+            return;
+        }
+
+        if (!str_cmp (arg, "off"))
+        {
+            if (IS_SET (ch->act, PLR_AUTOLOOT))
+                REMOVE_BIT (ch->act, PLR_AUTOLOOT);
+            send_to_char ("{CAutoloot:{x {DOFF{x {W- automatic corpse looting disabled.{x\n\r", ch);
+            return;
+        }
+
+        if (str_cmp (arg, "toggle"))
+        {
+            send_to_char ("{CUsage:{x {Wautoloot <on|off|toggle>{x\n\r", ch);
+            return;
+        }
+    }
+
     if (IS_SET (ch->act, PLR_AUTOLOOT))
     {
-        send_to_char ("Autolooting removed.\n\r", ch);
         REMOVE_BIT (ch->act, PLR_AUTOLOOT);
+        send_to_char ("{CAutoloot:{x {DOFF{x {W- automatic corpse looting disabled.{x\n\r", ch);
     }
     else
     {
-        send_to_char ("Automatic corpse looting set.\n\r", ch);
         SET_BIT (ch->act, PLR_AUTOLOOT);
+        send_to_char ("{CAutoloot:{x {GON{x {W- automatic corpse looting enabled.{x\n\r", ch);
     }
 }
 
 void do_autosac (CHAR_DATA * ch, char *argument)
 {
+    char arg[MAX_INPUT_LENGTH];
+
     if (IS_NPC (ch))
         return;
 
+    one_argument (argument, arg);
+
+    if (arg[0] != '\0')
+    {
+        if (!str_cmp (arg, "on"))
+        {
+            if (!IS_SET (ch->act, PLR_AUTOSAC))
+                SET_BIT (ch->act, PLR_AUTOSAC);
+            send_to_char ("{CAutosac:{x {GON{x {W- automatic corpse sacrifice enabled.{x\n\r", ch);
+            return;
+        }
+
+        if (!str_cmp (arg, "off"))
+        {
+            if (IS_SET (ch->act, PLR_AUTOSAC))
+                REMOVE_BIT (ch->act, PLR_AUTOSAC);
+            send_to_char ("{CAutosac:{x {DOFF{x {W- automatic corpse sacrifice disabled.{x\n\r", ch);
+            return;
+        }
+
+        if (str_cmp (arg, "toggle"))
+        {
+            send_to_char ("{CUsage:{x {Wautosac <on|off|toggle>{x\n\r", ch);
+            return;
+        }
+    }
+
     if (IS_SET (ch->act, PLR_AUTOSAC))
     {
-        send_to_char ("Autosacrificing removed.\n\r", ch);
         REMOVE_BIT (ch->act, PLR_AUTOSAC);
+        send_to_char ("{CAutosac:{x {DOFF{x {W- automatic corpse sacrifice disabled.{x\n\r", ch);
     }
     else
     {
-        send_to_char ("Automatic corpse sacrificing set.\n\r", ch);
         SET_BIT (ch->act, PLR_AUTOSAC);
+        send_to_char ("{CAutosac:{x {GON{x {W- automatic corpse sacrifice enabled.{x\n\r", ch);
+        if (!IS_SET (ch->act, PLR_AUTOLOOT))
+            send_to_char ("{YTip:{x enable {Wautoloot{x so loot is attempted before autosac.{x\n\r", ch);
     }
 }
 
@@ -919,8 +1185,18 @@ void do_show (CHAR_DATA * ch, char *argument)
 void do_prompt (CHAR_DATA * ch, char *argument)
 {
     char buf[MAX_STRING_LENGTH];
+    char arg[MAX_INPUT_LENGTH];
+    char original[MAX_STRING_LENGTH];
+    int exp_to_level;
 
-    if (argument[0] == '\0')
+    strncpy (original, argument, sizeof (original) - 1);
+    original[sizeof (original) - 1] = '\0';
+    argument = one_argument (argument, arg);
+
+    exp_to_level = IS_NPC (ch) ? 0 :
+        (ch->level + 1) * exp_per_level (ch, ch->pcdata->points) - ch->exp;
+
+    if (arg[0] == '\0')
     {
         if (IS_SET (ch->comm, COMM_PROMPT))
         {
@@ -935,17 +1211,103 @@ void do_prompt (CHAR_DATA * ch, char *argument)
         return;
     }
 
-    if (!strcmp (argument, "all"))
-        strcpy (buf, "<%hhp %mm %vmv> ");
+    if (!str_cmp (arg, "all"))
+    {
+        sprintf (buf,
+                 "{M========================================{x\n\r"
+                 "{C            CUSTOMIZE YOUR PLAYER PROMPT{x\n\r"
+                 "{M========================================{x\n\r\n\r"
+                 "{GPick a default prompt by using 'prompt <letter>':{x\n\r"
+                 "{G[A]{x {W%d/%dhp %d/%dmv %d/%dm >{x\n\r"
+                 "{G[B]{x {W%d/%dh %d/%dmv %d/%dm >{x\n\r"
+                 "{G[C]{x {W%dH %dM >{x\n\r"
+                 "{G[D]{x {W%dH %dMv %dMa>{x\n\r"
+                 "{G[E]{x {W%dH %dMv %dMa >{x\n\r"
+                 "{G[F]{x {W%d/%dH %d/%dMv %dMa >{x\n\r"
+                 "{G[G]{x {W%dh %dm {YXL:%d{x {W>{x\n\r"
+                 "{G[H]{x {W%d/%dH %d/%dMv %dMa {YXL(%d){x {W>{x\n\r"
+                 "{G[I]{x {W%dhp %dmv %dma ({Y%d{W) >{x\n\r"
+                 "{G[J]{x {WH:%d/%d M:%d/%d {YXL:%d{x {W>{x\n\r"
+                 "{G[K]{x {WH:%d M:%d Ma:%d {YXL:%d{x {W>{x\n\r"
+                 "{G[L]{x {W%dh %dm ({Y%d{W) >{x\n\r"
+                 "{G[M]{x {W%dh %dm ({Y%d{W) >{x\n\r"
+                 "{G[N]{x {W%dh %dmv %dma ({Y%d{W) >{x\n\r"
+                 "{G[O]{x {WH:%d/%d M:%d/%d {YXL:%d{x {W>{x\n\r"
+                 "{G[P]{x {WH:%d/%d M:%d/%d {YXL:%d{x {W>{x\n\r"
+                 "{WOr make your own prompt.  (see help prompt).{x\n\r",
+                 ch->hit, ch->max_hit, ch->move, ch->max_move, ch->mana,
+                 ch->max_mana,
+                 ch->hit, ch->max_hit, ch->move, ch->max_move, ch->mana,
+                 ch->max_mana,
+                 ch->hit, ch->move,
+                 ch->hit, ch->move, ch->mana,
+                 ch->hit, ch->move, ch->mana,
+                 ch->hit, ch->max_hit, ch->move, ch->max_move, ch->mana,
+                 ch->hit, ch->move, exp_to_level,
+                 ch->hit, ch->max_hit, ch->move, ch->max_move, ch->mana,
+                 exp_to_level,
+                 ch->hit, ch->move, ch->mana, exp_to_level,
+                 ch->hit, ch->max_hit, ch->move, ch->max_move, exp_to_level,
+                 ch->hit, ch->move, ch->mana, exp_to_level,
+                 ch->hit, ch->move, exp_to_level,
+                 ch->hit, ch->move, exp_to_level,
+                 ch->hit, ch->move, ch->mana, exp_to_level,
+                 ch->hit, ch->max_hit, ch->move, ch->max_move, exp_to_level,
+                 ch->hit, ch->max_hit, ch->move, ch->max_move, exp_to_level);
+        send_to_char (buf, ch);
+        return;
+    }
+
+    if (strlen (arg) == 1)
+    {
+        switch (UPPER (arg[0]))
+        {
+            case 'A': strcpy (buf, "%h/%Hhp %v/%Vmv %m/%Mm > "); break;
+            case 'B': strcpy (buf, "%h/%Hh %v/%Vmv %m/%Mm > "); break;
+            case 'C': strcpy (buf, "%hH %vM > "); break;
+            case 'D': strcpy (buf, "%hH %vMv %mMa> "); break;
+            case 'E': strcpy (buf, "%hH %vMv %mMa > "); break;
+            case 'F': strcpy (buf, "%h/%HH %v/%VMv %mMa > "); break;
+            case 'G': strcpy (buf, "%hh %vm XL:%X > "); break;
+            case 'H': strcpy (buf, "%h/%HH %v/%VMv %mMa XL(%X) > "); break;
+            case 'I': strcpy (buf, "%hhp %vmv %mma (%X) > "); break;
+            case 'J': strcpy (buf, "H:%h/%H M:%v/%V XL:%X > "); break;
+            case 'K': strcpy (buf, "H:%h M:%v Ma:%m XL:%X > "); break;
+            case 'L': strcpy (buf, "%hh %vm (%X) > "); break;
+            case 'M': strcpy (buf, "%hh %vm (%X) > "); break;
+            case 'N': strcpy (buf, "%hh %vmv %mma (%X) > "); break;
+            case 'O': strcpy (buf, "H:%h/%H M:%v/%V XL:%X > "); break;
+            case 'P': strcpy (buf, "H:%h/%H M:%v/%V XL:%X > "); break;
+            default:
+                strncpy (buf, original, sizeof (buf) - 1);
+                buf[sizeof (buf) - 1] = '\0';
+                break;
+        }
+    }
     else
     {
-        if (strlen (argument) > 50)
-            argument[50] = '\0';
-        strcpy (buf, argument);
-        smash_tilde (buf);
-        if (str_suffix ("%c", buf))
-            strcat (buf, " ");
+        strncpy (buf, original, sizeof (buf) - 1);
+        buf[sizeof (buf) - 1] = '\0';
+    }
 
+    if (strlen (buf) > 50)
+        buf[50] = '\0';
+
+    smash_tilde (buf);
+    if (str_suffix ("%c", buf))
+        strcat (buf, " ");
+
+    if (!str_cmp (arg, "on"))
+    {
+        send_to_char ("You will now see prompts.\n\r", ch);
+        SET_BIT (ch->comm, COMM_PROMPT);
+        return;
+    }
+    if (!str_cmp (arg, "off"))
+    {
+        send_to_char ("You will no longer see prompts.\n\r", ch);
+        REMOVE_BIT (ch->comm, COMM_PROMPT);
+        return;
     }
 
     free_string (ch->prompt);
@@ -953,6 +1315,68 @@ void do_prompt (CHAR_DATA * ch, char *argument)
     sprintf (buf, "Prompt set to %s\n\r", ch->prompt);
     send_to_char (buf, ch);
     return;
+}
+
+void do_top (CHAR_DATA * ch, char *argument)
+{
+    DESCRIPTOR_DATA *d;
+    CHAR_DATA *wch;
+    CHAR_DATA *top_chars[100];
+    int count = 0;
+    int i;
+    int j;
+    char buf[MAX_STRING_LENGTH];
+
+    for (d = descriptor_list; d != NULL; d = d->next)
+    {
+        if (d->connected != CON_PLAYING || d->character == NULL)
+            continue;
+
+        wch = (d->original != NULL) ? d->original : d->character;
+
+        if (IS_NPC (wch) || !can_see (ch, wch))
+            continue;
+
+        if (count < 100)
+            top_chars[count++] = wch;
+    }
+
+    for (i = 0; i < count - 1; i++)
+    {
+        for (j = i + 1; j < count; j++)
+        {
+            if (top_chars[j]->warpoint > top_chars[i]->warpoint)
+            {
+                CHAR_DATA *tmp = top_chars[i];
+                top_chars[i] = top_chars[j];
+                top_chars[j] = tmp;
+            }
+        }
+    }
+
+    send_to_char ("[Top Ten List of PKillers (Good/Evil and Evil/Good)]\n\r\n\r", ch);
+
+    for (i = 0; i < 10; i++)
+    {
+        if (i < count)
+        {
+            sprintf (buf,
+                     "* #%-2d %-25s (Rank %d) --> %-6d warpoints\n\r",
+                     i + 1,
+                     top_chars[i]->name,
+                     top_chars[i]->profession_rank,
+                     top_chars[i]->warpoint);
+        }
+        else
+        {
+            sprintf (buf,
+                     "* #%-2d %-25s (Rank 0) --> %-6d warpoints\n\r",
+                     i + 1,
+                     "Free-Slot",
+                     0);
+        }
+        send_to_char (buf, ch);
+    }
 }
 
 void do_combine (CHAR_DATA * ch, char *argument)
@@ -1081,7 +1505,7 @@ void do_look (CHAR_DATA * ch, char *argument)
     if (arg1[0] == '\0' || !str_cmp (arg1, "auto"))
     {
         /* 'look' or 'look auto' */
-        send_to_char ("{s", ch);
+        send_to_char ("{W", ch);
         send_to_char (ch->in_room->name, ch);
         send_to_char ("{x", ch);
 
@@ -1089,7 +1513,7 @@ void do_look (CHAR_DATA * ch, char *argument)
              && (IS_NPC (ch) || IS_SET (ch->act, PLR_HOLYLIGHT)))
             || IS_BUILDER (ch, ch->in_room->area))
         {
-            sprintf (buf, "{r [{RRoom %d{r]{x", ch->in_room->vnum);
+            sprintf (buf, " {C[{BRoom %d{C]{x", ch->in_room->vnum);
             send_to_char (buf, ch);
         }
 
@@ -1099,19 +1523,16 @@ void do_look (CHAR_DATA * ch, char *argument)
             || (!IS_NPC (ch) && !IS_SET (ch->comm, COMM_BRIEF)))
         {
             send_to_char ("  ", ch);
-            send_to_char ("{S", ch);
+            send_to_char ("{D", ch);
             send_to_char (ch->in_room->description, ch);
             send_to_char ("{x", ch);
         }
 
-        if (!IS_NPC (ch) && IS_SET (ch->act, PLR_AUTOEXIT))
-        {
-            send_to_char ("\n\r", ch);
-            do_function (ch, &do_exits, "auto");
-        }
+        send_to_char ("\n\r", ch);
+        do_function (ch, &do_exits, "auto");
 
-        show_list_to_char (ch->in_room->contents, ch, FALSE, FALSE);
         show_char_to_char (ch->in_room->people, ch);
+        show_list_to_char (ch->in_room->contents, ch, FALSE, FALSE);
         return;
     }
 
@@ -1405,7 +1826,7 @@ void do_exits (CHAR_DATA * ch, char *argument)
         return;
 
     if (fAuto)
-        sprintf (buf, "{o[Exits:");
+        sprintf (buf, "{B[Exits:");
     else if (IS_IMMORTAL (ch))
         sprintf (buf, "Obvious exits from room %d:\n\r", ch->in_room->vnum);
     else
@@ -1416,17 +1837,22 @@ void do_exits (CHAR_DATA * ch, char *argument)
     {
         if ((pexit = ch->in_room->exit[door]) != NULL
             && pexit->u1.to_room != NULL
-            && can_see_room (ch, pexit->u1.to_room)
-            && !IS_SET (pexit->exit_info, EX_CLOSED))
+            && can_see_room (ch, pexit->u1.to_room))
         {
             found = TRUE;
             if (fAuto)
             {
                 strcat (buf, " ");
+                if (IS_SET (pexit->exit_info, EX_CLOSED))
+                    strcat (buf, "[");
                 strcat (buf, dir_name[door]);
+                if (IS_SET (pexit->exit_info, EX_CLOSED))
+                    strcat (buf, "]");
             }
             else
             {
+                if (IS_SET (pexit->exit_info, EX_CLOSED))
+                    continue;
                 sprintf (buf + strlen (buf), "%-5s - %s",
                          capitalize (dir_name[door]),
                          room_is_dark (pexit->u1.to_room)
@@ -1441,7 +1867,7 @@ void do_exits (CHAR_DATA * ch, char *argument)
     }
 
     if (!found)
-        strcat (buf, fAuto ? " none" : "None.\n\r");
+        strcat (buf, fAuto ? " none" : "{DNone.{x\n\r");
 
     if (fAuto)
         strcat (buf, "]{x\n\r");
@@ -1456,97 +1882,641 @@ void do_worth (CHAR_DATA * ch, char *argument)
 
     if (IS_NPC (ch))
     {
-        sprintf (buf, "You have %ld gold and %ld silver.\n\r",
+           sprintf (buf, "{WYou have{x {Y%ld gold{x {Wand{x {Y%ld silver{x.\n\r",
                  ch->gold, ch->silver);
         send_to_char (buf, ch);
         return;
     }
 
-    sprintf (buf,
-             "You have %ld gold, %ld silver, and %d experience (%d exp to level).\n\r",
-             ch->gold, ch->silver, ch->exp,
-             (ch->level + 1) * exp_per_level (ch,
-                                              ch->pcdata->points) - ch->exp);
-
+    sprintf (buf, "{WYou have{x {Y%ld gold{x {Wand{x {Y%ld silver{x.\n\r",
+             ch->gold, ch->silver);
+    send_to_char (buf, ch);
+    sprintf (buf, "{WYou have{x {C%d experience{x.\n\r", ch->exp);
+    send_to_char (buf, ch);
+    sprintf (buf, "{WYou need{x {G%d more experience{x {Wto advance{x.\n\r",
+             (ch->level + 1) * exp_per_level (ch, ch->pcdata->points) - ch->exp);
     send_to_char (buf, ch);
 
     return;
+}
+
+void do_warpoint (CHAR_DATA * ch, char *argument)
+{
+    char buf[MAX_STRING_LENGTH];
+    const char *rank_name;
+    int next_threshold;
+    int season_bonus;
+    int event_bonus;
+    int world_damage_bonus;
+    int world_mana_scale;
+    int world_xp_bonus;
+
+    if (IS_NPC (ch))
+    {
+        send_to_char ("Mobs do not have warpoint progression.\n\r", ch);
+        return;
+    }
+
+    if (ch->warpoint < 100)
+    {
+        rank_name = "Novice";
+        next_threshold = 100;
+    }
+    else if (ch->warpoint < 500)
+    {
+        rank_name = "Adept";
+        next_threshold = 500;
+    }
+    else if (ch->warpoint < 1000)
+    {
+        rank_name = "Veteran";
+        next_threshold = 1000;
+    }
+    else if (ch->warpoint < 2500)
+    {
+        rank_name = "Champion";
+        next_threshold = 2500;
+    }
+    else
+    {
+        rank_name = "Legend";
+        next_threshold = -1;
+    }
+
+    sprintf (buf, "{C=== {WWarpoint Status{C ==={x\n\r");
+    send_to_char (buf, ch);
+
+    sprintf (buf, "{GWarpoints:{x %d\n\r", ch->warpoint);
+    send_to_char (buf, ch);
+
+    sprintf (buf, "{GRank:{x %s\n\r", rank_name);
+    send_to_char (buf, ch);
+
+    season_bonus = warpoint_season_bonus_percent ();
+    event_bonus = warpoint_event_bonus_percent ();
+
+    sprintf (buf, "{GSeason:{x %s ({Y+%d%%{x warpoint gain)\n\r",
+             warpoint_season_name (), season_bonus);
+    send_to_char (buf, ch);
+
+    sprintf (buf, "{GEvent:{x %s ({Y+%d%%{x warpoint gain)\n\r",
+             warpoint_event_name (), event_bonus);
+    send_to_char (buf, ch);
+
+    world_damage_bonus = rop_world_event_damage_percent ();
+    world_mana_scale = rop_world_event_mana_scale_percent ();
+    world_xp_bonus = rop_world_event_xp_percent ();
+
+    sprintf (buf, "{GWorld Event:{x %s\n\r", rop_world_event_name ());
+    send_to_char (buf, ch);
+
+    sprintf (buf,
+             "{GWorld Effects:{x damage %+d%%, mana cost %d%%, xp %+d%%\n\r",
+             world_damage_bonus,
+             world_mana_scale,
+             world_xp_bonus);
+    send_to_char (buf, ch);
+
+    if (next_threshold > 0)
+    {
+        sprintf (buf, "{GTo next rank:{x %d\n\r",
+                 UMAX (0, next_threshold - ch->warpoint));
+        send_to_char (buf, ch);
+    }
+    else
+    {
+        send_to_char ("{GYou are at the highest rank tier.{x\n\r", ch);
+    }
+}
+
+void do_rank (CHAR_DATA * ch, char *argument)
+{
+    do_warpoint (ch, argument);
+}
+
+void do_sect (CHAR_DATA * ch, char *argument)
+{
+    char arg[MAX_INPUT_LENGTH];
+    char target_name[MAX_INPUT_LENGTH];
+    char buf[MAX_STRING_LENGTH];
+    int sect;
+
+    if (IS_NPC (ch))
+    {
+        send_to_char ("Mobs are not part of player sects.\n\r", ch);
+        return;
+    }
+
+    argument = one_argument (argument, arg);
+
+    if (arg[0] == '\0')
+    {
+        if (ch->sect_number < 0 || ch->sect_number >= MAX_SECT)
+        {
+            send_to_char ("You are not currently assigned to a sect.\n\r", ch);
+            return;
+        }
+
+        sprintf (buf, "{C=== {WSect Status{C ==={x\n\r");
+        send_to_char (buf, ch);
+        sprintf (buf, "{GSect:{x %s ({W%s{x)\n\r",
+                 sect_table[ch->sect_number].name,
+                 sect_table[ch->sect_number].who_name);
+        send_to_char (buf, ch);
+
+        sprintf (buf, "{GAlignment Lock:{x %d\n\r", ch->alignment);
+        send_to_char (buf, ch);
+
+        sprintf (buf, "{GHall VNUM:{x %d\n\r",
+                 sect_table[ch->sect_number].hall_vnum);
+        send_to_char (buf, ch);
+
+        sprintf (buf, "{GPath:{x %s\n\r", sect_table[ch->sect_number].description);
+        send_to_char (buf, ch);
+
+        sprintf (buf, "{GPassive:{x %s\n\r",
+             sect_passive_summary (ch->sect_number));
+        send_to_char (buf, ch);
+
+           sprintf (buf, "{GActive:{x %s ({Ymana %d{x)\n\r",
+                  sect_active_name (ch->sect_number),
+                  sect_active_mana_cost (ch->sect_number));
+           send_to_char (buf, ch);
+
+           sprintf (buf, "{GInvoke:{x %s\n\r",
+                  sect_active_summary (ch->sect_number));
+           send_to_char (buf, ch);
+        return;
+    }
+
+    if (!str_cmp (arg, "list"))
+    {
+        send_to_char ("{C=== {WSect List{C ==={x\n\r", ch);
+        for (sect = 0; sect < MAX_SECT; sect++)
+        {
+            sprintf (buf, "{Y%2d{x) %-12s  %-4s  align:%2d  hall:%d\n\r",
+                     sect + 1,
+                     sect_table[sect].name,
+                     sect_table[sect].who_name,
+                     sect_table[sect].alignment,
+                     sect_table[sect].hall_vnum);
+            send_to_char (buf, ch);
+        }
+        return;
+    }
+
+    if (!str_cmp (arg, "info"))
+    {
+        argument = one_argument (argument, arg);
+        if (arg[0] == '\0')
+        {
+            send_to_char ("Syntax: sect info <name|number>\n\r", ch);
+            return;
+        }
+
+        if (is_number (arg))
+        {
+            sect = atoi (arg) - 1;
+            if (sect < 0 || sect >= MAX_SECT)
+            {
+                send_to_char ("That is not a valid sect number.\n\r", ch);
+                return;
+            }
+        }
+        else
+        {
+            for (sect = 0; sect < MAX_SECT; sect++)
+            {
+                if (!str_prefix (arg, sect_table[sect].name))
+                    break;
+            }
+
+            if (sect >= MAX_SECT)
+            {
+                send_to_char ("No sect found by that name.\n\r", ch);
+                return;
+            }
+        }
+
+        sprintf (buf, "{C=== {WSect Info{C ==={x\n\r");
+        send_to_char (buf, ch);
+        sprintf (buf, "{GSect:{x %s ({W%s{x)\n\r",
+                 sect_table[sect].name,
+                 sect_table[sect].who_name);
+        send_to_char (buf, ch);
+        sprintf (buf, "{GAvatar:{x %s\n\r", sect_table[sect].avatar_string);
+        send_to_char (buf, ch);
+        sprintf (buf, "{GAlignment:{x %d\n\r", sect_table[sect].alignment);
+        send_to_char (buf, ch);
+        sprintf (buf, "{GHall VNUM:{x %d\n\r", sect_table[sect].hall_vnum);
+        send_to_char (buf, ch);
+        sprintf (buf, "{GPath:{x %s\n\r", sect_table[sect].description);
+        send_to_char (buf, ch);
+        sprintf (buf, "{GPassive:{x %s\n\r", sect_passive_summary (sect));
+        send_to_char (buf, ch);
+        sprintf (buf, "{GActive:{x %s ({Ymana %d{x)\n\r",
+                 sect_active_name (sect), sect_active_mana_cost (sect));
+        send_to_char (buf, ch);
+        sprintf (buf, "{GInvoke:{x %s\n\r", sect_active_summary (sect));
+        send_to_char (buf, ch);
+        return;
+    }
+
+    if (!str_cmp (arg, "active") || !str_cmp (arg, "invoke"))
+    {
+        CHAR_DATA *victim;
+        AFFECT_DATA af;
+        int cost;
+
+        if (ch->sect_number < 0 || ch->sect_number >= MAX_SECT)
+        {
+            send_to_char ("You are not currently assigned to a sect.\n\r", ch);
+            return;
+        }
+
+        argument = one_argument (argument, target_name);
+        cost = sect_active_mana_cost (ch->sect_number);
+
+        if (!str_cmp (arg, "active") && target_name[0] == '\0')
+        {
+            sprintf (buf, "{G%s{x ({Ymana %d{x): %s\n\r",
+                     sect_active_name (ch->sect_number),
+                     cost,
+                     sect_active_summary (ch->sect_number));
+            send_to_char (buf, ch);
+            send_to_char ("Usage: sect invoke [target]\n\r", ch);
+            return;
+        }
+
+        if (ch->mana < cost)
+        {
+            send_to_char ("You lack the mana to invoke your sect power.\n\r", ch);
+            return;
+        }
+
+        WAIT_STATE (ch, 2 * PULSE_VIOLENCE);
+        ch->mana -= cost;
+
+        switch (ch->sect_number)
+        {
+            default:
+                send_to_char ("Your sect has no active invocation.\n\r", ch);
+                break;
+
+            case 0:            /* Aethelhelm */
+            {
+                int sn = skill_lookup ("sanctuary");
+                if (sn > 0)
+                    affect_strip (ch, sn);
+                af.where = TO_AFFECTS;
+                af.type = sn > 0 ? sn : 0;
+                af.level = ch->level;
+                af.duration = UMAX (2, ch->level / 15);
+                af.location = APPLY_NONE;
+                af.modifier = 0;
+                af.bitvector = AFF_SANCTUARY;
+                affect_to_char (ch, &af);
+                send_to_char ("A radiant aegis surrounds you.\n\r", ch);
+                act ("$n is wrapped in a radiant aegis.", ch, NULL, NULL, TO_ROOM);
+                break;
+            }
+
+            case 1:            /* Kiri */
+            {
+                int heal;
+                victim = target_name[0] == '\0' ? ch : get_char_room (ch, target_name);
+                if (victim == NULL)
+                {
+                    send_to_char ("They are not here.\n\r", ch);
+                    ch->mana += cost;
+                    return;
+                }
+                heal = dice (4, 20) + ch->level * 2;
+                victim->hit = UMIN (victim->max_hit, victim->hit + heal);
+                update_pos (victim);
+                if (victim == ch)
+                    send_to_char ("Sacred grace restores your wounds.\n\r", ch);
+                else
+                {
+                    act ("You invoke sacred grace upon $N.", ch, NULL, victim, TO_CHAR);
+                    act ("$n invokes sacred grace upon you.", ch, NULL, victim, TO_VICT);
+                    act ("$n invokes sacred grace upon $N.", ch, NULL, victim, TO_NOTVICT);
+                }
+                break;
+            }
+
+            case 2:            /* Baalzom */
+            {
+                int hp_cost;
+                int mana_gain;
+                hp_cost = UMAX (20, ch->max_hit / 12);
+                if (ch->hit <= hp_cost + 5)
+                {
+                    send_to_char ("You are too weak to transmute life into mana.\n\r", ch);
+                    ch->mana += cost;
+                    return;
+                }
+                mana_gain = UMAX (25, ch->level + number_range (20, 40));
+                ch->hit -= hp_cost;
+                ch->mana = UMIN (ch->max_mana, ch->mana + mana_gain);
+                send_to_char ("You transmute vitality into arcane focus.\n\r", ch);
+                break;
+            }
+
+            case 3:            /* Ishta */
+            {
+                int heal;
+                victim = target_name[0] == '\0' ? ch : get_char_room (ch, target_name);
+                if (victim == NULL)
+                {
+                    send_to_char ("They are not here.\n\r", ch);
+                    ch->mana += cost;
+                    return;
+                }
+                heal = dice (3, 16) + ch->level;
+                victim->hit = UMIN (victim->max_hit, victim->hit + heal);
+                victim->move = UMIN (victim->max_move, victim->move + heal / 2);
+                update_pos (victim);
+                if (victim == ch)
+                    send_to_char ("Vital renewal flows through your body.\n\r", ch);
+                else
+                {
+                    act ("You call a renewal bloom upon $N.", ch, NULL, victim, TO_CHAR);
+                    act ("$n calls a renewal bloom upon you.", ch, NULL, victim, TO_VICT);
+                }
+                break;
+            }
+
+            case 4:            /* Zod */
+            {
+                int sn = skill_lookup ("weaken");
+                int dam;
+                victim = get_char_room (ch, target_name);
+                if (victim == NULL)
+                {
+                    send_to_char ("Invoke Tyrant's Brand on whom?\n\r", ch);
+                    ch->mana += cost;
+                    return;
+                }
+                if (victim == ch)
+                {
+                    send_to_char ("You cannot brand yourself.\n\r", ch);
+                    ch->mana += cost;
+                    return;
+                }
+                if (is_safe (ch, victim))
+                {
+                    ch->mana += cost;
+                    return;
+                }
+                dam = dice (5, 14) + ch->level;
+                damage (ch, victim, dam, sn > 0 ? sn : TYPE_HIT, DAM_NEGATIVE, TRUE);
+                af.where = TO_AFFECTS;
+                af.type = sn > 0 ? sn : 0;
+                af.level = ch->level;
+                af.duration = 2;
+                af.location = APPLY_STR;
+                af.modifier = -2;
+                af.bitvector = AFF_WEAKEN;
+                affect_join (victim, &af);
+                act ("$N reels under your tyrant's brand.", ch, NULL, victim, TO_CHAR);
+                break;
+            }
+
+            case 5:            /* Jalaal */
+            {
+                int sn = skill_lookup ("haste");
+                if (sn > 0)
+                    affect_strip (ch, sn);
+                af.where = TO_AFFECTS;
+                af.type = sn > 0 ? sn : 0;
+                af.level = ch->level;
+                af.duration = UMAX (2, ch->level / 20);
+                af.location = APPLY_DEX;
+                af.modifier = 2;
+                af.bitvector = AFF_HASTE;
+                affect_to_char (ch, &af);
+                send_to_char ("A shadow clone blurs your movements.\n\r", ch);
+                act ("$n blurs into shadowed afterimages.", ch, NULL, NULL, TO_ROOM);
+                break;
+            }
+
+            case 6:            /* Xix */
+            {
+                int sn = skill_lookup ("frost breath");
+                int dam;
+                victim = get_char_room (ch, target_name);
+                if (victim == NULL)
+                {
+                    send_to_char ("Invoke Frost Nova on whom?\n\r", ch);
+                    ch->mana += cost;
+                    return;
+                }
+                if (victim == ch)
+                {
+                    send_to_char ("You cannot frost nova yourself.\n\r", ch);
+                    ch->mana += cost;
+                    return;
+                }
+                if (is_safe (ch, victim))
+                {
+                    ch->mana += cost;
+                    return;
+                }
+                dam = dice (6, 12) + ch->level;
+                damage (ch, victim, dam, sn > 0 ? sn : TYPE_HIT, DAM_COLD, TRUE);
+                WAIT_STATE (victim, PULSE_VIOLENCE);
+                act ("Your frost nova staggers $N.", ch, NULL, victim, TO_CHAR);
+                break;
+            }
+
+            case 7:            /* Talice */
+            {
+                int sn = skill_lookup ("invis");
+                if (sn > 0)
+                    affect_strip (ch, sn);
+                af.where = TO_AFFECTS;
+                af.type = sn > 0 ? sn : 0;
+                af.level = ch->level;
+                af.duration = UMAX (2, ch->level / 20);
+                af.location = APPLY_DEX;
+                af.modifier = 1;
+                af.bitvector = AFF_INVISIBLE;
+                affect_to_char (ch, &af);
+                send_to_char ("You step through a storm veil and vanish.\n\r", ch);
+                act ("$n vanishes behind a crackling veil.", ch, NULL, NULL, TO_ROOM);
+                break;
+            }
+        }
+        return;
+    }
+
+    send_to_char ("Syntax: sect\n\r", ch);
+    send_to_char ("        sect list\n\r", ch);
+    send_to_char ("        sect info <name|number>\n\r", ch);
+    send_to_char ("        sect active\n\r", ch);
+    send_to_char ("        sect invoke [target]\n\r", ch);
+}
+
+void do_remort (CHAR_DATA * ch, char *argument)
+{
+    char buf[MAX_STRING_LENGTH];
+
+    if (IS_NPC (ch))
+    {
+        send_to_char ("Mobs cannot remort.\n\r", ch);
+        return;
+    }
+
+    if (ch->level < MIN_REMORT_LEVEL)
+    {
+        sprintf (buf,
+                 "You must reach level %d before remorting.\n\r",
+                 MIN_REMORT_LEVEL);
+        send_to_char (buf, ch);
+        return;
+    }
+
+    if (ch->remort_count >= MAX_REMORTS)
+    {
+        sprintf (buf,
+                 "You have reached the remort cap of %d.\n\r",
+                 MAX_REMORTS);
+        send_to_char (buf, ch);
+        return;
+    }
+
+    ch->remort_count++;
+    ch->profession_rank++;
+    ch->remort_benefits_applied = TRUE;
+
+    ch->remort_hp_bonus += 5;
+    ch->remort_move_bonus += 5;
+    ch->remort_skill_slots += 2;
+
+    if (ch->remort_count >= 2)
+        ch->remort_no_food = TRUE;
+
+    if (ch->remort_count >= 3)
+        ch->remort_no_drink = TRUE;
+
+    ch->max_hit += 5;
+    ch->max_move += 5;
+
+    ch->level = 1;
+    ch->exp = exp_per_level (ch, ch->pcdata->points);
+    ch->hit = ch->max_hit;
+    ch->move = ch->max_move;
+    ch->mana = ch->max_mana;
+
+    save_char_obj (ch);
+
+    sprintf (buf,
+             "You have remorted! Count: %d/%d, Profession Rank: %d.\n\r"
+             "Bonuses: +%d max hp, +%d max move, +%d skill adept cap.\n\r",
+             ch->remort_count, MAX_REMORTS, ch->profession_rank,
+             ch->remort_hp_bonus, ch->remort_move_bonus,
+             ch->remort_skill_slots);
+    send_to_char (buf, ch);
 }
 
 
 void do_score (CHAR_DATA * ch, char *argument)
 {
     char buf[MAX_STRING_LENGTH];
-    int i;
+    const char *class_name;
+    int exp_to_level;
+    const char *rank_name = "Novice";
+    class_name = IS_NPC (ch) ? "mobile" :
+        (get_profession (ch) != NULL ? get_profession (ch)->name : class_table[ch->class].name);
+    exp_to_level = IS_NPC (ch) ? 0 :
+        ((ch->level + 1) * exp_per_level (ch, ch->pcdata->points) - ch->exp);
+
+    if (!IS_NPC (ch))
+    {
+        if (ch->warpoint < 100)
+        {
+            rank_name = "Novice";
+        }
+        else if (ch->warpoint < 500)
+        {
+            rank_name = "Adept";
+        }
+        else if (ch->warpoint < 1000)
+        {
+            rank_name = "Veteran";
+        }
+        else if (ch->warpoint < 2500)
+        {
+            rank_name = "Champion";
+        }
+        else
+        {
+            rank_name = "Legend";
+        }
+    }
+
+    send_to_char ("{W[+]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[+]{x\n\r", ch);
+    send_to_char ("{W                           --- Rites of Passage ---{x\n\r", ch);
+    send_to_char ("{W[+]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[+]{x\n\r", ch);
 
     sprintf (buf,
-             "{C=== {WCharacter Score{C ==={x\n\r{GYou are{x %s%s{Y, level %d{x, {W%d{x years old ({W%d{x hours).\n\r",
+             "    {DThou art{x {R%s{x {Dthe{x {R%s{x {Y%s{D.{x\n\r",
              ch->name,
-             IS_NPC (ch) ? "" : ch->pcdata->title,
-             ch->level, get_age (ch),
-             (ch->played + (int) (current_time - ch->logon)) / 3600);
-    send_to_char (buf, ch);
-
-    if (get_trust (ch) != ch->level)
-    {
-        sprintf (buf, "{GYou are trusted at level{x {Y%d{x.\n\r", get_trust (ch));
-        send_to_char (buf, ch);
-    }
-
-    sprintf (buf, "{GRace:{x %s  {GSex:{x %s  {GClass:{x %s\n\r",
              race_table[ch->race].name,
-             ch->sex == 0 ? "sexless" : ch->sex == 1 ? "male" : "female",
-             IS_NPC (ch) ? "mobile" : class_table[ch->class].name);
-    send_to_char (buf, ch);
-
-
-    sprintf (buf,
-             "{GYou have{x {B%d{x/{B%d{x hit, {B%d{x/{B%d{x mana, {B%d{x/{B%d{x movement.\n\r",
-             ch->hit, ch->max_hit,
-             ch->mana, ch->max_mana, ch->move, ch->max_move);
+             class_name);
     send_to_char (buf, ch);
 
     sprintf (buf,
-             "{GYou have{x {Y%d{x {Gpractices and{x {Y%d{x {Gtraining sessions.{x\n\r",
-             ch->practice, ch->train);
+             "    {DYour deeds rank you as{x {Y%s{x {Damongst your{x {R%s{D ancestors.{x\n\r\n\r",
+             rank_name,
+             race_table[ch->race].name);
     send_to_char (buf, ch);
 
     sprintf (buf,
-             "{GYou are carrying{x {Y%d{x/{Y%d{x items with weight {Y%ld{x/{Y%d{x pounds.\n\r",
-             ch->carry_number, can_carry_n (ch),
-             get_carry_weight (ch) / 10, can_carry_w (ch) / 10);
+             "   {DYou are{x {W%d{x {Dyears of age ({x{W%d Hours{D) and level{x {W%d{D.{x\n\r",
+             get_age (ch),
+             (ch->played + (int) (current_time - ch->logon)) / 3600,
+             ch->level);
     send_to_char (buf, ch);
 
     sprintf (buf,
-             "{GStr:{x {W%d{x({B%d{x)  {GInt:{x {W%d{x({B%d{x)  {GWis:{x {W%d{x({B%d{x)  {GDex:{x {W%d{x({B%d{x)  {GCon:{x {W%d{x({B%d{x)\n\r",
-             ch->perm_stat[STAT_STR],
-             get_curr_stat (ch, STAT_STR),
-             ch->perm_stat[STAT_INT],
-             get_curr_stat (ch, STAT_INT),
-             ch->perm_stat[STAT_WIS],
-             get_curr_stat (ch, STAT_WIS),
-             ch->perm_stat[STAT_DEX],
-             get_curr_stat (ch, STAT_DEX),
-             ch->perm_stat[STAT_CON], get_curr_stat (ch, STAT_CON));
+             "   {DYou have gained{x {W%d{x {Dexperience and need{x {W%d{D more to level.{x\n\r\n\r",
+             ch->exp,
+             UMAX (0, exp_to_level));
     send_to_char (buf, ch);
 
     sprintf (buf,
-             "{GYou have scored{x {Y%d{x {Gexp, and have{{x {Y%ld{x {Ggold and{{x {Y%ld{x {Gsilver coins.{x\n\r",
-             ch->exp, ch->gold, ch->silver);
+             "   {DYou have{x {W%d{x {Dpractices to improve your skills and spells.{x\n\r\n\r",
+             ch->practice);
     send_to_char (buf, ch);
 
-    /* RT shows exp to level */
-    if (!IS_NPC (ch) && ch->level < LEVEL_HERO)
-    {
-        sprintf (buf,
-                 "{GYou need{{x {Y%d{x {Gexp to level.{x\n\r",
-                 ((ch->level + 1) * exp_per_level (ch, ch->pcdata->points) -
-                  ch->exp));
-        send_to_char (buf, ch);
-    }
-
-    sprintf (buf, "{GWimpy set to{{x {Y%d{x {Ghit points.{x\n\r", ch->wimpy);
+    sprintf (buf,
+             "   {DHealth :{x {B%d{x  {D/{x {B%d{x        {DAttack Power Bonus:{x {W%d{x       {DWar Points:{x {W%d{x\n\r",
+             ch->hit, ch->max_hit, GET_DAMROLL (ch), ch->warpoint);
     send_to_char (buf, ch);
+
+    sprintf (buf,
+             "   {DStamina:{x {G%d{x  {D/{x {G%d{x        {DOffensive Bonus   :{x {W%d{x       {DWimpy      :{x {W%d{x\n\r",
+             ch->move, ch->max_move, GET_HITROLL (ch), ch->wimpy);
+    send_to_char (buf, ch);
+
+    sprintf (buf,
+             "   {DMana   :{x {M%d{x  {D/{x {M%d{x        {DEvasion Bonus     :{x {W%d{x       {DRemorts    :{x {W%d{x\n\r",
+             ch->mana, ch->max_mana, UMAX (0, 100 - GET_AC (ch, AC_EXOTIC)), ch->remort_count);
+    send_to_char (buf, ch);
+
+    sprintf (buf,
+             "   {DYou are carrying{x {W%ld{D gold{x {Dand{x {W%ld{D silver.{x\n\r",
+             ch->gold, ch->silver);
+    send_to_char (buf, ch);
+
+    sprintf (buf,
+             "   {DYou are carrying{x {W%ld{D kg(s) of weight.{x\n\r",
+             get_carry_weight (ch) / 10);
+    send_to_char (buf, ch);
+
+    send_to_char ("{W[+]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[+]{x\n\r", ch);
 
     if (!IS_NPC (ch) && ch->pcdata->condition[COND_DRUNK] > 10)
         send_to_char ("{RYou are drunk.{x\n\r", ch);
@@ -1585,127 +2555,6 @@ void do_score (CHAR_DATA * ch, char *argument)
             send_to_char ("{RYou are fighting.{x\n\r", ch);
             break;
     }
-
-
-    /* print AC values */
-    if (ch->level >= 25)
-    {
-        sprintf (buf, "{GArmor:{x pierce: {Y%d{x  bash: {Y%d{x  slash: {Y%d{x  magic: {Y%d{x\n\r",
-                 GET_AC (ch, AC_PIERCE),
-                 GET_AC (ch, AC_BASH),
-                 GET_AC (ch, AC_SLASH), GET_AC (ch, AC_EXOTIC));
-        send_to_char (buf, ch);
-    }
-
-    for (i = 0; i < 4; i++)
-    {
-        char *temp;
-
-        switch (i)
-        {
-            case (AC_PIERCE):
-                temp = "piercing";
-                break;
-            case (AC_BASH):
-                temp = "bashing";
-                break;
-            case (AC_SLASH):
-                temp = "slashing";
-                break;
-            case (AC_EXOTIC):
-                temp = "magic";
-                break;
-            default:
-                temp = "error";
-                break;
-        }
-
-        send_to_char ("{GYou are{{x ", ch);
-
-        if (GET_AC (ch, i) >= 101)
-            sprintf (buf, "hopelessly vulnerable to %s.\n\r", temp);
-        else if (GET_AC (ch, i) >= 80)
-            sprintf (buf, "defenseless against %s.\n\r", temp);
-        else if (GET_AC (ch, i) >= 60)
-            sprintf (buf, "barely protected from %s.\n\r", temp);
-        else if (GET_AC (ch, i) >= 40)
-            sprintf (buf, "slightly armored against %s.\n\r", temp);
-        else if (GET_AC (ch, i) >= 20)
-            sprintf (buf, "somewhat armored against %s.\n\r", temp);
-        else if (GET_AC (ch, i) >= 0)
-            sprintf (buf, "armored against %s.\n\r", temp);
-        else if (GET_AC (ch, i) >= -20)
-            sprintf (buf, "well-armored against %s.\n\r", temp);
-        else if (GET_AC (ch, i) >= -40)
-            sprintf (buf, "very well-armored against %s.\n\r", temp);
-        else if (GET_AC (ch, i) >= -60)
-            sprintf (buf, "heavily armored against %s.\n\r", temp);
-        else if (GET_AC (ch, i) >= -80)
-            sprintf (buf, "superbly armored against %s.\n\r", temp);
-        else if (GET_AC (ch, i) >= -100)
-            sprintf (buf, "almost invulnerable to %s.\n\r", temp);
-        else
-            sprintf (buf, "divinely armored against %s.\n\r", temp);
-
-        send_to_char (buf, ch);
-    }
-
-
-    /* RT wizinvis and holy light */
-    if (IS_IMMORTAL (ch))
-    {
-        send_to_char ("Holy Light: ", ch);
-        if (IS_SET (ch->act, PLR_HOLYLIGHT))
-            send_to_char ("on", ch);
-        else
-            send_to_char ("off", ch);
-
-        if (ch->invis_level)
-        {
-            sprintf (buf, "  Invisible: level %d", ch->invis_level);
-            send_to_char (buf, ch);
-        }
-
-        if (ch->incog_level)
-        {
-            sprintf (buf, "  Incognito: level %d", ch->incog_level);
-            send_to_char (buf, ch);
-        }
-        send_to_char ("\n\r", ch);
-    }
-
-    if (ch->level >= 15)
-    {
-        sprintf (buf, "Hitroll: %d  Damroll: %d.\n\r",
-                 GET_HITROLL (ch), GET_DAMROLL (ch));
-        send_to_char (buf, ch);
-    }
-
-    if (ch->level >= 10)
-    {
-        sprintf (buf, "Alignment: %d.  ", ch->alignment);
-        send_to_char (buf, ch);
-    }
-
-    send_to_char ("You are ", ch);
-    if (ch->alignment > 900)
-        send_to_char ("angelic.\n\r", ch);
-    else if (ch->alignment > 700)
-        send_to_char ("saintly.\n\r", ch);
-    else if (ch->alignment > 350)
-        send_to_char ("good.\n\r", ch);
-    else if (ch->alignment > 100)
-        send_to_char ("kind.\n\r", ch);
-    else if (ch->alignment > -100)
-        send_to_char ("neutral.\n\r", ch);
-    else if (ch->alignment > -350)
-        send_to_char ("mean.\n\r", ch);
-    else if (ch->alignment > -700)
-        send_to_char ("evil.\n\r", ch);
-    else if (ch->alignment > -900)
-        send_to_char ("demonic.\n\r", ch);
-    else
-        send_to_char ("satanic.\n\r", ch);
 
     if (IS_SET (ch->comm, COMM_SHOW_AFFECTS))
         do_function (ch, &do_affects, "");
@@ -1852,6 +2701,106 @@ void do_help (CHAR_DATA * ch, char *argument)
         strcat (argall, argone);
     }
 
+    if (!str_cmp (argall, "summary"))
+    {
+        add_buf (output,
+                 "{M========================================{x\n\r"
+                 "{W              HELP SYSTEM{x\n\r"
+                 "{M========================================{x\n\r\n\r"
+                 "{CMovement Commands...        Grouping Commands...{x\n\r"
+                 "{Wnorth south east west up down   follow group gtell split{x\n\r"
+                 "{Wexits recall                                    (optional text){x\n\r\n\r"
+                 "{CObject Commands...          Information Cmds...{x\n\r"
+                 "{Wget put drop give sacrifice    help credits commands areas{x\n\r"
+                 "{Wwear wield hold                report score time weather where who{x\n\r\n\r"
+                 "{CCombat Commands...          Misc Commands...{x\n\r"
+                 "{Wkill flee kick rescue disarm  ! save quit{x\n\r"
+                 "{Wbackstab cast wimpy           practice train{x\n\r\n\r"
+                 "{WFor more help, type {G'help <topic>'{W for any command, skill, or spell.{x\n\r"
+                 "{WAlso help on: {YDAMAGE DEATH EXPERIENCE NEWS STORY TICK WIZLIST{x\n\r");
+        page_to_char (buf_string (output), ch);
+        free_buf (output);
+        return;
+    }
+
+    if (!str_cmp (argall, "newbie") || !str_cmp (argall, "help newbie"))
+    {
+        add_buf (output,
+                 "{M========================================{x\n\r"
+                 "{C          TOP 10 THINGS NEW PLAYERS SHOULD KNOW{x\n\r"
+                 "{M========================================{x\n\r\n\r"
+                 "{C1. Alignment Defines Your Allies and Enemies{x\n\r"
+                 "   {WYour alignment (good or evil) determines who can attack you. Only\n\r"
+                 "   opposite alignments can PK each other. Type {Ghelp alignment{W to learn\n\r"
+                 "   more. You cannot change alignment after creation!{x\n\r\n\r"
+                 "{C2. Use CONSIDER and SCAN Before Every Fight{x\n\r"
+                 "   {WAlways {Gconsider <mob>{W before attacking - it tells you if you can win.\n\r"
+                 "   Use {Gscan{W to see creatures in adjacent rooms. Sometimes consider fails,\n\r"
+                 "   so try again if you get no response. The command {Ggconsider{W works for\n\r"
+                 "   groups.{x\n\r\n\r"
+                 "{C3. Death Penalties Scale With Level{x\n\r"
+                 "   {WAt level 1-20, death penalties are minimal - explore freely! Higher levels\n\r"
+                 "   lose more XP on death. Your corpse contains your gear, so retrieve it\n\r"
+                 "   quickly. Type {Ghelp death{W for full details.{x\n\r\n\r"
+                 "{G======================== QUICK REFERENCE COMMANDS ========================{x\n\r"
+                 "   {Ghelp <topic>{W      - Get help on any topic{x\n\r"
+                 "   {Gcommands{W          - List every command available to you{x\n\r"
+                 "   {Gwho{W               - See who's online{x\n\r"
+                 "   {Gwhere{W             - See your current location{x\n\r"
+                 "   {Gscore{W             - View your character stats{x\n\r"
+                 "   {Ginventory{W         - Check what you're carrying{x\n\r"
+                 "   {Gequipment{W         - Check what you're wearing{x\n\r"
+                 "   {Gweight{W            - Check your carry weight{x\n\r"
+                 "   {Gsocials{W           - Express yourself to players around you{x\n\r");
+        page_to_char (buf_string (output), ch);
+        free_buf (output);
+        return;
+    }
+
+    if (!str_cmp (argall, "gossip") || !str_cmp (argall, "chat"))
+    {
+        add_buf (output,
+                 "{M========================================{x\n\r"
+                 "{C              COMMUNICATION CHANNELS{x\n\r"
+                 "{M========================================{x\n\r\n\r"
+                 "{GSyntax: {Wgossip <message>   {G- Send to all interested players{x\n\r"
+                 "{GSyntax: {Wquestion <message> {G- Ask a question to all{x\n\r"
+                 "{GSyntax: {Wanswer <message>   {G- Answer the current question{x\n\r"
+                 "{GSyntax: {Wshout <message>    {G- Shout to all awake players{x\n\r"
+                 "{GSyntax: {Wyell <message>     {G- Yell to players in your area{x\n\r\n\r"
+                 "{CGOSSIP / . (DOT){x\n\r"
+                 "   {WSends your message to all players interested in gossip.\n\r"
+                 "   Type {Wgossip{W with no arguments to toggle whether you hear gossip.\n\r"
+                 "   The {W.{W (dot) command is a quick shortcut for gossip.{x\n\r");
+        page_to_char (buf_string (output), ch);
+        free_buf (output);
+        return;
+    }
+
+    if (!str_cmp (argall, "immtalk") || !str_cmp (argall, "pray"))
+    {
+        add_buf (output,
+                 "{M========================================{x\n\r"
+                 "{C                 COMMUNICATE WITH ADMINS{x\n\r"
+                 "{M========================================{x\n\r\n\r"
+                 "{GSyntax: {Wimmtalk <message>{x\n\r"
+                 "{GSyntax: {W: <message>{x\n\r\n\r"
+                 "{G** DO USE IMMTALK FOR:{x\n\r"
+                 "   {W- Important rule questions\n\r"
+                 "   - Report bugs or exploits\n\r"
+                 "   - Report player harassment\n\r"
+                 "   - Emergency situations\n\r"
+                 "   - Issues requiring immediate admin attention{x\n\r\n\r"
+                 "{R** DO NOT USE IMMTALK FOR:{x\n\r"
+                 "   {W- Requesting battlegrounds (use gossip instead)\n\r"
+                 "   - General questions (use help or gossip)\n\r"
+                 "   - Spamming or testing\n\r"
+                 "   - Complaining about deaths or losses{x\n\r");
+        page_to_char (buf_string (output), ch);
+        free_buf (output);
+        return;
+    }
+
     for (pHelp = help_first; pHelp != NULL; pHelp = pHelp->next)
     {
         level = (pHelp->level < 0) ? -1 * pHelp->level - 1 : pHelp->level;
@@ -1918,6 +2867,7 @@ void do_whois (CHAR_DATA * ch, char *argument)
     char arg[MAX_INPUT_LENGTH];
     BUFFER *output;
     char buf[MAX_STRING_LENGTH];
+    char const *class;
     DESCRIPTOR_DATA *d;
     bool found = FALSE;
 
@@ -1934,7 +2884,6 @@ void do_whois (CHAR_DATA * ch, char *argument)
     for (d = descriptor_list; d != NULL; d = d->next)
     {
         CHAR_DATA *wch;
-        char const *class;
 
         if (d->connected != CON_PLAYING || !can_see (ch, d->character))
             continue;
@@ -1949,7 +2898,7 @@ void do_whois (CHAR_DATA * ch, char *argument)
             found = TRUE;
 
             /* work out the printing */
-            class = class_table[wch->class].who_name;
+            class = get_profession (wch) != NULL ? get_profession (wch)->who_name : class_table[wch->class].who_name;
             switch (wch->level)
             {
                 case MAX_LEVEL - 0:
@@ -2034,6 +2983,8 @@ void do_who (CHAR_DATA * ch, char *argument)
     bool fClan = FALSE;
     bool fRaceRestrict = FALSE;
     bool fImmortalOnly = FALSE;
+    bool hasImmortalsShown = FALSE;
+    bool showedMortalDivider = FALSE;
 
     /*
      * Set default arguments.
@@ -2133,10 +3084,12 @@ void do_who (CHAR_DATA * ch, char *argument)
     nMatch = 0;
     buf[0] = '\0';
     output = new_buf ();
+
+    add_buf (output, "{W-----------------------------------------------------------------------------{x\n\r");
+
     for (d = descriptor_list; d != NULL; d = d->next)
     {
         CHAR_DATA *wch;
-        char const *class;
 
         /*
          * Check for match against restrictions.
@@ -2162,63 +3115,37 @@ void do_who (CHAR_DATA * ch, char *argument)
         nMatch++;
 
         /*
-         * Figure out what to print for class.
-         */
-        class = class_table[wch->class].who_name;
-        switch (wch->level)
-        {
-            default:
-                break;
-                {
-            case MAX_LEVEL - 0:
-                    class = "IMP";
-                    break;
-            case MAX_LEVEL - 1:
-                    class = "CRE";
-                    break;
-            case MAX_LEVEL - 2:
-                    class = "SUP";
-                    break;
-            case MAX_LEVEL - 3:
-                    class = "DEI";
-                    break;
-            case MAX_LEVEL - 4:
-                    class = "GOD";
-                    break;
-            case MAX_LEVEL - 5:
-                    class = "IMM";
-                    break;
-            case MAX_LEVEL - 6:
-                    class = "DEM";
-                    break;
-            case MAX_LEVEL - 7:
-                    class = "ANG";
-                    break;
-            case MAX_LEVEL - 8:
-                    class = "AVA";
-                    break;
-                }
-        }
-
-        /*
          * Format it up.
          */
-        sprintf (buf, "{C[{W%2d{C] {G%6s{x {Y%s{x %s%s%s%s%s%s{C%s{x{W%s{x\n\r",
-                 wch->level,
-                 wch->race < MAX_PC_RACE ? pc_race_table[wch->race].who_name
-                 : "     ",
-                 class,
-                 wch->incog_level >= LEVEL_HERO ? "(Incog) " : "",
-                 wch->invis_level >= LEVEL_HERO ? "(Wizi) " : "",
-                 wch->invis_level >= LEVEL_HERO ? "" : clan_table[wch->clan].who_name,
-                 IS_SET (wch->comm, COMM_AFK) ? "{R[AFK]{x " : "",
-                 IS_SET (wch->act, PLR_KILLER) ? "{R(KILLER){x " : "",
-                 IS_SET (wch->act, PLR_THIEF) ? "{R(THIEF){x " : "",
-                 wch->name, IS_NPC (wch) ? "" : wch->pcdata->title);
+        if (wch->level >= LEVEL_IMMORTAL)
+        {
+            hasImmortalsShown = TRUE;
+            sprintf (buf, "  {M[ -* Coder *- ]{x {W%s%s%s%s%s%s{x\n\r",
+                     IS_SET (wch->comm, COMM_AFK) ? "<AFK> " : "",
+                     wch->incog_level >= LEVEL_HERO ? "<Incog> " : "",
+                     wch->invis_level >= LEVEL_HERO ? "<Wizi> " : "",
+                     wch->name,
+                     IS_NPC (wch) ? "" : " ",
+                     IS_NPC (wch) ? "" : wch->pcdata->title);
+        }
+        else
+        {
+            if (hasImmortalsShown && !showedMortalDivider)
+            {
+                add_buf (output, "{W- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -{x\n\r");
+                showedMortalDivider = TRUE;
+            }
+            sprintf (buf, "  [ {RLevel %2d{x ] {D%s%s{x\n\r",
+                     wch->level,
+                     wch->name,
+                     IS_NPC (wch) ? "" : wch->pcdata->title);
+        }
         add_buf (output, buf);
     }
 
-    sprintf (buf2, "\n\rPlayers found: %d\n\r", nMatch);
+    sprintf (buf2, "{W-----------------------------------------------------------------------------{x\n\r"
+             "{WThere are %d players visible to you and %d total players.{x\n\r",
+             nMatch, nMatch);
     add_buf (output, buf2);
     page_to_char (buf_string (output), ch);
     free_buf (output);
@@ -2253,7 +3180,8 @@ void do_count (CHAR_DATA * ch, char *argument)
 
 void do_inventory (CHAR_DATA * ch, char *argument)
 {
-    send_to_char ("You are carrying:\n\r", ch);
+    send_to_char ("{C--- {W[Inventory]{C ---{x\n\r", ch);
+    send_to_char ("{WYou are carrying:{x\n\r", ch);
     show_list_to_char (ch->carrying, ch, TRUE, TRUE);
     return;
 }
@@ -2266,7 +3194,7 @@ void do_equipment (CHAR_DATA * ch, char *argument)
     int iWear;
     bool found;
 
-    send_to_char ("{C=== {WEquipment{C ==={x\n\r", ch);
+    send_to_char ("{WYou are using:{x\n\r", ch);
     found = FALSE;
     for (iWear = 0; iWear < MAX_WEAR; iWear++)
     {
@@ -2290,7 +3218,7 @@ void do_equipment (CHAR_DATA * ch, char *argument)
     }
 
     if (!found)
-        send_to_char ("{YNothing.{x\n\r", ch);
+        send_to_char ("{DNothing equipped.{x\n\r", ch);
 
     return;
 }
@@ -2309,11 +3237,6 @@ void do_compare (CHAR_DATA * ch, char *argument)
 
     argument = one_argument (argument, arg1);
     argument = one_argument (argument, arg2);
-    if (arg1[0] == '\0')
-    {
-        send_to_char ("Compare what to what?\n\r", ch);
-        return;
-    }
 
     if ((obj1 = get_obj_carry (ch, arg1, ch)) == NULL)
     {
@@ -2472,6 +3395,7 @@ void do_where (CHAR_DATA * ch, char *argument)
 void do_consider (CHAR_DATA * ch, char *argument)
 {
     char arg[MAX_INPUT_LENGTH];
+    char buf[MAX_STRING_LENGTH];
     CHAR_DATA *victim;
     char *msg;
     int diff;
@@ -2494,6 +3418,27 @@ void do_consider (CHAR_DATA * ch, char *argument)
     {
         send_to_char ("Don't even think about it.\n\r", ch);
         return;
+    }
+
+    if (!IS_NPC (ch) && !IS_NPC (victim))
+    {
+        if ((ch->alignment > 0 && victim->alignment < 0)
+            || (ch->alignment < 0 && victim->alignment > 0))
+        {
+            send_to_char ("{GOpposed alignment:{x warpoint rewards apply on PK.\n\r", ch);
+        }
+        else
+        {
+            send_to_char ("{YSame alignment:{x no opposite-alignment warpoint bonus.\n\r", ch);
+        }
+
+        sprintf (buf,
+                 "{GTarget Warpoints:{x %d  {GTarget Sect:{x %s\n\r",
+                 victim->warpoint,
+                 (victim->sect_number >= 0 && victim->sect_number < MAX_SECT)
+                    ? sect_table[victim->sect_number].name
+                    : "Unassigned");
+        send_to_char (buf, ch);
     }
 
     diff = victim->level - ch->level;
@@ -2546,25 +3491,29 @@ void set_title (CHAR_DATA * ch, char *title)
 }
 
 
-
-void do_title (CHAR_DATA * ch, char *argument)
+static void sanitize_player_title(char *title)
 {
     int i;
 
-    if (IS_NPC (ch))
+    if (title == NULL)
         return;
 
-	/* Changed this around a bit to do some sanitization first   *
-	 * before checking length of the title. Need to come up with *
-	 * a centralized user input sanitization scheme. FIXME!      *
-	 * JR -- 10/15/00                                            */
+    if (strlen(title) > 45)
+        title[45] = '\0';
 
-    if (strlen (argument) > 45)
-        argument[45] = '\0';
+    i = strlen(title);
+    if (i > 0 && title[i - 1] == '{' && (i == 1 || title[i - 2] != '{'))
+        title[i - 1] = '\0';
 
-	i = strlen(argument);
-    if (argument[i-1] == '{' && argument[i-2] != '{')
-		argument[i-1] = '\0';
+    smash_tilde(title);
+}
+
+
+
+void do_title (CHAR_DATA * ch, char *argument)
+{
+    if (IS_NPC (ch))
+        return;
 
     if (argument[0] == '\0')
     {
@@ -2572,7 +3521,14 @@ void do_title (CHAR_DATA * ch, char *argument)
         return;
     }
 
-    smash_tilde (argument);
+    sanitize_player_title(argument);
+
+    if (argument[0] == '\0')
+    {
+        send_to_char ("Change your title to what?\n\r", ch);
+        return;
+    }
+
     set_title (ch, argument);
     send_to_char ("Ok.\n\r", ch);
 }
@@ -2684,9 +3640,12 @@ void do_practice (CHAR_DATA * ch, char *argument)
 {
     char buf[MAX_STRING_LENGTH];
     int sn;
+    int class_index;
 
     if (IS_NPC (ch))
         return;
+
+    class_index = rop_effective_class_index (ch->class);
 
     if (argument[0] == '\0')
     {
@@ -2697,7 +3656,7 @@ void do_practice (CHAR_DATA * ch, char *argument)
         {
             if (skill_table[sn].name == NULL)
                 break;
-            if (ch->level < skill_table[sn].skill_level[ch->class]
+            if (ch->level < skill_table[sn].skill_level[class_index]
                 || ch->pcdata->learned[sn] < 1 /* skill is not known */ )
                 continue;
 
@@ -2748,20 +3707,20 @@ void do_practice (CHAR_DATA * ch, char *argument)
                                                      && (ch->level <
                                                          skill_table
                                                          [sn].skill_level
-                                                         [ch->class]
+                                                         [class_index]
                                                          || ch->
                                                          pcdata->learned[sn] < 1    /* skill is not known */
                                                          ||
                                                          skill_table
-                                                         [sn].rating[ch->
-                                                                     class] ==
+                                                         [sn].rating[class_index] ==
                                                          0)))
         {
             send_to_char ("You can't practice that.\n\r", ch);
             return;
         }
 
-        adept = IS_NPC (ch) ? 100 : class_table[ch->class].skill_adept;
+        adept = IS_NPC (ch) ? 100 : (get_profession (ch) != NULL ? get_profession (ch)->skill_adept : class_table[ch->class].skill_adept);
+        adept = UMIN (100, adept + ch->remort_skill_slots);
 
         if (ch->pcdata->learned[sn] >= adept)
         {
@@ -2774,7 +3733,7 @@ void do_practice (CHAR_DATA * ch, char *argument)
             ch->practice--;
             ch->pcdata->learned[sn] +=
                 int_app[get_curr_stat (ch, STAT_INT)].learn /
-                skill_table[sn].rating[ch->class];
+                skill_table[sn].rating[class_index];
             if (ch->pcdata->learned[sn] < adept)
             {
                 act ("You practice $T.",

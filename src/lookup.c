@@ -96,6 +96,13 @@ int size_lookup (const char *name)
 {
     int size;
 
+    if (name[0] >= '0' && name[0] <= '9' && name[1] == '\0')
+    {
+        size = name[0] - '0';
+        if (size >= SIZE_TINY && size <= SIZE_GIANT)
+            return size;
+    }
+
     for (size = 0; size_table[size].name != NULL; size++)
     {
         if (LOWER (name[0]) == LOWER (size_table[size].name[0])

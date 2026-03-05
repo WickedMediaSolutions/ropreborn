@@ -1,15 +1,16 @@
 # Developer Quickstart: ROM 2.4-ROP Edition
 
 **Quick Guide for Contributing Developers**  
-**Version**: 1.0  
-**Last Updated**: March 3, 2026
+**Version**: 1.1  
+**Last Updated**: March 4, 2026
 
 ---
 
 ## Quick Setup (10 minutes)
 
 ### Prerequisites
-- Docker & Docker Compose installed
+- Linux environment (Chromebook Penguin is supported)
+- `gcc`, `make`, `csh`, `telnet` installed
 - Git installed
 - Text editor (VS Code recommended)
 - Basic C knowledge
@@ -21,14 +22,25 @@
 git clone https://github.com/yourusername/rom24-quickmud.git
 cd rom24-quickmud
 
-# Build & run
-docker-compose up --build
+# Build
+cd src
+make -f Makefile.linux clean
+make -f Makefile.linux rom
+cp rom ../area/rom
+
+# Run from repo root
+cd ..
+./startup
 
 # Check logs
-docker logs rom-mud-server
+tail -f log/*.log
 ```
 
 **Server available on**: localhost:4000
+
+### Environment Note
+
+This project is currently maintained/tested on native Linux (Chromebook Penguin compatible) with a host runtime workflow.
 
 ---
 
@@ -132,7 +144,10 @@ if ( ch->level >= 40 && victim->level <= 10 )
 **Then test**:
 ```bash
 # Rebuild
-docker-compose up --build
+cd src && make -f Makefile.linux rom && cp rom ../area/rom
+
+# Restart server
+cd .. && ./startup
 
 # Test: Create level 50, kill level 5
 # Verify: warpoints gain 50% of normal
@@ -202,27 +217,28 @@ int bonus = YOUR_NEW_CONSTANT * victim->level / 50;
 
 ```bash
 # Full rebuild with logs
-docker-compose up --build 2>&1 | tee build.log
+cd src
+make -f Makefile.linux clean
+make -f Makefile.linux rom 2>&1 | tee ../build.log
+cp rom ../area/rom
 
 # Check for errors
-grep -i "error\|warning" build.log
+grep -i "error\|warning" ../build.log
 ```
 
 ### Quick Syntax Check
 
 ```bash
-# Check one file
-docker-compose exec rom-mud-server sh -c "cd src && make clean && make"
-
-# Or run inside container
-docker exec rom-mud-server tail -50 /build.log
+# Rebuild quickly
+cd src
+make -f Makefile.linux rom
 ```
 
 ### Testing Your Changes
 
 ```bash
-# 1. Start server
-docker-compose up -d
+# 1. Start server from repo root
+./startup
 
 # 2. Connect with telnet
 telnet localhost 4000
@@ -239,7 +255,7 @@ kill <mob_name>
 warpoint_show <character>  # If you added warpoint logic
 
 # 5. Check logs
-docker exec rom-mud-server tail -20 /var/log/warpoint.log
+tail -20 log/warpoint.log
 ```
 
 ---
@@ -383,7 +399,7 @@ Algorithm:
 #!/bin/bash
 # test_warpoint.sh - Quick warpoint test
 
-docker exec rom-mud-server telnet localhost 4000 <<EOF
+telnet localhost 4000 <<EOF
 # Create two test characters
 create tester1
 password123
@@ -501,11 +517,11 @@ log_string( "security.log", buf );
 
 ## Performance Profiling
 
-### Docker Stats
+### Runtime Stats
 
 ```bash
-# Watch container performance
-docker stats rom-mud-server --no-stream
+# Watch server process performance
+ps -o pid,%cpu,%mem,cmd -C rom
 
 # Expected at 10 players:
 # CPU%: <30%
@@ -534,7 +550,6 @@ docker stats rom-mud-server --no-stream
 ### Extensions
 - C/C++ (Microsoft) - IntelliSense
 - Clang-Format - Code formatting
-- Docker (Microsoft) - Container management
 
 ### Workspace Settings (.vscode/settings.json)
 
@@ -605,7 +620,7 @@ Type can be:
 Before tagging a new version:
 
 - [ ] All compilation errors fixed
-- [ ] Docker build succeeds on clean slate
+- [ ] Native Linux build succeeds on clean slate
 - [ ] test_balance.sh passes all tests
 - [ ] No crashes in 1-hour gameplay session
 - [ ] Logs are clean (no spam)
@@ -626,9 +641,9 @@ Before tagging a new version:
 - EMAIL_ROM_QUESTIONS or ask in develop channel
 
 **Build Issues**:
-- Check Docker build output (docker-compose logs)
+- Check build output (`build.log` or terminal output)
 - Ensure all dependencies installed
-- Try `docker-compose down && docker-compose up --build`
+- Rebuild with `cd src && make -f Makefile.linux rom`
 
 ---
 

@@ -684,7 +684,7 @@ char *numlines (char *string)
     while (*string)
     {
         string = merc_getline (string, tmpb);
-        sprintf (buf2, "%2d. %s\n\r", cnt++, tmpb);
+        snprintf (buf2, sizeof (buf2), "%2d. %.4592s\n\r", cnt++, tmpb);
         strcat (buf, buf2);
     }
 

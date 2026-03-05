@@ -727,6 +727,124 @@ void do_clantalk (CHAR_DATA * ch, char *argument)
     return;
 }
 
+void do_sectalk (CHAR_DATA * ch, char *argument)
+{
+    char buf[MAX_STRING_LENGTH];
+    DESCRIPTOR_DATA *d;
+
+    if (IS_NPC (ch))
+    {
+        send_to_char ("Mobs cannot use sect channels.\n\r", ch);
+        return;
+    }
+
+    if (ch->sect_number < 0 || ch->sect_number >= MAX_SECT)
+    {
+        send_to_char ("You are not assigned to a sect.\n\r", ch);
+        return;
+    }
+
+    if (argument[0] == '\0')
+    {
+        send_to_char ("Sectalk what?\n\r", ch);
+        return;
+    }
+
+    if (IS_SET (ch->comm, COMM_QUIET))
+    {
+        send_to_char ("You must turn off quiet mode first.\n\r", ch);
+        return;
+    }
+
+    if (IS_SET (ch->comm, COMM_NOCHANNELS))
+    {
+        send_to_char ("The gods have revoked your channel privileges.\n\r", ch);
+        return;
+    }
+
+    sprintf (buf, "{c[SECT %s]{x You: '%s'\n\r",
+             sect_table[ch->sect_number].who_name,
+             argument);
+    send_to_char (buf, ch);
+
+    for (d = descriptor_list; d != NULL; d = d->next)
+    {
+        CHAR_DATA *victim;
+
+        victim = d->original ? d->original : d->character;
+
+        if (d->connected == CON_PLAYING
+            && victim != NULL
+            && victim != ch
+            && !IS_NPC (victim)
+            && victim->sect_number == ch->sect_number
+            && !IS_SET (victim->comm, COMM_QUIET))
+        {
+            act_new ("{c[SECT] $n: '$t'{x", ch, argument, victim, TO_VICT, POS_DEAD);
+        }
+    }
+}
+
+void do_sectell (CHAR_DATA * ch, char *argument)
+{
+    char arg[MAX_INPUT_LENGTH];
+    CHAR_DATA *victim;
+
+    if (IS_NPC (ch))
+    {
+        send_to_char ("Mobs cannot use sect tells.\n\r", ch);
+        return;
+    }
+
+    if (ch->sect_number < 0 || ch->sect_number >= MAX_SECT)
+    {
+        send_to_char ("You are not assigned to a sect.\n\r", ch);
+        return;
+    }
+
+    if (IS_SET (ch->comm, COMM_QUIET))
+    {
+        send_to_char ("You must turn off quiet mode first.\n\r", ch);
+        return;
+    }
+
+    if (IS_SET (ch->comm, COMM_NOCHANNELS))
+    {
+        send_to_char ("The gods have revoked your channel privileges.\n\r", ch);
+        return;
+    }
+
+    argument = one_argument (argument, arg);
+    if (arg[0] == '\0' || argument[0] == '\0')
+    {
+        send_to_char ("Sectell whom what?\n\r", ch);
+        return;
+    }
+
+    victim = get_char_world (ch, arg);
+    if (victim == NULL || IS_NPC (victim))
+    {
+        send_to_char ("They aren't here.\n\r", ch);
+        return;
+    }
+
+    if (victim->sect_number != ch->sect_number)
+    {
+        send_to_char ("They are not in your sect.\n\r", ch);
+        return;
+    }
+
+    if (IS_SET (victim->comm, COMM_QUIET) || IS_SET (victim->comm, COMM_DEAF))
+    {
+        act ("$E is not receiving tells.", ch, 0, victim, TO_CHAR);
+        return;
+    }
+
+    act_new ("{c[SECTELL] You tell $N '$t'{x", ch, argument, victim, TO_CHAR, POS_DEAD);
+    act_new ("{c[SECTELL] $n tells you '$t'{x", ch, argument, victim, TO_VICT, POS_DEAD);
+    victim->reply = ch;
+}
+
 void do_immtalk (CHAR_DATA * ch, char *argument)
 {
     DESCRIPTOR_DATA *d;
@@ -1478,7 +1596,14 @@ void do_quit (CHAR_DATA * ch, char *argument)
         send_to_char ("You're not DEAD yet.\n\r", ch);
         return;
     }
-    send_to_char ("Alas, all good things must come to an end.\n\r", ch);
+    send_to_char ("\n\r", ch);
+    send_to_char ("                        -=+)*(+=-_-=+)*(+=-_-=+)*(+=-\n\r\n\r", ch);
+    send_to_char ("                  Thanks for playing Rites of Passage MUD!\n\r\n\r", ch);
+    send_to_char ("       If you enjoy your time here VOTE for us on the following sites!\n\r\n\r", ch);
+    send_to_char ("               * MudVault: https://mudvault.org/?id=115\n\r", ch);
+    send_to_char ("               * MudVerse: https://www.mudverse.com/vote/628\n\r\n\r", ch);
+    send_to_char ("          Or join us on the discord at https://discord.gg/CkYm9WRnyw\n\r\n\r", ch);
+    send_to_char ("                        -=+)*(+=-_-=+)*(+=-_-=+)*(+=-\n\r", ch);
     act ("$n has left the game.", ch, NULL, NULL, TO_ROOM);
     sprintf (log_buf, "%s has quit.", ch->name);
     log_string (log_buf);
@@ -1791,8 +1916,7 @@ void do_group (CHAR_DATA * ch, char *argument)
                 sprintf (buf,
                          "[%2d %s] %-16s %4d/%4d hp %4d/%4d mana %4d/%4d mv %5d xp\n\r",
                          gch->level,
-                         IS_NPC (gch) ? "Mob" : class_table[gch->
-                                                            class].who_name,
+                         IS_NPC (gch) ? "Mob" : (get_profession (gch) != NULL ? get_profession (gch)->who_name : class_table[gch->class].who_name),
                          capitalize (PERS (gch, ch)), gch->hit, gch->max_hit,
                          gch->mana, gch->max_mana, gch->move, gch->max_move,
                          gch->exp);

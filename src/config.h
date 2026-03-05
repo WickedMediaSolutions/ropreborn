@@ -118,6 +118,25 @@
 /* Day of month for monthly warpoint rank reset */
 #define WARPOINT_RESET_DAY      1
 
+/* Seasonal warpoint gain modifiers (percent) */
+#define WARPOINT_SEASON_SPRING_BONUS 10
+#define WARPOINT_SEASON_SUMMER_BONUS 20
+#define WARPOINT_SEASON_AUTUMN_BONUS 5
+#define WARPOINT_SEASON_WINTER_BONUS 15
+
+/* Monthly event windows (day 0-34) and bonus percentages */
+#define WARPOINT_EVENT_OPENING_START 0
+#define WARPOINT_EVENT_OPENING_END   6
+#define WARPOINT_EVENT_OPENING_BONUS 10
+
+#define WARPOINT_EVENT_MID_START     16
+#define WARPOINT_EVENT_MID_END       20
+#define WARPOINT_EVENT_MID_BONUS     15
+
+#define WARPOINT_EVENT_FINALE_START  28
+#define WARPOINT_EVENT_FINALE_END    34
+#define WARPOINT_EVENT_FINALE_BONUS  25
+
 
 /*
  * ========================
@@ -133,6 +152,12 @@
 
 /* Seconds before corpse decays and items are lost */
 #define CORPSE_DECAY_TIME       3600
+
+/* Corpse owner-exclusive protection window in object timer ticks */
+#define CORPSE_OWNER_LOCK_TICKS 15
+
+/* Protected death bag decay in object timer ticks */
+#define DEATH_BAG_TIMER_TICKS   90
 
 /* Seconds for other game timeouts */
 #define LOGIN_TIMEOUT           180
@@ -178,14 +203,35 @@
 /* Starting room vnum for new players */
 #define ROOM_VNUM_START         3001
 
+/* RoP onboarding room for new characters */
+#define ROOM_VNUM_STARTING_VILLAGE 18400
+
 /* Altar room vnum (default clan/sect halls meeting point) */
+#ifndef ROOM_VNUM_ALTAR
 #define ROOM_VNUM_ALTAR         3001
+#endif
 
 /* Limbo room vnum (fallback location if character gets stuck) */
 #define ROOM_VNUM_LIMBO         2
 
 /* Maximum number of areas that can be loaded at startup */
 #define MAX_AREAS               100
+
+/*
+ * ========================
+ * Dynamic World Events
+ * ========================
+ */
+
+/* Event day windows (day 0-34) */
+#define WORLD_EVENT_BLOODMOON_START 7
+#define WORLD_EVENT_BLOODMOON_END   10
+
+#define WORLD_EVENT_HARMONY_START   21
+#define WORLD_EVENT_HARMONY_END     24
+
+#define WORLD_EVENT_ASCENDANT_START 30
+#define WORLD_EVENT_ASCENDANT_END   34
 
 
 /*

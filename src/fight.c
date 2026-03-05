@@ -32,8 +32,10 @@
 #endif
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <time.h>
 #include "merc.h"
+#include "config.h"
 #include "interp.h"
 
 /*
@@ -56,6 +58,120 @@ void mob_hit args ((CHAR_DATA * ch, CHAR_DATA * victim, int dt));
 void raw_kill args ((CHAR_DATA * victim));
 void set_fighting args ((CHAR_DATA * ch, CHAR_DATA * victim));
 void disarm args ((CHAR_DATA * ch, CHAR_DATA * victim));
+
+enum
+{
+    SECT_AETHELHELM = 0,
+    SECT_KIRI = 1,
+    SECT_BAALZOM = 2,
+    SECT_ISHTA = 3,
+    SECT_ZOD = 4,
+    SECT_JALAAL = 5,
+    SECT_XIX = 6,
+    SECT_TALICE = 7
+};
+
+static int get_warpoint_season_bonus_percent (void)
+{
+    if (time_info.month >= 0 && time_info.month <= 3)
+        return WARPOINT_SEASON_SPRING_BONUS;
+    if (time_info.month >= 4 && time_info.month <= 7)
+        return WARPOINT_SEASON_SUMMER_BONUS;
+    if (time_info.month >= 8 && time_info.month <= 11)
+        return WARPOINT_SEASON_AUTUMN_BONUS;
+    return WARPOINT_SEASON_WINTER_BONUS;
+}
+
+static int get_warpoint_event_bonus_percent (void)
+{
+    if (time_info.day >= WARPOINT_EVENT_FINALE_START
+        && time_info.day <= WARPOINT_EVENT_FINALE_END)
+        return WARPOINT_EVENT_FINALE_BONUS;
+
+    if (time_info.day >= WARPOINT_EVENT_MID_START
+        && time_info.day <= WARPOINT_EVENT_MID_END)
+        return WARPOINT_EVENT_MID_BONUS;
+
+    if (time_info.day >= WARPOINT_EVENT_OPENING_START
+        && time_info.day <= WARPOINT_EVENT_OPENING_END)
+        return WARPOINT_EVENT_OPENING_BONUS;
+
+    return 0;
+}
+
+static void enforce_sect_alignment (CHAR_DATA * ch)
+{
+    if (ch == NULL || IS_NPC (ch))
+        return;
+
+    if (ch->sect_number < 0 || ch->sect_number >= MAX_SECT)
+        return;
+
+    if (sect_table[ch->sect_number].alignment == 1)
+        ch->alignment = 1000;
+    else if (sect_table[ch->sect_number].alignment == -1)
+        ch->alignment = -1000;
+}
+
+static int apply_sect_combat_passives (CHAR_DATA * ch, CHAR_DATA * victim,
+                                       int dam, int dt)
+{
+    bool is_spell_damage;
+
+    if (ch == NULL || victim == NULL)
+        return dam;
+
+    if (IS_NPC (ch) || IS_NPC (victim))
+        return dam;
+
+    if (ch == victim)
+        return dam;
+
+    if (ch->sect_number < 0 || ch->sect_number >= MAX_SECT)
+        return dam;
+
+    if (victim->sect_number < 0 || victim->sect_number >= MAX_SECT)
+        return dam;
+
+    is_spell_damage = (dt > 0 && dt < TYPE_HIT);
+
+    switch (ch->sect_number)
+    {
+        default:
+            break;
+        case SECT_ZOD:
+            if (dt >= TYPE_HIT)
+                dam = dam * 115 / 100;
+            break;
+        case SECT_JALAAL:
+            if (dt >= TYPE_HIT && number_percent () <= 12)
+                dam = dam * 6 / 5;
+            break;
+        case SECT_XIX:
+            if (is_spell_damage)
+                dam = dam * 112 / 100;
+            break;
+    }
+
+    switch (victim->sect_number)
+    {
+        default:
+            break;
+        case SECT_AETHELHELM:
+            if (is_spell_damage)
+                dam = dam * 94 / 100;
+            break;
+        case SECT_KIRI:
+            dam = dam * 95 / 100;
+            break;
+        case SECT_TALICE:
+            if (number_percent () <= 10)
+                dam = dam * 4 / 5;
+            break;
+    }
+
+    return UMAX (1, dam);
+}
 
 
 
@@ -457,8 +573,18 @@ void one_hit (CHAR_DATA * ch, CHAR_DATA * victim, int dt)
     }
     else
     {
-        thac0_00 = class_table[ch->class].thac0_00;
-        thac0_32 = class_table[ch->class].thac0_32;
+        const struct profession_type *profession = get_profession (ch);
+
+        if (profession != NULL)
+        {
+            thac0_00 = 20;
+            thac0_32 = profession->thac0;
+        }
+        else
+        {
+            thac0_00 = class_table[ch->class].thac0_00;
+            thac0_32 = class_table[ch->class].thac0_32;
+        }
     }
     thac0 = interpolate (ch->level, thac0_00, thac0_32);
 
@@ -645,6 +771,7 @@ void one_hit (CHAR_DATA * ch, CHAR_DATA * victim, int dt)
                  victim, wield, NULL, TO_CHAR);
             damage (ch, victim, dam, 0, DAM_NEGATIVE, FALSE);
             ch->alignment = UMAX (-1000, ch->alignment - 1);
+            enforce_sect_alignment (ch);
             ch->hit += dam / 2;
         }
 
@@ -719,6 +846,28 @@ bool damage (CHAR_DATA * ch, CHAR_DATA * victim, int dam, int dt,
         dam = (dam - 35) / 2 + 35;
     if (dam > 80)
         dam = (dam - 80) / 2 + 80;
+
+
+    if (ch != NULL
+        && victim != NULL
+        && ch != victim
+        && !IS_NPC (ch)
+        && !IS_NPC (victim)
+        && ch->sect_number >= 0 && ch->sect_number < MAX_SECT
+        && victim->sect_number >= 0 && victim->sect_number < MAX_SECT
+        && ch->sect_number != victim->sect_number)
+    {
+        dam = dam * 11 / 10;
+    }
+
+    dam = apply_sect_combat_passives (ch, victim, dam, dt);
+
+    if (ch != NULL && victim != NULL && ch != victim)
+    {
+        int event_damage_bonus = rop_world_event_damage_percent ();
+        if (event_damage_bonus > 0)
+            dam = dam * (100 + event_damage_bonus) / 100;
+    }
 
 
 
@@ -919,22 +1068,48 @@ bool damage (CHAR_DATA * ch, CHAR_DATA * victim, int dam, int dt,
             if ((ch->alignment > 0 && victim->alignment < 0) ||
                 (ch->alignment < 0 && victim->alignment > 0))
             {
-                int warpoint_gain = 10;
+                int warpoint_gain = WARPOINT_KILL_BASE;
                 int level_diff = victim->level - ch->level;
+                int season_bonus = get_warpoint_season_bonus_percent ();
+                int event_bonus = get_warpoint_event_bonus_percent ();
+                bool anti_farm_block = FALSE;
                 
                 if (level_diff > 0)
-                    warpoint_gain += (level_diff / 5);
+                    warpoint_gain += UMIN (WARPOINT_LEVEL_MAX,
+                                           (level_diff / WARPOINT_LEVEL_BONUS));
                 if (level_diff < -5)
-                    warpoint_gain -= ((abs(level_diff) / 5));
+                    warpoint_gain -= (abs(level_diff) / WARPOINT_LEVEL_BONUS);
+
+                warpoint_gain = warpoint_gain * (100 + season_bonus + event_bonus) / 100;
                 if (warpoint_gain < 1)
                     warpoint_gain = 1;
+
+                if (ch->last_warpoint_victim == victim->id
+                    && (current_time - ch->last_warpoint_time) < 1800)
+                {
+                    anti_farm_block = TRUE;
+                }
+
+                if (!anti_farm_block)
+                {
+                    ch->warpoint += warpoint_gain;
+                    ch->last_warpoint_victim = victim->id;
+                    ch->last_warpoint_time = current_time;
+
+                    sprintf(buf,
+                            "You gain %d warpoints from slaying %s! (season %+d%%, event %+d%%)",
+                            warpoint_gain,
+                            victim->name,
+                            season_bonus,
+                            event_bonus);
+                    send_to_char(buf, ch);
+                }
+                else
+                {
+                    send_to_char("No warpoints awarded: anti-farm lockout is active for this victim.\n\r", ch);
+                }
                 
-                ch->warpoint += warpoint_gain;
-                
-                sprintf(buf, "You gain %d warpoints from slaying %s!", warpoint_gain, victim->name);
-                send_to_char(buf, ch);
-                
-                int warpoint_loss = victim->warpoint / 10;
+                int warpoint_loss = victim->warpoint * WARPOINT_DEATH_LOSS / 100;
                 if (warpoint_loss > 0)
                 {
                     victim->warpoint -= warpoint_loss;
@@ -1496,6 +1671,7 @@ void make_corpse (CHAR_DATA * ch)
 {
     char buf[MAX_STRING_LENGTH];
     OBJ_DATA *corpse;
+    OBJ_DATA *death_bag;
     OBJ_DATA *obj;
     OBJ_DATA *obj_next;
     char *name;
@@ -1504,6 +1680,7 @@ void make_corpse (CHAR_DATA * ch)
     {
         name = ch->short_descr;
         corpse = create_object (get_obj_index (OBJ_VNUM_CORPSE_NPC), 0);
+        death_bag = NULL;
         corpse->timer = number_range (3, 6);
         if (ch->gold > 0)
         {
@@ -1515,22 +1692,55 @@ void make_corpse (CHAR_DATA * ch)
     }
     else
     {
+        int split_gold;
+
         name = ch->name;
         corpse = create_object (get_obj_index (OBJ_VNUM_CORPSE_PC), 0);
-        corpse->timer = number_range (25, 40);
+        death_bag = create_object (get_obj_index (OBJ_VNUM_CORPSE_PC), 0);
+
+        corpse->timer = number_range (35, 45);
         REMOVE_BIT (ch->act, PLR_CANLOOT);
-        if (!is_clan (ch))
-            corpse->owner = str_dup (ch->name);
-        else
+
+        if (corpse->owner != NULL)
+            free_string (corpse->owner);
+        corpse->owner = str_dup (ch->name);
+        corpse->value[4] = 0;
+
+        if (death_bag->owner != NULL)
+            free_string (death_bag->owner);
+        death_bag->owner = str_dup (ch->name);
+        death_bag->item_type = ITEM_CONTAINER;
+        death_bag->timer = DEATH_BAG_TIMER_TICKS;
+        death_bag->cost = 0;
+        death_bag->level = ch->level;
+        death_bag->value[0] = 1000;
+        death_bag->value[1] = 0;
+        death_bag->value[2] = 0;
+        death_bag->value[3] = 0;
+        death_bag->value[4] = 1;
+        SET_BIT (death_bag->extra_flags, ITEM_NODROP);
+        SET_BIT (death_bag->extra_flags, ITEM_NOLOCATE);
+        SET_BIT (death_bag->extra_flags, ITEM_BURN_PROOF);
+        SET_BIT (death_bag->extra_flags, ITEM_NOPURGE);
+
+        snprintf (buf, sizeof (buf), "a protected death bag of %s", name);
+        free_string (death_bag->short_descr);
+        death_bag->short_descr = str_dup (buf);
+
+        snprintf (buf, sizeof (buf), "A protected death bag of %s lies here.", name);
+        free_string (death_bag->description);
+        death_bag->description = str_dup (buf);
+
+        snprintf (buf, sizeof (buf), "death bag protected %s", name);
+        free_string (death_bag->name);
+        death_bag->name = str_dup (buf);
+
+        split_gold = ch->gold / 2;
+        if (split_gold > 0 || ch->silver / 2 > 0)
         {
-            corpse->owner = NULL;
-            if (ch->gold > 1 || ch->silver > 1)
-            {
-                obj_to_obj (create_money (ch->gold / 2, ch->silver / 2),
-                            corpse);
-                ch->gold -= ch->gold / 2;
-                ch->silver -= ch->silver / 2;
-            }
+            obj_to_obj (create_money (ch->gold / 2, ch->silver / 2), corpse);
+            ch->gold -= ch->gold / 2;
+            ch->silver -= ch->silver / 2;
         }
 
         corpse->cost = 0;
@@ -1549,6 +1759,7 @@ void make_corpse (CHAR_DATA * ch)
     for (obj = ch->carrying; obj != NULL; obj = obj_next)
     {
         bool floating = FALSE;
+        bool send_to_death_bag = FALSE;
 
         obj_next = obj->next_content;
         if (obj->wear_loc == WEAR_FLOAT)
@@ -1564,6 +1775,16 @@ void make_corpse (CHAR_DATA * ch)
             REMOVE_BIT (obj->extra_flags, ITEM_ROT_DEATH);
         }
         REMOVE_BIT (obj->extra_flags, ITEM_VIS_DEATH);
+
+        if (!IS_NPC (ch)
+            && death_bag != NULL
+            && !floating
+            && obj->wear_loc == WEAR_NONE
+            && !IS_SET (obj->extra_flags, ITEM_INVENTORY)
+            && number_bits (1) == 0)
+        {
+            send_to_death_bag = TRUE;
+        }
 
         if (IS_SET (obj->extra_flags, ITEM_INVENTORY))
             extract_obj (obj);
@@ -1595,10 +1816,24 @@ void make_corpse (CHAR_DATA * ch)
             }
         }
         else
-            obj_to_obj (obj, corpse);
+        {
+            if (send_to_death_bag)
+                obj_to_obj (obj, death_bag);
+            else
+                obj_to_obj (obj, corpse);
+        }
     }
 
     obj_to_room (corpse, ch->in_room);
+
+    if (death_bag != NULL)
+    {
+        if (death_bag->contains != NULL)
+            obj_to_room (death_bag, ch->in_room);
+        else
+            extract_obj (death_bag);
+    }
+
     return;
 }
 
@@ -1763,7 +1998,6 @@ void group_gain (CHAR_DATA * ch, CHAR_DATA * victim)
 {
     char buf[MAX_STRING_LENGTH];
     CHAR_DATA *gch;
-    CHAR_DATA *lch;
     int xp;
     int members;
     int group_levels;
@@ -1793,8 +2027,6 @@ void group_gain (CHAR_DATA * ch, CHAR_DATA * victim)
         members = 1;
         group_levels = ch->level;
     }
-
-    lch = (ch->leader != NULL) ? ch->leader : ch;
 
     for (gch = ch->in_room->people; gch != NULL; gch = gch->next_in_room)
     {
@@ -1943,6 +2175,8 @@ int xp_compute (CHAR_DATA * gch, CHAR_DATA * victim, int total_levels)
         change = gch->alignment * base_exp / 500 * gch->level / total_levels;
         gch->alignment -= change;
     }
+
+    enforce_sect_alignment (gch);
 
     /* calculate exp multiplier */
     if (IS_SET (victim->act, ACT_NOALIGN))
@@ -2305,11 +2539,14 @@ void disarm (CHAR_DATA * ch, CHAR_DATA * victim)
 void do_berserk (CHAR_DATA * ch, char *argument)
 {
     int chance, hp_percent;
+    int class_index;
+
+    class_index = rop_effective_class_index (ch->class);
 
     if ((chance = get_skill (ch, gsn_berserk)) == 0
         || (IS_NPC (ch) && !IS_SET (ch->off_flags, OFF_BERSERK))
         || (!IS_NPC (ch)
-            && ch->level < skill_table[gsn_berserk].skill_level[ch->class]))
+            && ch->level < skill_table[gsn_berserk].skill_level[class_index]))
     {
         send_to_char ("You turn red in the face, but nothing happens.\n\r",
                       ch);
@@ -2396,13 +2633,16 @@ void do_bash (CHAR_DATA * ch, char *argument)
     char arg[MAX_INPUT_LENGTH];
     CHAR_DATA *victim;
     int chance;
+    int class_index;
+
+    class_index = rop_effective_class_index (ch->class);
 
     one_argument (argument, arg);
 
     if ((chance = get_skill (ch, gsn_bash)) == 0
         || (IS_NPC (ch) && !IS_SET (ch->off_flags, OFF_BASH))
         || (!IS_NPC (ch)
-            && ch->level < skill_table[gsn_bash].skill_level[ch->class]))
+            && ch->level < skill_table[gsn_bash].skill_level[class_index]))
     {
         send_to_char ("Bashing? What's that?\n\r", ch);
         return;
@@ -2526,13 +2766,16 @@ void do_dirt (CHAR_DATA * ch, char *argument)
     char arg[MAX_INPUT_LENGTH];
     CHAR_DATA *victim;
     int chance;
+    int class_index;
+
+    class_index = rop_effective_class_index (ch->class);
 
     one_argument (argument, arg);
 
     if ((chance = get_skill (ch, gsn_dirt)) == 0
         || (IS_NPC (ch) && !IS_SET (ch->off_flags, OFF_KICK_DIRT))
         || (!IS_NPC (ch)
-            && ch->level < skill_table[gsn_dirt].skill_level[ch->class]))
+            && ch->level < skill_table[gsn_dirt].skill_level[class_index]))
     {
         send_to_char ("You get your feet dirty.\n\r", ch);
         return;
@@ -2678,13 +2921,16 @@ void do_trip (CHAR_DATA * ch, char *argument)
     char arg[MAX_INPUT_LENGTH];
     CHAR_DATA *victim;
     int chance;
+    int class_index;
+
+    class_index = rop_effective_class_index (ch->class);
 
     one_argument (argument, arg);
 
     if ((chance = get_skill (ch, gsn_trip)) == 0
         || (IS_NPC (ch) && !IS_SET (ch->off_flags, OFF_TRIP))
         || (!IS_NPC (ch)
-            && ch->level < skill_table[gsn_trip].skill_level[ch->class]))
+            && ch->level < skill_table[gsn_trip].skill_level[class_index]))
     {
         send_to_char ("Tripping?  What's that?\n\r", ch);
         return;
@@ -3045,7 +3291,7 @@ void do_flee (CHAR_DATA * ch, char *argument)
         if (!IS_NPC (ch))
         {
             send_to_char ("You flee from combat!\n\r", ch);
-            if ((ch->class == 2) && (number_percent () < 3 * (ch->level / 2)))
+            if ((rop_effective_class_index (ch->class) == 2) && (number_percent () < 3 * (ch->level / 2)))
                 send_to_char ("You snuck away safely.\n\r", ch);
             else
             {
@@ -3140,9 +3386,12 @@ void do_rescue (CHAR_DATA * ch, char *argument)
 void do_kick (CHAR_DATA * ch, char *argument)
 {
     CHAR_DATA *victim;
+    int class_index;
+
+    class_index = rop_effective_class_index (ch->class);
 
     if (!IS_NPC (ch)
-        && ch->level < skill_table[gsn_kick].skill_level[ch->class])
+        && ch->level < skill_table[gsn_kick].skill_level[class_index])
     {
         send_to_char ("You better leave the martial arts to fighters.\n\r",
                       ch);

@@ -179,10 +179,10 @@ grep <character> log/warpoint.log | tail -10
 **Possible causes**:
 1. **Farm check triggered** - killed same player 3x in 30min (warpoint gain halved)
 2. **Victim has 0 warpoints** - you only gain 10 base WP
-3. **Server issue** - check Docker container logs:
-   ```
-   docker logs rom-mud-server
-   ```
+3. **Server issue** - check native server logs:
+  ```
+  tail -50 log/*.log
+  ```
 
 **Verify in-game**:
 ```
@@ -333,9 +333,9 @@ Generate using daily_report.log summary:
 ### Server Compromised
 **If warpoints being set arbitrarily**:
 1. Take server offline immediately
-2. Check docker logs: `docker logs rom-mud-server > /tmp/logs.txt`
+2. Capture current logs: `tail -500 log/*.log > /tmp/logs.txt`
 3. Review all .c files for injection vectors
-4. Check Docker image integrity: `docker inspect rom-mud-server`
+4. Verify running process and listener: `ps -ef | grep -E "area/rom|startup"` and `ss -ltnp | grep :4000`
 5. Rollback to previous stable snapshot
 
 ### Severe Duplication Exploit
@@ -454,7 +454,7 @@ tail -f log/warpoint.log | grep "gained\|set\|strip"
 **Code Issues**: Check src/ directory comments or reach out to lead developer  
 **Balance Questions**: Reference BALANCE.md parameters  
 **Player Appeals**: Document in frozen.log, schedule review  
-**Emergency**: docker-compose restart rom-mud-server
+**Emergency**: stop server (`shutdown` in-game), then restart with `./startup`
 
 ---
 

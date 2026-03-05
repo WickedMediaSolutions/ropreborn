@@ -353,7 +353,7 @@ A
 E
 cloth turban~
 The turban used to be white cloth, now it is covered with oil and dirt from
-the head and hair of its previous owner, who must not have bathed much.
+0 -1 8717
 ~
 #8704
 cloth wrappings~
@@ -1195,7 +1195,7 @@ D2
 You see a rocky crevasse that proceeds deep under the pyramid.
 ~
 ~
-0 -1 8719
+0 -1 8718
 E
 bones~
 The bones have whitened and cracked in the dry air, apparently the remains 

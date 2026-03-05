@@ -2,10 +2,10 @@
 sect_halls.are~
 Sect Halls~
 {40 50} RoP     The Eight Sect Halls~
-8000 8399
+18000 18399
 
 #MOBILES
-#8000
+#18000
 master_aethelhelm~
 Master Aethelhelm~
 The sect master stands here, enveloped in a protective aura.
@@ -22,7 +22,7 @@ ABTV CEFHIJK 1000 0
 ACDEFHIJKLMNOT ABP CD 0
 stand stand male 0
 0 0 3 0
-#8001
+#18001
 avatar_aethelhelm~
 Avatar of Aethelhelm~
 A celestial being radiates divine power.
@@ -38,7 +38,7 @@ ABTV CEFHIJKZ 1500 0
 ACDEFHIJKLMNOP ABP CD 0
 stand stand either 0
 0 0 3 0
-#8002
+#18002
 trainer_holy~
 a holy trainer~
 A disciplined trainer teaches combat techniques.
@@ -51,10 +51,10 @@ human~
 ABV CFHIJK 500 0
 25 15 1d1+999 1d1+199 1d8+20 punch
 -15 -10 -5 -2
-ACEFHIJK ABD 0
+ACEFHIJK ABD 0 0
 stand stand male 0
 0 0 2 0
-#8003
+#18003
 scribe_aethelhelm~
 a holy scribe~
 A robed scholar copies ancient texts.
@@ -67,10 +67,10 @@ human~
 AB CFHIJK 400 0
 20 5 1d1+999 1d1+99 1d4+5 punch
 -10 -8 -5 0
-CFJ ABD 0
+CFJ ABD 0 0
 stand stand male 0
 0 0 2 0
-#8010
+#18010
 master_kiri~
 Master Kiri~
 The sacred priestess stands in meditation.
@@ -86,7 +86,7 @@ ABTV CFHIJK 1000 0
 ACDEFHIJKLMNOT ABP CD 0
 stand stand female 0
 0 0 2 0
-#8011
+#18011
 avatar_kiri~
 Avatar of Kiri~
 A shimmering goddess appears before you.
@@ -101,7 +101,7 @@ ABTV CEFHIJKZ 1500 0
 ACDEFHIJKLMNOP ABP CD 0
 stand stand female 0
 0 0 2 0
-#8012
+#18012
 priestess_kiri~
 a holy priestess~
 A robed priestess tends to spiritual matters.
@@ -114,10 +114,10 @@ human~
 ABV CFHIJK 500 0
 25 15 1d1+999 1d1+199 1d8+18 punch
 -15 -10 -5 -2
-ACEFHIJK ABD 0
+ACEFHIJK ABD 0 0
 stand stand female 0
 0 0 2 0
-#8020
+#18020
 master_baalzom~
 Master Baalzom~
 An ancient scholar studies forbidden knowledge.
@@ -133,7 +133,7 @@ ABTV CFHIJK 1000 0
 ACDEFHIJKLMNOT ABP CD 0
 stand stand male 0
 0 0 2 0
-#8021
+#18021
 avatar_baalzom~
 Avatar of Baalzom~
 An ethereal being of pure knowledge appears.
@@ -149,7 +149,7 @@ ABTV CFHIJKZ 1500 0
 ACDEFHIJKLMNOP ABP CD 0
 stand stand male 0
 0 0 3 0
-#8030
+#18030
 master_ishta~
 Master Ishta~
 A robed druid communes with nature.
@@ -165,7 +165,7 @@ ABTV CFHIJK 1000 0
 ACDEFHIJKLMNOT ABP CD 0
 stand stand male 0
 0 0 2 0
-#8031
+#18031
 avatar_ishta~
 Avatar of Ishta~
 The spirit of nature takes form.
@@ -181,7 +181,7 @@ ABTV CFHIJKZ 1500 0
 ACDEFHIJKLMNOP ABP CD 0
 stand stand male 0
 0 0 3 0
-#8040
+#18040
 master_zod~
 Master Zod~
 A tyrannical warlord commands absolute obedience.
@@ -197,7 +197,7 @@ ABTV CEFHIJKZ -1000 0
 ACDEFHIJKLMNOT ABP CD 0
 stand stand male 0
 0 0 3 0
-#8041
+#18041
 avatar_zod~
 Avatar of Zod~
 A dark tyrant looms before you.
@@ -213,7 +213,7 @@ ABTV CEFHIJKZ -1500 0
 ACDEFHIJKLMNOP ABP CD 0
 stand stand male 0
 0 0 3 0
-#8050
+#18050
 master_jalaal~
 Master Jalaal~
 A shadowed assassin waits in darkness.
@@ -229,7 +229,7 @@ ACHS PQ -1000 0
 EFJN 0 0 0
 stand stand male 100
 0 0 2 0
-#8051
+#18051
 avatar_jalaal~
 Avatar of Jalaal~
 A shadow assassin coalesces from darkness.
@@ -245,7 +245,7 @@ ACHS PQZ -1500 0
 EFHJN 0 0 0
 stand stand male 100
 0 0 2 0
-#8060
+#18060
 master_xix~
 Master Xix~
 A chaos-touched warlord radiates destruction.
@@ -261,7 +261,7 @@ ABTV CEFGHIJKZ -1000 0
 ACDEFHIJKLMNOT ABP CD 0
 stand stand male 0
 0 0 3 0
-#8061
+#18061
 avatar_xix~
 Avatar of Xix~
 Chaos itself takes terrible form.
@@ -277,7 +277,7 @@ ABTV CEFGHIJKZ -1500 0
 ACDEFHIJKLMNOP ABP CD 0
 stand stand male 0
 0 0 3 0
-#8070
+#18070
 master_talice~
 Master Talice~
 A deceiver shrouded in illusions sits regally.
@@ -293,7 +293,7 @@ ABTV CEFHIJKZ -1000 0
 ACDEFHIJKLMNOT ABP CD 0
 stand stand male 0
 0 0 2 0
-#8071
+#18071
 avatar_talice~
 Avatar of Talice~
 A trickster god materializes before you.
@@ -311,11 +311,22 @@ stand stand male 0
 0 0 2 0
 #0
 
+#RESETS
+S
+
+#SHOPS
+0
+
+#SPECIALS
+S
+
+#$
+
 #OBJECTS
 #0
 
 #ROOMS
-#8000
+#18000
 Hall of Aethelhelm~
 You stand in a massive stone hall dedicated to the virtues of valor and 
 protection. Towering columns crafted from pure white marble stretch up toward
@@ -328,14 +339,14 @@ D1
 Aethelhelm's training grounds lie to the east.
 ~
 ~
-0 -1 8001
+0 -1 18001
 D2
 The library archives are to the south.
 ~
 ~
-0 -1 8002
+0 -1 18002
 S
-#8001
+#18001
 Training Grounds of Aethelhelm~
 A large open courtyard surrounded by high stone walls serves as the training
 grounds for Aethelhelm's warriors. Equipment racks line the walls, and the 
@@ -347,9 +358,9 @@ D3
 The main hall is to the west.
 ~
 ~
-0 -1 8000
+0 -1 18000
 S
-#8002
+#18002
 Library Archives of Aethelhelm~
 Towering shelves of pristine stone hold sacred texts and battle records of 
 Aethelhelm's greatest achievements. The air is cool and dry, preserving the
@@ -361,9 +372,9 @@ D0
 The main hall is to the north.
 ~
 ~
-0 -1 8000
+0 -1 18000
 S
-#8010
+#18010
 Shrine of Kiri~
 You stand before a crystalline shrine of breathtaking beauty. Water flows
 endlessly from a sacred spring, its surface reflecting divine light. Healing
@@ -375,14 +386,14 @@ D1
 Kiri's meditation chambers are to the east.
 ~
 ~
-0 -1 8011
+0 -1 18011
 D2
 The healing pools are to the south.
 ~
 ~
-0 -1 8012
+0 -1 18012
 S
-#8011
+#18011
 Meditation Chambers~
 Peaceful chambers filled with the sound of flowing water and gentle music.
 Meditation cushions of silk line the floor, and the air is thick with 
@@ -394,9 +405,9 @@ D3
 The shrine is to the west.
 ~
 ~
-0 -1 8010
+0 -1 18010
 S
-#8012
+#18012
 Healing Pools~
 Luminous pools of sacred water glow with holy light. The water itself seems
 to pulse with healing power, and simply bathing in it mends wounds and 
@@ -407,9 +418,9 @@ D0
 The shrine is to the north.
 ~
 ~
-0 -1 8010
+0 -1 18010
 S
-#8020
+#18020
 Library of Baalzom~
 An impossibly vast library stretches in all directions, filled with ancient
 scrolls and forbidden tomes. The air crackles with arcane power. Runes glow
@@ -421,14 +432,14 @@ D1
 The vault of secrets is to the east.
 ~
 ~
-0 -1 8021
+0 -1 18021
 D2
 The study halls are to the south.
 ~
 ~
-0 -1 8022
+0 -1 18022
 S
-#8021
+#18021
 Vault of Secrets~
 A chamber of immense power, protected by countless wards and enchantments.
 Within are stored the greatest secrets of Baalzom - knowledge too dangerous
@@ -440,9 +451,9 @@ D3
 The library is to the west.
 ~
 ~
-0 -1 8020
+0 -1 18020
 S
-#8022
+#18022
 Study Halls~
 Long wooden tables stretch across this hall, where scholars contemplate the
 mysteries of existence. Candlelight flickers gently, and the scratching of
@@ -454,9 +465,9 @@ D0
 The library is to the north.
 ~
 ~
-0 -1 8020
+0 -1 18020
 S
-#8030
+#18030
 Grove of Ishta~
 A natural sanctuary where humans and nature exist in perfect balance. Trees
 of impossible height frame clearings of soft grass. Animals roam freely, and
@@ -468,14 +479,14 @@ D1
 The animal sanctuary is to the east.
 ~
 ~
-0 -1 8031
+0 -1 18031
 D2
 The garden of healing herbs is to the south.
 ~
 ~
-0 -1 8032
+0 -1 18032
 S
-#8031
+#18031
 Animal Sanctuary~
 A vast enclosure where creatures of all kinds live in harmony under Ishta's
 blessing. Majestic beasts walk freely, and predators rest alongside prey.
@@ -487,9 +498,9 @@ D3
 The grove is to the west.
 ~
 ~
-0 -1 8030
+0 -1 18030
 S
-#8032
+#18032
 Garden of Healing Herbs~
 Terraced gardens cultivate thousands of rare and magical plants. Healing
 herbs, restorative roots, and life-giving flowers bloom in abundance. The
@@ -501,9 +512,9 @@ D0
 The grove is to the north.
 ~
 ~
-0 -1 8030
+0 -1 18030
 S
-#8040
+#18040
 Throne Room of Zod~
 A massive hall of black iron and dark stone, dominated by a towering throne
 of twisted metal and bone. The walls are adorned with instruments of control
@@ -515,14 +526,14 @@ D1
 The war chamber is to the east.
 ~
 ~
-0 -1 8041
+0 -1 18041
 D2
 The dungeons of compliance are to the south.
 ~
 ~
-0 -1 8042
+0 -1 18042
 S
-#8041
+#18041
 War Chamber~
 A hall of conquest where strategy of dominion is planned. Maps of conquered
 lands cover the walls, and trophies of subjugated foes are displayed with
@@ -534,9 +545,9 @@ D3
 The throne room is to the west.
 ~
 ~
-0 -1 8040
+0 -1 18040
 S
-#8042
+#18042
 Dungeons of Compliance~
 Dark stone chambers where obedience is enforced and will is broken. Chains
 and mechanisms of control line the walls. Dark energy suffuses these chambers,
@@ -548,9 +559,9 @@ D0
 The throne room is to the north.
 ~
 ~
-0 -1 8040
+0 -1 18040
 S
-#8050
+#18050
 Assassin's Sanctum~
 A hidden sanctuary shrouded in shadow and mystery. Darkness clings to every
 surface, and silence is absolute. The air is heavy with secrets and danger.
@@ -562,14 +573,14 @@ D1
 The poison laboratory is to the east.
 ~
 ~
-0 -1 8051
+0 -1 18051
 D2
 The shadow training grounds are to the south.
 ~
 ~
-0 -1 8052
+0 -1 18052
 S
-#8051
+#18051
 Poison Laboratory~
 A chamber of shadows where deadly concoctions are brewed. Vials of luminous
 poison glow in the darkness, and the air reeks of toxin. Alchemists work in
@@ -581,9 +592,9 @@ D3
 The sanctum is to the west.
 ~
 ~
-0 -1 8050
+0 -1 18050
 S
-#8052
+#18052
 Shadow Training Grounds~
 A place where darkness itself teaches the art of assassination. Shadows take
 physical form and enemies materialize from thin air. The best assassins train
@@ -595,9 +606,9 @@ D0
 The sanctum is to the north.
 ~
 ~
-0 -1 8050
+0 -1 18050
 S
-#8060
+#18060
 Volcano of Xix~
 You stand at the heart of a volcano of pure chaos. Lava flows in patterns
 that defy physics, and flames of impossible colors dance in the air. The
@@ -609,14 +620,14 @@ D1
 The chamber of cataclysm is to the east.
 ~
 ~
-0 -1 8061
+0 -1 18061
 D2
 The furnace of destruction is to the south.
 ~
 ~
-0 -1 8062
+0 -1 18062
 S
-#8061
+#18061
 Chamber of Cataclysm~
 A hall where chaos is manifest in its purest form. The very atoms of matter
 seem to vibrate on the edge of annihilation. Magical forces of devastating
@@ -628,9 +639,9 @@ D3
 The volcano is to the west.
 ~
 ~
-0 -1 8060
+0 -1 18060
 S
-#8062
+#18062
 Furnace of Destruction~
 An inferno of apocalyptic proportions burns with flame and chaos. The heat
 is beyond measure, and the destruction is complete. This is where Xix forges
@@ -642,9 +653,9 @@ D0
 The volcano is to the north.
 ~
 ~
-0 -1 8060
+0 -1 18060
 S
-#8070
+#18070
 Hall of Illusions~
 A grand hall that appears different to every observer. The architecture shifts
 subtly, colors are never quite the same twice, and the very geometry seems to
@@ -656,14 +667,14 @@ D1
 The mirror chamber is to the east.
 ~
 ~
-0 -1 8071
+0 -1 18071
 D2
 The trick galleries are to the south.
 ~
 ~
-0 -1 8072
+0 -1 18072
 S
-#8071
+#18071
 Mirror Chamber~
 A hall of infinite mirrors that reflect not images but possibilities. Each
 reflection shows a different truth, and it is impossible to tell which is real.
@@ -675,9 +686,9 @@ D3
 The hall is to the west.
 ~
 ~
-0 -1 8070
+0 -1 18070
 S
-#8072
+#18072
 Trick Galleries~
 A winding gallery filled with illusions of breathtaking complexity. Paths
 appear and disappear, walls shift and change, and gravity itself seems
@@ -689,7 +700,7 @@ D0
 The hall is to the north.
 ~
 ~
-0 -1 8070
+0 -1 18070
 S
 #0
 

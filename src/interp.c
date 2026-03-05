@@ -70,6 +70,7 @@ const struct cmd_type cmd_table[] = {
     {"west",  do_west,  POS_STANDING, 0, LOG_NEVER, 0},
     {"up",    do_up,    POS_STANDING, 0, LOG_NEVER, 0},
     {"down",  do_down,  POS_STANDING, 0, LOG_NEVER, 0},
+    {"run",   do_run,   POS_STANDING, 0, LOG_NEVER, 1},
 
     /*
      * Common other commands.
@@ -99,6 +100,8 @@ const struct cmd_type cmd_table[] = {
     {"sockets",   do_sockets,   POS_DEAD,     L4, LOG_NORMAL, 1},
     {"stand",     do_stand,     POS_SLEEPING, 0,  LOG_NORMAL, 1},
     {"tell",      do_tell,      POS_RESTING,  0,  LOG_NORMAL, 1},
+    {"sectalk",   do_sectalk,   POS_SLEEPING, 0,  LOG_NORMAL, 1},
+    {"sectell",   do_sectell,   POS_RESTING,  0,  LOG_NORMAL, 1},
     {"unlock",    do_unlock,    POS_RESTING,  0,  LOG_NORMAL, 1},
     {"wield",     do_wear,      POS_RESTING,  0,  LOG_NORMAL, 1},
     {"wizhelp",   do_wizhelp,   POS_DEAD,     IM, LOG_NORMAL, 1},
@@ -130,6 +133,7 @@ const struct cmd_type cmd_table[] = {
     {"show",      do_show,      POS_DEAD,     0, LOG_NORMAL, 1},
     {"spells",    do_spells,    POS_DEAD,     0, LOG_NORMAL, 1},
     {"story",     do_story,     POS_DEAD,     0, LOG_NORMAL, 1},
+    {"top",       do_top,       POS_DEAD,     0, LOG_NORMAL, 1},
     {"time",      do_time,      POS_DEAD,     0, LOG_NORMAL, 1},
     {"typo",      do_typo,      POS_DEAD,     0, LOG_NORMAL, 1},
     {"weather",   do_weather,   POS_RESTING,  0, LOG_NORMAL, 1},
@@ -137,6 +141,9 @@ const struct cmd_type cmd_table[] = {
     {"whois",     do_whois,     POS_DEAD,     0, LOG_NORMAL, 1},
     {"wizlist",   do_wizlist,   POS_DEAD,     0, LOG_NORMAL, 1},
     {"worth",     do_worth,     POS_SLEEPING, 0, LOG_NORMAL, 1},
+    {"warpoint",  do_warpoint,  POS_DEAD,     0, LOG_NORMAL, 1},
+    {"rank",      do_rank,      POS_DEAD,     0, LOG_NORMAL, 1},
+    {"sect",      do_sect,      POS_DEAD,     0, LOG_NORMAL, 1},
 
     /*
      * Configuration commands.
@@ -270,6 +277,7 @@ const struct cmd_type cmd_table[] = {
     {"quit", do_quit, POS_DEAD, 0, LOG_NORMAL, 1},
     {"recall", do_recall, POS_FIGHTING, 0, LOG_NORMAL, 1},
     {"/", do_recall, POS_FIGHTING, 0, LOG_NORMAL, 0},
+    {"remort", do_remort, POS_DEAD, 0, LOG_NORMAL, 1},
     {"rent", do_rent, POS_DEAD, 0, LOG_NORMAL, 0},
     {"save", do_save, POS_DEAD, 0, LOG_NORMAL, 1},
     {"sleep", do_sleep, POS_SLEEPING, 0, LOG_NORMAL, 1},
@@ -298,6 +306,11 @@ const struct cmd_type cmd_table[] = {
     {"disconnect",	do_disconnect,	POS_DEAD, L3, LOG_ALWAYS, 1},
     {"flag",		do_flag,	POS_DEAD, L4, LOG_ALWAYS, 1},
     {"freeze",		do_freeze,	POS_DEAD, L4, LOG_ALWAYS, 1},
+    {"warpoint_set",	do_warpoint_set,	POS_DEAD, L4, LOG_ALWAYS, 1},
+    {"warpoint_show",	do_warpoint_show,	POS_DEAD, L4, LOG_ALWAYS, 1},
+    {"warpoint_strip",	do_warpoint_strip,	POS_DEAD, L4, LOG_ALWAYS, 1},
+    {"sect_set",	do_sect_set,	POS_DEAD, L4, LOG_ALWAYS, 1},
+    {"sect_alignment",	do_sect_alignment,	POS_DEAD, L4, LOG_ALWAYS, 1},
     {"permban",		do_permban,	POS_DEAD, L1, LOG_ALWAYS, 1},
     {"protect",		do_protect,	POS_DEAD, L1, LOG_ALWAYS, 1},
     {"reboo",		do_reboo,	POS_DEAD, L1, LOG_NORMAL, 0},

@@ -453,7 +453,7 @@ npm start
 
 ```
 ROM 2.4 MUD Server
-├── Docker Container (running ROM)
+├── Native Linux Runtime (running ROM)
 ├── area/ (existing area files)
 └── world-builder/ (NEW - Phase 13)
     ├── backend/ (Node.js API)

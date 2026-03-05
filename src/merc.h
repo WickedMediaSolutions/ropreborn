@@ -414,6 +414,7 @@ struct    weather_data
 #define CON_NOTE_TEXT			8
 #define CON_NOTE_FINISH			9
 #define CON_SELECT_SECT			46   /* ROP: Sect selection */
+#define CON_ROP_STAT_ALLOCATION  47   /* ROP: Stat allocation after sect selection */
 
 
 /*
@@ -1629,6 +1630,8 @@ struct    char_data
     sh_int             remort_skill_slots; /* customizable remort benefit */
     bool               remort_no_food;     /* if TRUE, don't need food */
     bool               remort_no_drink;    /* if TRUE, don't need drink */
+    long               last_warpoint_victim;   /* anti-farm: last victim id */
+    time_t             last_warpoint_time;     /* anti-farm: last reward timestamp */
     int                played;
     int                lines;  /* for the pager */
     time_t             logon;
@@ -1751,6 +1754,7 @@ struct    pc_data
 #ifdef IMC
     IMC_CHARDATA *imcchardata;
 #endif
+    int stat_points; /* ROP: Stat allocation points for new characters */
 };
 
 /* Data for generating characters -- only used during generation */
@@ -2555,6 +2559,14 @@ char    *item_name    args( ( int item_type) );
 int    attack_lookup    args( ( const char *name) );
 long    wiznet_lookup    args( ( const char *name) );
 int    class_lookup    args( ( const char *name) );
+int    profession_lookup_by_class args( ( int class_num ) );
+const struct profession_type *get_profession_by_class args( ( int class_num ) );
+const struct profession_type *get_profession args( ( CHAR_DATA *ch ) );
+int rop_effective_class_index args( ( int class_num ) );
+const char *rop_world_event_name args( ( void ) );
+int rop_world_event_damage_percent args( ( void ) );
+int rop_world_event_mana_scale_percent args( ( void ) );
+int rop_world_event_xp_percent args( ( void ) );
 bool    is_clan        args( (CHAR_DATA *ch) );
 bool    is_same_clan    args( (CHAR_DATA *ch, CHAR_DATA *victim));
 bool    is_old_mob    args ( (CHAR_DATA *ch) );

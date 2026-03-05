@@ -195,15 +195,119 @@ long wiznet_lookup (const char *name)
 int class_lookup (const char *name)
 {
     int class;
+    int profession;
 
     for (class = 0; class < MAX_CLASS; class++)
     {
+        if (class_table[class].name == NULL || class_table[class].name[0] == '\0')
+            continue;
         if (LOWER (name[0]) == LOWER (class_table[class].name[0])
             && !str_prefix (name, class_table[class].name))
             return class;
     }
 
+    for (profession = 0; profession < MAX_PROFESSION; profession++)
+    {
+        if (profession_table[profession].name == NULL || profession_table[profession].name[0] == '\0')
+            continue;
+
+        if (LOWER (name[0]) == LOWER (profession_table[profession].name[0])
+            && !str_prefix (name, profession_table[profession].name))
+        {
+            for (class = 0; class < MAX_CLASS; class++)
+            {
+                if (class_table[class].name == NULL || class_table[class].name[0] == '\0')
+                    continue;
+                if (!str_cmp (class_table[class].name, profession_table[profession].name))
+                    return class;
+            }
+        }
+    }
+
     return -1;
+}
+
+int profession_lookup_by_class (int class_num)
+{
+    int profession;
+
+    if (class_num < 0 || class_num >= MAX_CLASS)
+        return -1;
+
+    if (class_table[class_num].name == NULL || class_table[class_num].name[0] == '\0')
+        return -1;
+
+    for (profession = 0; profession < MAX_PROFESSION; profession++)
+    {
+        if (!str_cmp (class_table[class_num].name, profession_table[profession].name))
+            return profession;
+    }
+
+    return -1;
+}
+
+const struct profession_type *get_profession_by_class (int class_num)
+{
+    int profession_num;
+
+    profession_num = profession_lookup_by_class (class_num);
+    if (profession_num < 0)
+        return NULL;
+
+    return &profession_table[profession_num];
+}
+
+const struct profession_type *get_profession (CHAR_DATA * ch)
+{
+    if (ch == NULL || IS_NPC (ch))
+        return NULL;
+
+    return get_profession_by_class (ch->class);
+}
+
+int rop_effective_class_index (int class_num)
+{
+    const char *default_group;
+    const char *class_name;
+
+    if (class_num < 0 || class_num >= MAX_CLASS)
+        return 0;
+
+    default_group = class_table[class_num].default_group;
+    if (default_group != NULL && default_group[0] != '\0')
+    {
+        if (!str_cmp (default_group, "mage default"))
+            return 0;
+        if (!str_cmp (default_group, "cleric default"))
+            return 1;
+        if (!str_cmp (default_group, "thief default"))
+            return 2;
+        if (!str_cmp (default_group, "warrior default"))
+            return 3;
+    }
+
+    class_name = class_table[class_num].name;
+    if (class_name != NULL && class_name[0] != '\0')
+    {
+        if (!str_cmp (class_name, "mage")
+            || !str_cmp (class_name, "warlock")
+            || !str_cmp (class_name, "alchemist"))
+            return 0;
+
+        if (!str_cmp (class_name, "cleric")
+            || !str_cmp (class_name, "templar"))
+            return 1;
+
+        if (!str_cmp (class_name, "thief")
+            || !str_cmp (class_name, "ninja")
+            || !str_cmp (class_name, "monk"))
+            return 2;
+
+        if (!str_cmp (class_name, "warrior"))
+            return 3;
+    }
+
+    return 0;
 }
 
 /* for immunity, vulnerabiltiy, and resistant
@@ -360,7 +464,7 @@ int get_skill (CHAR_DATA * ch, int sn)
 
     else if (!IS_NPC (ch))
     {
-        if (ch->level < skill_table[sn].skill_level[ch->class])
+        if (ch->level < skill_table[sn].skill_level[rop_effective_class_index (ch->class)])
             skill = 0;
         else
             skill = ch->pcdata->learned[sn];
@@ -852,6 +956,7 @@ int get_age (CHAR_DATA * ch)
 int get_curr_stat (CHAR_DATA * ch, int stat)
 {
     int max;
+    const struct profession_type *profession;
 
     if (IS_NPC (ch) || ch->level > LEVEL_IMMORTAL)
         max = 25;
@@ -860,7 +965,9 @@ int get_curr_stat (CHAR_DATA * ch, int stat)
     {
         max = pc_race_table[ch->race].max_stats[stat] + 4;
 
-        if (class_table[ch->class].attr_prime == stat)
+        profession = get_profession (ch);
+
+        if (profession != NULL ? profession->attr_prime == stat : class_table[ch->class].attr_prime == stat)
             max += 2;
 
         if (ch->race == race_lookup ("human"))
@@ -876,12 +983,14 @@ int get_curr_stat (CHAR_DATA * ch, int stat)
 int get_max_train (CHAR_DATA * ch, int stat)
 {
     int max;
+    const struct profession_type *profession;
 
     if (IS_NPC (ch) || ch->level > LEVEL_IMMORTAL)
         return 25;
 
     max = pc_race_table[ch->race].max_stats[stat];
-    if (class_table[ch->class].attr_prime == stat)
+    profession = get_profession (ch);
+    if (profession != NULL ? profession->attr_prime == stat : class_table[ch->class].attr_prime == stat)
     {
         if (ch->race == race_lookup ("human"))
             max += 3;
@@ -1464,14 +1573,11 @@ bool is_affected (CHAR_DATA * ch, int sn)
 void affect_join (CHAR_DATA * ch, AFFECT_DATA * paf)
 {
     AFFECT_DATA *paf_old;
-    bool found;
-
-    found = FALSE;
     for (paf_old = ch->affected; paf_old != NULL; paf_old = paf_old->next)
     {
         if (paf_old->type == paf->type)
         {
-            paf->level = (paf->level += paf_old->level) / 2;
+            paf->level = (paf->level + paf_old->level) / 2;
             paf->duration += paf_old->duration;
             paf->modifier += paf_old->modifier;
             affect_remove (ch, paf_old);
@@ -3613,7 +3719,7 @@ void all_colour (CHAR_DATA * ch, char *argument)
     ch->pcdata->fight_thit[0] = bright;
     ch->pcdata->fight_skill[0] = bright;
 
-    sprintf (buf, "All Colour settings set to %s.\n\r", buf2);
+    snprintf (buf, sizeof (buf), "All Colour settings set to %.69s.\n\r", buf2);
     send_to_char_bw (buf, ch);
 
     return;

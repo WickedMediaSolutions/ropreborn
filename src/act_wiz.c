@@ -1604,7 +1604,7 @@ void do_mstat (CHAR_DATA * ch, char *argument)
     sprintf (buf,
              "Lv: %d  Class: %s  Align: %d  Gold: %ld  Silver: %ld  Exp: %d\n\r",
              victim->level,
-             IS_NPC (victim) ? "mobile" : class_table[victim->class].name,
+             IS_NPC (victim) ? "mobile" : (get_profession (victim) != NULL ? get_profession (victim)->name : class_table[victim->class].name),
              victim->alignment, victim->gold, victim->silver, victim->exp);
     send_to_char (buf, ch);
 
@@ -4784,6 +4784,237 @@ void do_qmconfig (CHAR_DATA * ch, char * argument)
 
 	printf_to_char(ch, "I have no clue what you are trying to do...\n\r");
 	return;
+}
+
+void do_warpoint_set (CHAR_DATA * ch, char *argument)
+{
+    char arg1[MAX_INPUT_LENGTH];
+    char arg2[MAX_INPUT_LENGTH];
+    CHAR_DATA *victim;
+    int amount;
+
+    argument = one_argument (argument, arg1);
+    argument = one_argument (argument, arg2);
+
+    if (arg1[0] == '\0' || arg2[0] == '\0' || !is_number (arg2))
+    {
+        send_to_char ("Syntax: warpoint_set <player> <amount>\n\r", ch);
+        return;
+    }
+
+    victim = get_char_world (ch, arg1);
+    if (victim == NULL || IS_NPC (victim))
+    {
+        send_to_char ("Player not found.\n\r", ch);
+        return;
+    }
+
+    amount = atoi (arg2);
+    if (amount < 0)
+        amount = 0;
+
+    victim->warpoint = amount;
+    save_char_obj (victim);
+
+    printf_to_char (ch, "Warpoints for %s set to %d.\n\r", victim->name, victim->warpoint);
+    printf_to_char (victim, "Your warpoints have been set to %d by %s.\n\r", victim->warpoint, ch->name);
+}
+
+void do_warpoint_show (CHAR_DATA * ch, char *argument)
+{
+    char arg1[MAX_INPUT_LENGTH];
+    CHAR_DATA *victim;
+
+    argument = one_argument (argument, arg1);
+    if (arg1[0] == '\0')
+    {
+        send_to_char ("Syntax: warpoint_show <player>\n\r", ch);
+        return;
+    }
+
+    victim = get_char_world (ch, arg1);
+    if (victim == NULL || IS_NPC (victim))
+    {
+        send_to_char ("Player not found.\n\r", ch);
+        return;
+    }
+
+    printf_to_char (ch,
+                    "%s: warpoints=%d remorts=%d profession_rank=%d sect=%d\n\r",
+                    victim->name,
+                    victim->warpoint,
+                    victim->remort_count,
+                    victim->profession_rank,
+                    victim->sect_number);
+}
+
+void do_warpoint_strip (CHAR_DATA * ch, char *argument)
+{
+    char arg1[MAX_INPUT_LENGTH];
+    CHAR_DATA *victim;
+
+    argument = one_argument (argument, arg1);
+    if (arg1[0] == '\0')
+    {
+        send_to_char ("Syntax: warpoint_strip <player>\n\r", ch);
+        return;
+    }
+
+    victim = get_char_world (ch, arg1);
+    if (victim == NULL || IS_NPC (victim))
+    {
+        send_to_char ("Player not found.\n\r", ch);
+        return;
+    }
+
+    victim->warpoint = 0;
+    save_char_obj (victim);
+
+    printf_to_char (ch, "Warpoints for %s reset to 0.\n\r", victim->name);
+    printf_to_char (victim, "Your warpoints have been reset by %s.\n\r", ch->name);
+}
+
+void do_sect_set (CHAR_DATA * ch, char *argument)
+{
+    char arg1[MAX_INPUT_LENGTH];
+    char arg2[MAX_INPUT_LENGTH];
+    CHAR_DATA *victim;
+    int sect = -1;
+    int i;
+
+    argument = one_argument (argument, arg1);
+    argument = one_argument (argument, arg2);
+
+    if (arg1[0] == '\0' || arg2[0] == '\0')
+    {
+        send_to_char ("Syntax: sect_set <player> <sect_name|sect_number>\n\r", ch);
+        return;
+    }
+
+    victim = get_char_world (ch, arg1);
+    if (victim == NULL || IS_NPC (victim))
+    {
+        send_to_char ("Player not found.\n\r", ch);
+        return;
+    }
+
+    if (is_number (arg2))
+    {
+        sect = atoi (arg2) - 1;
+    }
+    else
+    {
+        for (i = 0; i < MAX_SECT; i++)
+        {
+            if (!str_prefix (arg2, sect_table[i].name))
+            {
+                sect = i;
+                break;
+            }
+        }
+    }
+
+    if (sect < 0 || sect >= MAX_SECT)
+    {
+        send_to_char ("Invalid sect. Use sect number 1-8 or a valid sect name.\n\r", ch);
+        return;
+    }
+
+    victim->sect_number = sect;
+    if (sect_table[sect].alignment == 1)
+        victim->alignment = 1000;
+    else if (sect_table[sect].alignment == -1)
+        victim->alignment = -1000;
+
+    if (sect_table[sect].base_group != NULL
+        && sect_table[sect].base_group[0] != '\0')
+    {
+        group_add (victim, sect_table[sect].base_group, FALSE);
+    }
+
+    save_char_obj (victim);
+
+    printf_to_char (ch,
+                    "Sect for %s set to %s (%s). Alignment set to %d.\n\r",
+                    victim->name,
+                    sect_table[sect].name,
+                    sect_table[sect].who_name,
+                    victim->alignment);
+    printf_to_char (victim,
+                    "Your sect has been set to %s by %s.\n\r",
+                    sect_table[sect].name,
+                    ch->name);
+}
+
+void do_sect_alignment (CHAR_DATA * ch, char *argument)
+{
+    char arg1[MAX_INPUT_LENGTH];
+    char arg2[MAX_INPUT_LENGTH];
+    CHAR_DATA *victim;
+    int target_alignment;
+    int i;
+
+    argument = one_argument (argument, arg1);
+    argument = one_argument (argument, arg2);
+
+    if (arg1[0] == '\0' || arg2[0] == '\0')
+    {
+        send_to_char ("Syntax: sect_alignment <player> <good|evil>\n\r", ch);
+        return;
+    }
+
+    victim = get_char_world (ch, arg1);
+    if (victim == NULL || IS_NPC (victim))
+    {
+        send_to_char ("Player not found.\n\r", ch);
+        return;
+    }
+
+    if (!str_prefix (arg2, "good"))
+    {
+        target_alignment = 1000;
+    }
+    else if (!str_prefix (arg2, "evil"))
+    {
+        target_alignment = -1000;
+    }
+    else
+    {
+        send_to_char ("Alignment must be 'good' or 'evil'.\n\r", ch);
+        return;
+    }
+
+    victim->alignment = target_alignment;
+
+    if (victim->sect_number < 0
+        || victim->sect_number >= MAX_SECT
+        || sect_table[victim->sect_number].alignment != (target_alignment > 0 ? 1 : -1))
+    {
+        for (i = 0; i < MAX_SECT; i++)
+        {
+            if (sect_table[i].alignment == (target_alignment > 0 ? 1 : -1))
+            {
+                victim->sect_number = i;
+                if (sect_table[i].base_group != NULL
+                    && sect_table[i].base_group[0] != '\0')
+                {
+                    group_add (victim, sect_table[i].base_group, FALSE);
+                }
+                break;
+            }
+        }
+    }
+
+    save_char_obj (victim);
+
+    printf_to_char (ch,
+                    "Alignment for %s set to %d.\n\r",
+                    victim->name,
+                    victim->alignment);
+    printf_to_char (victim,
+                    "Your alignment has been forced to %s by %s.\n\r",
+                    target_alignment > 0 ? "good" : "evil",
+                    ch->name);
 }
 
 void qmconfig_read (void) {

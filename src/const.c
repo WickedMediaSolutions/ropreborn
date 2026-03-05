@@ -194,6 +194,136 @@ const struct race_type race_table[] = {
      A | H | M | V, A | B | C | D | E | F | G | H | I | J | K},
 
     {
+     "skyborn", TRUE,
+     0, AFF_FLYING, OFF_DODGE,
+     0, RES_LIGHTNING, VULN_BASH,
+     A | H | M | W, A | B | C | D | E | F | G | H | I | J | K | P},
+
+    {
+     "feline", TRUE,
+     0, AFF_DARK_VISION, OFF_FAST | OFF_DODGE,
+     0, 0, 0,
+     A | G | V, A | C | D | E | F | H | J | K | Q | U | V},
+
+    {
+     "lizard", TRUE,
+     0, 0, 0,
+     0, RES_POISON, VULN_COLD,
+     A | G | X | cc, A | C | D | E | F | H | K | Q | V},
+
+    {
+     "dragon", TRUE,
+     0, AFF_INFRARED | AFF_FLYING, 0,
+     0, RES_FIRE | RES_BASH | RES_CHARM,
+     VULN_PIERCE | VULN_COLD,
+     A | H | Z, A | C | D | E | F | G | H | I | J | K | P | Q | U | V | X},
+
+    {
+     "undead", TRUE,
+     0, AFF_DETECT_HIDDEN, 0,
+     IMM_DISEASE | IMM_POISON, RES_NEGATIVE | RES_COLD,
+     VULN_HOLY | VULN_FIRE,
+     A | I | M | V, A | B | C | D | E | F | G | H | I | J | K},
+
+    {
+     "orc", TRUE,
+     0, AFF_INFRARED, 0,
+     0, RES_DISEASE, VULN_LIGHT,
+     A | H | M | V, A | B | C | D | E | F | G | H | I | J | K},
+
+    {
+     "goblin", TRUE,
+     0, AFF_INFRARED, 0,
+     0, RES_DISEASE, VULN_MAGIC,
+     A | H | M | V, A | B | C | D | E | F | G | H | I | J | K},
+
+    {
+     "gnome", TRUE,
+     0, AFF_INFRARED, OFF_DODGE,
+     0, RES_MENTAL, VULN_BASH,
+     A | H | M | V, A | B | C | D | E | F | G | H | I | J | K},
+
+    {
+     "halfling", TRUE,
+     0, AFF_DARK_VISION, OFF_DODGE | OFF_FAST,
+     0, RES_CHARM, VULN_BASH,
+     A | G | V, A | C | D | E | F | H | J | K | Q},
+
+    {
+     "troll", TRUE,
+     0, AFF_REGENERATION | AFF_INFRARED | AFF_DETECT_HIDDEN,
+     OFF_BERSERK,
+     0, RES_CHARM | RES_BASH, VULN_FIRE | VULN_ACID,
+     A | B | H | M | V, A | B | C | D | E | F | G | H | I | J | K | U | V},
+
+    {
+     "minotaur", TRUE,
+     0, AFF_INFRARED, OFF_BASH,
+     0, RES_BASH, VULN_MENTAL,
+     A | H | M | V, A | B | C | D | E | F | G | H | I | J | K | W},
+
+    {
+     "centaur", TRUE,
+     0, 0, OFF_BASH,
+     0, RES_DROWNING, VULN_PIERCE,
+     A | H | M | V, A | B | C | D | E | F | G | H | I | J | K | Q | U},
+
+    {
+     "faerie", TRUE,
+     0, AFF_FLYING | AFF_DARK_VISION, OFF_FAST,
+     0, RES_MAGIC, VULN_IRON,
+     A | G | W, A | C | D | E | F | H | J | K | P},
+
+    {
+     "drow", TRUE,
+     0, AFF_INFRARED | AFF_DARK_VISION, OFF_DODGE,
+     0, RES_CHARM, VULN_LIGHT,
+     A | H | M | V, A | B | C | D | E | F | G | H | I | J | K},
+
+    {
+     "aarakocra", TRUE,
+     0, AFF_FLYING | AFF_DARK_VISION, OFF_FAST,
+     0, RES_LIGHTNING, VULN_BASH,
+     A | G | W, A | C | D | E | F | H | J | K | P},
+
+    {
+     "naga", TRUE,
+     0, AFF_DARK_VISION, 0,
+     0, RES_POISON, VULN_COLD,
+     A | G | X | Y | cc, A | D | E | F | K | L | Q | V | X},
+
+    {
+     "kender", TRUE,
+     0, AFF_DARK_VISION, OFF_DODGE | OFF_FAST,
+     0, RES_CHARM, VULN_BASH,
+     A | G | V, A | C | D | E | F | H | J | K | Q},
+
+    {
+     "pixie", TRUE,
+     0, AFF_FLYING | AFF_HIDE, OFF_FAST,
+     0, RES_CHARM | RES_MAGIC, VULN_BASH,
+     A | G | W, A | C | D | E | F | H | J | K | P},
+
+    {
+     "gnoll", TRUE,
+     0, AFF_INFRARED, OFF_BASH,
+     0, RES_DISEASE, VULN_MAGIC,
+     A | H | M | V, A | B | C | D | E | F | G | H | I | J | K},
+
+    {
+     "changeling", TRUE,
+     0, AFF_DETECT_INVIS, OFF_DODGE,
+     0, RES_MENTAL, VULN_LIGHT,
+     A | H | M | V, A | B | C | D | E | F | G | H | I | J | K},
+
+    {
+     "void-touched", TRUE,
+     0, AFF_DARK_VISION | AFF_DETECT_INVIS, 0,
+     RES_NEGATIVE, RES_MAGIC,
+     VULN_HOLY,
+     A | H | I | M | V, A | B | C | D | E | F | G | H | I | J | K},
+
+    {
      "bat", FALSE,
      0, AFF_FLYING | AFF_DARK_VISION, OFF_DODGE | OFF_FAST,
      0, 0, VULN_LIGHT,
@@ -384,7 +514,7 @@ const struct pc_race_type pc_race_table[] = {
      {"bash", "fast healing"},
      {16, 11, 13, 11, 14}, {22, 15, 18, 15, 20}, SIZE_LARGE},
 
-    /* ROP: Additional 19 races to reach 24 total */
+    /* ROP: Additional 20 races to reach 24 total */
     {
      "skyborn", "Skyb", 3, {100, 120, 100, 110},
      {"",}, 
@@ -471,6 +601,11 @@ const struct pc_race_type pc_race_table[] = {
      {10, 13, 12, 15, 11}, {15, 18, 17, 20, 16}, SIZE_SMALL},
 
     {
+     "pixie", "Pixi", 3, {100, 120, 115, 120},
+     {"sneak", "hide"},
+     {10, 14, 13, 15, 10}, {15, 19, 18, 20, 15}, SIZE_SMALL},
+
+    {
      "gnoll", "Gnol", 3, {115, 100, 100, 110},
      {"bash"},
      {14, 10, 10, 13, 13}, {19, 15, 15, 18, 18}, SIZE_MEDIUM},
@@ -504,13 +639,43 @@ const struct class_type class_table[MAX_CLASS] = {
      "cleric basics", "cleric default"},
 
     {
+     "templar", "Tem", STAT_WIS, OBJ_VNUM_SCHOOL_MACE,
+     {3003, 9619}, 75, 20, 0, 8, 11, TRUE,
+     "cleric basics", "cleric default"},
+
+    {
+     "monk", "Mon", STAT_DEX, OBJ_VNUM_SCHOOL_DAGGER,
+     {3028, 9639}, 75, 20, -2, 9, 13, FALSE,
+     "thief basics", "thief default"},
+
+    {
+     "warlock", "Wlk", STAT_INT, OBJ_VNUM_SCHOOL_DAGGER,
+     {3018, 9618}, 75, 20, 4, 6, 9, TRUE,
+     "mage basics", "mage default"},
+
+    {
      "thief", "Thi", STAT_DEX, OBJ_VNUM_SCHOOL_DAGGER,
      {3028, 9639}, 75, 20, -4, 8, 13, FALSE,
      "thief basics", "thief default"},
 
     {
+     "ninja", "Nin", STAT_DEX, OBJ_VNUM_SCHOOL_DAGGER,
+     {3028, 9639}, 75, 20, -5, 8, 12, FALSE,
+     "thief basics", "thief default"},
+
+    {
      "warrior", "War", STAT_STR, OBJ_VNUM_SCHOOL_SWORD,
      {3022, 9633}, 75, 20, -10, 11, 15, FALSE,
+     "warrior basics", "warrior default"},
+
+    {
+     "alchemist", "Alc", STAT_INT, OBJ_VNUM_SCHOOL_DAGGER,
+     {3018, 9618}, 75, 20, 3, 6, 9, TRUE,
+     "mage basics", "mage default"},
+
+    {
+     "", "", STAT_STR, OBJ_VNUM_SCHOOL_SWORD,
+     {0, 0}, 75, 20, 0, 11, 15, FALSE,
      "warrior basics", "warrior default"}
 };
 
@@ -518,7 +683,6 @@ const struct class_type class_table[MAX_CLASS] = {
 
 /*
  * ROP Profession Table (9 professions)
- * Placeholder structure - to be filled with actual profession data in Phase 1+
  */
 const struct profession_type profession_table[MAX_PROFESSION] = {
     {
@@ -527,24 +691,24 @@ const struct profession_type profession_table[MAX_PROFESSION] = {
      "warrior basics", "warrior default"},
 
     {
-     "paladin", "Pal", STAT_WIS, OBJ_VNUM_SCHOOL_MACE,
+    "cleric", "Cle", STAT_WIS, OBJ_VNUM_SCHOOL_MACE,
      75, 0, 8, 12, 0,
-     "paladin basics", "paladin default"},
+    "cleric basics", "cleric default"},
 
     {
-     "ranger", "Ran", STAT_DEX, OBJ_VNUM_SCHOOL_SWORD,
+    "templar", "Tem", STAT_WIS, OBJ_VNUM_SCHOOL_MACE,
+    75, 0, 8, 12, 50,
+    "cleric basics", "cleric default"},
+
+    {
+    "monk", "Mon", STAT_DEX, OBJ_VNUM_SCHOOL_DAGGER,
      75, -5, 9, 13, 0,
-     "ranger basics", "ranger default"},
+    "thief basics", "thief default"},
 
     {
-     "mage", "Mag", STAT_INT, OBJ_VNUM_SCHOOL_DAGGER,
+    "warlock", "Wlk", STAT_INT, OBJ_VNUM_SCHOOL_DAGGER,
      75, 6, 6, 8, 100,
      "mage basics", "mage default"},
-
-    {
-     "cleric", "Cle", STAT_WIS, OBJ_VNUM_SCHOOL_MACE,
-     75, 2, 7, 10, 100,
-     "cleric basics", "cleric default"},
 
     {
      "thief", "Thi", STAT_DEX, OBJ_VNUM_SCHOOL_DAGGER,
@@ -552,68 +716,67 @@ const struct profession_type profession_table[MAX_PROFESSION] = {
      "thief basics", "thief default"},
 
     {
-     "assassin", "Ass", STAT_DEX, OBJ_VNUM_SCHOOL_DAGGER,
+    "ninja", "Nin", STAT_DEX, OBJ_VNUM_SCHOOL_DAGGER,
      75, -6, 9, 12, 0,
-     "assassin basics", "assassin default"},
+    "thief basics", "thief default"},
 
     {
-     "bard", "Bar", STAT_INT, OBJ_VNUM_SCHOOL_SWORD,
-     75, -2, 8, 12, 50,
-     "bard basics", "bard default"},
+    "mage", "Mag", STAT_INT, OBJ_VNUM_SCHOOL_DAGGER,
+    75, 6, 6, 8, 100,
+    "mage basics", "mage default"},
 
     {
-     "druid", "Dru", STAT_WIS, OBJ_VNUM_SCHOOL_DAGGER,
+    "alchemist", "Alc", STAT_INT, OBJ_VNUM_SCHOOL_DAGGER,
      75, 4, 7, 11, 100,
-     "druid basics", "druid default"}
+    "mage basics", "mage default"}
 };
 
 
 
 /*
  * ROP Sect Table (8 sects)
- * Placeholder structure - to be filled with actual sect data in Phase 1+
  * Alignment: 1=GOOD, 0=NEUTRAL, -1=EVIL
  */
 const struct sect_type sect_table[MAX_SECT] = {
     {
      "Aethelhelm", "AET", 1,
      "Avatar of Aethelhelm",
-     3700, "aethelhelm spells", "The path of light and justice"},
+    18000, "aethelhelm spells", "The path of light and justice"},
 
     {
-     "Zod", "ZOD", -1,
-     "Avatar of Zod",
-     3701, "zod spells", "The path of shadow and power"},
+    "Kiri", "KIR", 1,
+    "Avatar of Kiri",
+    18010, "kiri spells", "The path of sacred healing and balance"},
 
     {
-     "Necrute", "NEC", -1,
-     "Avatar of Necrute",
-     3702, "necrute spells", "The path of death and undeath"},
+    "Baalzom", "BAA", 1,
+    "Avatar of Baalzom",
+    18020, "baalzom spells", "The path of knowledge and ancient wisdom"},
 
     {
-     "Solist", "SOL", 0,
-     "Avatar of Solist",
-     3703, "solist spells", "The path of nature and solitude"},
+    "Ishta", "ISH", 1,
+    "Avatar of Ishta",
+    18030, "ishta spells", "The path of benevolence and renewal"},
 
     {
-     "Prophet", "PRO", 1,
-     "Avatar of Prophet",
-     3704, "prophet spells", "The path of faith and redemption"},
+    "Zod", "ZOD", -1,
+    "Avatar of Zod",
+    18040, "zod spells", "The path of tyranny and domination"},
 
     {
-     "Malediction", "MAL", -1,
-     "Avatar of Malediction",
-     3705, "malediction spells", "The path of chaos and malice"},
+    "Jalaal", "JAL", -1,
+    "Avatar of Jalaal",
+    18050, "jalaal spells", "The path of shadow and precision"},
 
     {
-     "Salvation", "SAL", 1,
-     "Avatar of Salvation",
-     3706, "salvation spells", "The path of healing and grace"},
+    "Xix", "XIX", -1,
+    "Avatar of Xix",
+    18060, "xix spells", "The path of chaos and destruction"},
 
     {
-     "Void", "VOI", 0,
-     "Avatar of the Void",
-     3707, "void spells", "The path of emptiness and balance"}
+    "Talice", "TAL", -1,
+    "Avatar of Talice",
+    18070, "talice spells", "The path of deception and illusion"}
 };
 
 

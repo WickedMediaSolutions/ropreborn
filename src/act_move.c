@@ -295,6 +295,73 @@ void do_down (CHAR_DATA * ch, char *argument)
 
 
 
+void do_run (CHAR_DATA * ch, char *argument)
+{
+    char arg[MAX_INPUT_LENGTH];
+    int door;
+    int steps = 0;
+
+    one_argument (argument, arg);
+
+    if (arg[0] == '\0')
+    {
+        send_to_char ("{CUsage:{x {Wrun <n|e|s|w|u|d>{x\n\r", ch);
+        return;
+    }
+
+    if (!str_cmp (arg, "n") || !str_cmp (arg, "north"))
+        door = DIR_NORTH;
+    else if (!str_cmp (arg, "e") || !str_cmp (arg, "east"))
+        door = DIR_EAST;
+    else if (!str_cmp (arg, "s") || !str_cmp (arg, "south"))
+        door = DIR_SOUTH;
+    else if (!str_cmp (arg, "w") || !str_cmp (arg, "west"))
+        door = DIR_WEST;
+    else if (!str_cmp (arg, "u") || !str_cmp (arg, "up"))
+        door = DIR_UP;
+    else if (!str_cmp (arg, "d") || !str_cmp (arg, "down"))
+        door = DIR_DOWN;
+    else
+    {
+        send_to_char ("{RInvalid direction.{x {CUse:{x {Wn/e/s/w/u/d{x\n\r", ch);
+        return;
+    }
+
+    send_to_char ("{CYou break into a run...{x\n\r", ch);
+
+    for (;;)
+    {
+        ROOM_INDEX_DATA *was_room;
+
+        if (ch->in_room == NULL)
+            break;
+
+        was_room = ch->in_room;
+        move_char (ch, door, FALSE);
+
+        if (ch->in_room == NULL || ch->in_room == was_room)
+            break;
+
+        steps++;
+
+        if (IS_NPC (ch))
+            continue;
+
+        if (ch->move <= 0)
+            break;
+    }
+
+    if (steps > 0)
+    {
+        char buf[MAX_STRING_LENGTH];
+        snprintf (buf, sizeof (buf), "{CRun complete:{x traveled {W%d{x room%s {Cin{x {G%s{x.\n\r",
+                  steps, steps == 1 ? "" : "s", dir_name[door]);
+        send_to_char (buf, ch);
+    }
+}
+
+
+
 int find_door (CHAR_DATA * ch, char *arg)
 {
     EXIT_DATA *pexit;
@@ -1666,7 +1733,7 @@ void do_train (CHAR_DATA * ch, char *argument)
 
     if (!str_cmp (argument, "str"))
     {
-        if (class_table[ch->class].attr_prime == STAT_STR)
+        if ((get_profession (ch) != NULL ? get_profession (ch)->attr_prime : class_table[ch->class].attr_prime) == STAT_STR)
             cost = 1;
         stat = STAT_STR;
         pOutput = "strength";
@@ -1674,7 +1741,7 @@ void do_train (CHAR_DATA * ch, char *argument)
 
     else if (!str_cmp (argument, "int"))
     {
-        if (class_table[ch->class].attr_prime == STAT_INT)
+        if ((get_profession (ch) != NULL ? get_profession (ch)->attr_prime : class_table[ch->class].attr_prime) == STAT_INT)
             cost = 1;
         stat = STAT_INT;
         pOutput = "intelligence";
@@ -1682,7 +1749,7 @@ void do_train (CHAR_DATA * ch, char *argument)
 
     else if (!str_cmp (argument, "wis"))
     {
-        if (class_table[ch->class].attr_prime == STAT_WIS)
+        if ((get_profession (ch) != NULL ? get_profession (ch)->attr_prime : class_table[ch->class].attr_prime) == STAT_WIS)
             cost = 1;
         stat = STAT_WIS;
         pOutput = "wisdom";
@@ -1690,7 +1757,7 @@ void do_train (CHAR_DATA * ch, char *argument)
 
     else if (!str_cmp (argument, "dex"))
     {
-        if (class_table[ch->class].attr_prime == STAT_DEX)
+        if ((get_profession (ch) != NULL ? get_profession (ch)->attr_prime : class_table[ch->class].attr_prime) == STAT_DEX)
             cost = 1;
         stat = STAT_DEX;
         pOutput = "dexterity";
@@ -1698,7 +1765,7 @@ void do_train (CHAR_DATA * ch, char *argument)
 
     else if (!str_cmp (argument, "con"))
     {
-        if (class_table[ch->class].attr_prime == STAT_CON)
+        if ((get_profession (ch) != NULL ? get_profession (ch)->attr_prime : class_table[ch->class].attr_prime) == STAT_CON)
             cost = 1;
         stat = STAT_CON;
         pOutput = "constitution";

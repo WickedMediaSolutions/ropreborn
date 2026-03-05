@@ -1,9 +1,9 @@
 /* IMC2 Freedom Client - Developed by Mud Domain.
  *
- * Copyright ©2004 by Roger Libiez ( Samson )
- * Contributions by Johnathan Walker ( Xorith ), Copyright ©2004
- * Additional contributions by Jesse Defer ( Garil ), Copyright ©2004
- * Additional contributions by Rogel, Copyright ©2004
+ * Copyright ï¿½2004 by Roger Libiez ( Samson )
+ * Contributions by Johnathan Walker ( Xorith ), Copyright ï¿½2004
+ * Additional contributions by Jesse Defer ( Garil ), Copyright ï¿½2004
+ * Additional contributions by Rogel, Copyright ï¿½2004
  * Comments and suggestions welcome: http://www.mudbytes.net/index.php?a=forum&f=31
  * License terms are available in the imc2freedom.license file.
  */
@@ -218,7 +218,7 @@ void imclog( const char *format, ... )
    vsnprintf( buf, LGST, format, ap );
    va_end( ap );
 
-   snprintf( buf2, LGST, "IMC: %s", buf );
+   snprintf( buf2, LGST, "IMC: %.*s", LGST - 6, buf );
 
    strtime = ctime( &imc_time );
    strtime[strlen( strtime ) - 1] = '\0';
@@ -238,7 +238,7 @@ void imcbug( const char *format, ... )
    vsnprintf( buf, LGST, format, ap );
    va_end( ap );
 
-   snprintf( buf2, LGST, "***BUG*** IMC: %s", buf );
+   snprintf( buf2, LGST, "***BUG*** IMC: %.*s", LGST - 16, buf );
 
    strtime = ctime( &imc_time );
    strtime[strlen( strtime ) - 1] = '\0';
@@ -1586,7 +1586,7 @@ void imc_update_tellhistory( CHAR_DATA * ch, const char *msg )
 
    for( x = 0; x < MAX_IMCTELLHISTORY; x++ )
    {
-      if( IMCTELLHISTORY( ch, x ) == '\0' )
+      if( IMCTELLHISTORY( ch, x ) == NULL )
       {
          IMCTELLHISTORY( ch, x ) = IMCSTRALLOC( new_msg );
          break;
@@ -1695,9 +1695,9 @@ PFUN( imc_recv_tell )
     * Tell social
     */
    if( reply == 2 )
-      snprintf( buf, LGST, "~WImctell: ~c%s\r\n", txt );
+      snprintf( buf, LGST, "~WImctell: ~c%.*s\r\n", LGST - 16, txt );
    else
-      snprintf( buf, LGST, "~C%s ~cimctells you ~c'~W%s~c'~!\r\n", imcgetname( q->from ), txt );
+      snprintf( buf, LGST, "~C%s ~cimctells you ~c'~W%.*s~c'~!\r\n", imcgetname( q->from ), LGST - 48, txt );
    imc_to_char( buf, vic );
    imc_update_tellhistory( vic, buf );
    return;
@@ -1750,8 +1750,9 @@ void update_imchistory( IMC_CHANNEL * channel, char *message )
       if( channel->history[x] == NULL )
       {
          local = localtime( &imc_time );
-         snprintf( buf, LGST, "~R[%-2.2d/%-2.2d %-2.2d:%-2.2d] ~G%s",
-                   local->tm_mon + 1, local->tm_mday, local->tm_hour, local->tm_min, msg );
+         snprintf( buf, LGST, "~R[%-2.2d/%-2.2d %-2.2d:%-2.2d] ~G%.*s",
+                   local->tm_mon + 1, local->tm_mday, local->tm_hour, local->tm_min,
+                   LGST - 48, msg );
          channel->history[x] = IMCSTRALLOC( buf );
 
          if( IMCIS_SET( channel->flags, IMCCHAN_LOG ) )
@@ -1788,8 +1789,9 @@ void update_imchistory( IMC_CHANNEL * channel, char *message )
          }
 
          local = localtime( &imc_time );
-         snprintf( buf, LGST, "~R[%-2.2d/%-2.2d %-2.2d:%-2.2d] ~G%s",
-                   local->tm_mon + 1, local->tm_mday, local->tm_hour, local->tm_min, msg );
+         snprintf( buf, LGST, "~R[%-2.2d/%-2.2d %-2.2d:%-2.2d] ~G%.*s",
+                   local->tm_mon + 1, local->tm_mday, local->tm_hour, local->tm_min,
+                   LGST - 48, msg );
          IMCSTRFREE( channel->history[x] );
          channel->history[x] = IMCSTRALLOC( buf );
 
@@ -2653,7 +2655,7 @@ PFUN( imc_recv_isalive )
       r->network = IMCSTRALLOC( netname );
    }
 
-   if( q->route && q->route[0] != '\0' )
+   if( q->route[0] != '\0' )
    {
       IMCSTRFREE( r->path );
       r->path = IMCSTRALLOC( q->route );
@@ -3389,6 +3391,9 @@ void imc_loop( void )
    fd_set in_set, out_set;
    struct timeval last_time, null_time;
 
+   if( this_imcmud == NULL )
+      return;
+
    gettimeofday( &last_time, NULL );
    imc_time = ( time_t ) last_time.tv_sec;
 
@@ -3450,7 +3455,7 @@ void imc_loop( void )
    {
       if( !imc_read_socket( ) )
       {
-         if( this_imcmud->inbuf && this_imcmud->inbuf[0] != '\0' )
+         if( this_imcmud->inbuf[0] != '\0' )
          {
             if( imc_read_buffer( ) )
             {
@@ -4287,7 +4292,7 @@ void imc_savehelps( void )
       fprintf( fp, "%s", "#HELP\n" );
       fprintf( fp, "Name %s\n", help->name );
       fprintf( fp, "Perm %s\n", imcperm_names[help->level] );
-      fprintf( fp, "Text %s¢\n", help->text );
+      fprintf( fp, "Text %s~\n", help->text );
       fprintf( fp, "%s", "End\n\n" );
    }
    fprintf( fp, "%s", "#END\n" );
@@ -4346,7 +4351,7 @@ void imc_readhelp( IMC_HELP_DATA * help, FILE * fp )
             {
                int num = 0;
 
-               while( ( hbuf[num] = fgetc( fp ) ) != EOF && hbuf[num] != '¢' && num < ( LGST - 2 ) )
+               while( ( hbuf[num] = fgetc( fp ) ) != EOF && hbuf[num] != '~' && num < ( LGST - 2 ) )
                   num++;
                hbuf[num] = '\0';
                help->text = IMCSTRALLOC( hbuf );
@@ -4989,49 +4994,49 @@ void imc_load_who_template( void )
 
       if( !strcasecmp( word, "Head:" ) )
       {
-         while( ( hbuf[num] = fgetc( fp ) ) != EOF && hbuf[num] != '¢' && num < ( LGST - 2 ) )
+         while( ( hbuf[num] = fgetc( fp ) ) != EOF && hbuf[num] != '~' && num < ( LGST - 2 ) )
             ++num;
          hbuf[num] = '\0';
          whot->head = IMCSTRALLOC( parse_who_header( hbuf ) );
       }
       else if( !strcasecmp( word, "Tail:" ) )
       {
-         while( ( hbuf[num] = fgetc( fp ) ) != EOF && hbuf[num] != '¢' && num < ( LGST - 2 ) )
+         while( ( hbuf[num] = fgetc( fp ) ) != EOF && hbuf[num] != '~' && num < ( LGST - 2 ) )
             ++num;
          hbuf[num] = '\0';
          whot->tail = IMCSTRALLOC( parse_who_tail( hbuf ) );
       }
       else if( !strcasecmp( word, "Plrline:" ) )
       {
-         while( ( hbuf[num] = fgetc( fp ) ) != EOF && hbuf[num] != '¢' && num < ( LGST - 2 ) )
+         while( ( hbuf[num] = fgetc( fp ) ) != EOF && hbuf[num] != '~' && num < ( LGST - 2 ) )
             ++num;
          hbuf[num] = '\0';
          whot->plrline = IMCSTRALLOC( hbuf );
       }
       else if( !strcasecmp( word, "Immline:" ) )
       {
-         while( ( hbuf[num] = fgetc( fp ) ) != EOF && hbuf[num] != '¢' && num < ( LGST - 2 ) )
+         while( ( hbuf[num] = fgetc( fp ) ) != EOF && hbuf[num] != '~' && num < ( LGST - 2 ) )
             ++num;
          hbuf[num] = '\0';
          whot->immline = IMCSTRALLOC( hbuf );
       }
       else if( !strcasecmp( word, "Immheader:" ) )
       {
-         while( ( hbuf[num] = fgetc( fp ) ) != EOF && hbuf[num] != '¢' && num < ( LGST - 2 ) )
+         while( ( hbuf[num] = fgetc( fp ) ) != EOF && hbuf[num] != '~' && num < ( LGST - 2 ) )
             ++num;
          hbuf[num] = '\0';
          whot->immheader = IMCSTRALLOC( hbuf );
       }
       else if( !strcasecmp( word, "Plrheader:" ) )
       {
-         while( ( hbuf[num] = fgetc( fp ) ) != EOF && hbuf[num] != '¢' && num < ( LGST - 2 ) )
+         while( ( hbuf[num] = fgetc( fp ) ) != EOF && hbuf[num] != '~' && num < ( LGST - 2 ) )
             ++num;
          hbuf[num] = '\0';
          whot->plrheader = IMCSTRALLOC( hbuf );
       }
       else if( !strcasecmp( word, "Master:" ) )
       {
-         while( ( hbuf[num] = fgetc( fp ) ) != EOF && hbuf[num] != '¢' && num < ( LGST - 2 ) )
+         while( ( hbuf[num] = fgetc( fp ) ) != EOF && hbuf[num] != '~' && num < ( LGST - 2 ) )
             ++num;
          hbuf[num] = '\0';
          whot->master = IMCSTRALLOC( hbuf );
@@ -5404,8 +5409,13 @@ bool imc_startup_network( bool connected )
       {
          unlink( IMC_HOTBOOT_FILE );
 
-         int errorcheck = fscanf( fp, "%s %s\n", netname, server );
-         errorcheck = 0; // no purpose of variable, only to avoid warning (void) type casting doesn't work
+         if( fscanf( fp, "%4095s %4095s", netname, server ) != 2 )
+         {
+            imcbug( "%s: Unable to parse IMC hotboot file.", __FUNCTION__ );
+            IMCFCLOSE( fp );
+            this_imcmud->state = IMC_OFFLINE;
+            return FALSE;
+         }
 
          IMCSTRFREE( this_imcmud->network );
          this_imcmud->network = IMCSTRALLOC( netname );
@@ -5456,7 +5466,8 @@ void imc_startup( bool force, int desc, bool connected )
    {
       if( !imc_load_commands(  ) )
       {
-         imcbug( "%s: Unable to load command table!", __FUNCTION__ );
+         imclog( "%s: Command table unavailable; IMC features disabled.", __FUNCTION__ );
+         imcwait = -2;
          return;
       }
    }
@@ -6063,7 +6074,11 @@ IMC_CMD( imctell )
       p2 = imc_send_social( ch, buf2, 2 );
       if( !p2 || p2[0] == '\0' )
          return;
-      snprintf( buf1, LGST, "~WImctell ~C%s: ~c%s\r\n", buf, p2 );
+      imcstrlcpy( buf1, "~WImctell ~C", LGST );
+      imcstrlcat( buf1, buf, LGST );
+      imcstrlcat( buf1, ": ~c", LGST );
+      imcstrlcat( buf1, p2, LGST );
+      imcstrlcat( buf1, "\r\n", LGST );
    }
    else if( argument[0] == ',' )
    {
@@ -6071,12 +6086,20 @@ IMC_CMD( imctell )
       while( isspace( *argument ) )
          argument++;
       imc_send_tell( CH_IMCNAME( ch ), buf, color_mtoi( argument ), 1 );
-      snprintf( buf1, LGST, "~WImctell: ~c%s %s\r\n", buf, argument );
+      imcstrlcpy( buf1, "~WImctell: ~c", LGST );
+      imcstrlcat( buf1, buf, LGST );
+      imcstrlcat( buf1, " ", LGST );
+      imcstrlcat( buf1, argument, LGST );
+      imcstrlcat( buf1, "\r\n", LGST );
    }
    else
    {
       imc_send_tell( CH_IMCNAME( ch ), buf, color_mtoi( argument ), 0 );
-      snprintf( buf1, LGST, "~cYou imctell ~C%s ~c'~W%s~c'\r\n", buf, argument );
+      imcstrlcpy( buf1, "~cYou imctell ~C", LGST );
+      imcstrlcat( buf1, buf, LGST );
+      imcstrlcat( buf1, " ~c'~W", LGST );
+      imcstrlcat( buf1, argument, LGST );
+      imcstrlcat( buf1, "~c'\r\n", LGST );
    }
    imc_to_char( buf1, ch );
    imc_update_tellhistory( ch, buf1 );
@@ -7273,7 +7296,8 @@ IMC_CMD( imcremoteadmin )
       char cryptpw[LGST];
       char *hash;
 
-      snprintf( cryptpw, LGST, "%ld%s", imc_sequencenumber + 1, pwd );
+      snprintf( cryptpw, LGST, "%ld", imc_sequencenumber + 1 );
+      imcstrlcat( cryptpw, pwd, LGST );
       hash = sha256_crypt( cryptpw );
       imc_addtopacket( p, "hash=%s", hash );
    }
@@ -7915,7 +7939,7 @@ char *imc_find_social( CHAR_DATA * ch, char *sname, char *person, char *mud, int
    return socname;
 }
 
-/* Revised 10/10/03 by Xorith: Recognize the need to capitalize for a new sentence. */
+/* Revised 10/10/03 by Xorith: Recognize the need to capitalize for a newï¿½sentence. */
 char *imc_act_string( const char *format, CHAR_DATA * ch, CHAR_DATA * vic )
 {
    static char *const he_she[] = { "it", "he", "she" };

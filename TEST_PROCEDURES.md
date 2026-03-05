@@ -10,6 +10,17 @@
 
 This document provides detailed procedures for testing each phase of the ROP conversion and validating the live deployment. All tests have been executed and verified during Phase 12.
 
+### Environment Mode (Current)
+
+Development/testing currently runs on **Linux (Chromebook Penguin)** using a native host process workflow.
+
+Core runtime commands:
+
+- Start server: `./startup`
+- Follow logs: `tail -f log/*.log`
+- Follow specific log: `tail -f log/<file>.log`
+- Check process stats: `ps -o pid,%cpu,%mem,cmd -C rom`
+
 ---
 
 ## Test 1: Experience Curve Verification
@@ -346,11 +357,10 @@ Log output: "SaveTest has quit" message appears
 **Step 3: Restart server completely**
 
 ```
-docker-compose down
-docker-compose up -d
+shutdown (in-game), then run ./startup
 Wait for server startup (30 seconds)
 
-Check: docker logs rom-mud-server | tail -20
+Check: tail -20 log/*.log
 Expected: "MUD server ready" message
 ```
 
@@ -390,7 +400,7 @@ Check status: score
 Expected: XP loss visible, character alive
 
 Logout: quit
-Restart server: docker-compose down && up
+Restart server: shutdown (in-game), then run ./startup
 Login: Check XP is still reduced (from step 6)
 
 Verification: ____ (XP loss persisted across restart)
@@ -401,7 +411,7 @@ Verification: ____ (XP loss persisted across restart)
 ```
 In-game (immortal): freeze SaveTest "Test frozen save"
 Logout: quit
-Restart server: docker-compose down && up
+Restart server: shutdown (in-game), then run ./startup
 
 Try to login as SaveTest:
 Expected: Login blocked with "You are frozen: Test frozen save"
@@ -416,7 +426,7 @@ Verification: ____ (frozen status persisted)
 - [ ] XP loss from death persists across server restarts
 - [ ] Frozen status persists (character can't login)
 - [ ] Old ROM characters load safely (new fields default to 0)
-- [ ] Docker restart cycle doesn't corrupt character data
+- [ ] Native restart cycle doesn't corrupt character data
 
 ---
 
@@ -428,7 +438,7 @@ Verify admin commands work correctly and log properly.
 ### Prerequisites
 - Immortal character created with appropriate level/flags
 - Test characters: BadGuy, GoodGuy, SuspiciousBot, SpamBot
-- Access to log files (docker exec, tail command)
+- Access to log files (`tail`, `grep`)
 
 ### Procedure
 
@@ -697,7 +707,7 @@ Verify anti-cheat systems detect and prevent exploits.
 ### Prerequisites
 - Test multi-account setup (simulated)
 - Test bot detection flags
-- Docker logs accessible
+- Native logs accessible
 
 ### Procedure
 
@@ -799,7 +809,7 @@ Verification: ____ (system correctly detected and penalized farm)
 Verify server stability under increasing player load.
 
 ### Prerequisites
-- Docker stats monitoring active
+- Process stats monitoring active
 - Ability to create test characters rapidly
 - 30+ spare character slots
 
@@ -808,7 +818,7 @@ Verify server stability under increasing player load.
 **Step 1: Baseline (Single player)**
 
 ```
-Docker stats rom-mud-server:
+Process stats (`ps -o pid,%cpu,%mem,cmd -C rom`):
   CPU %: _____ (target <10%)
   Memory: _____ MB (target <200MB)
   
@@ -825,7 +835,7 @@ Create 5 test characters
 All logged in, scattered around world
 Idle for 5 minutes
 
-Docker stats:
+Process stats:
   CPU %: _____ (target <15%)
   Memory: _____ MB (target <200MB)
   
@@ -840,7 +850,7 @@ Create 10 test characters
 Logged in, distributed across zones
 All fighting mobs (combat active)
 
-Docker stats:
+Process stats:
   CPU %: _____ (target <25%)
   Memory: _____ MB (target <250MB)
   
@@ -855,7 +865,7 @@ Create 20 test characters
 All logged in and active in combat
 Multiple group battles
 
-Docker stats:
+Process stats:
   CPU %: _____ (target <40%)
   Memory: _____ MB (target <300MB)
   
@@ -871,7 +881,7 @@ Spawn 50 NPCs in one zone
 All players in same zone
 Active combat with mobs and PvP
 
-Docker stats:
+Process stats:
   CPU %: _____ (target keep below 60%)
   Memory: _____ MB (target keep below 400MB)
   
@@ -1113,7 +1123,7 @@ git push origin v2.4-ROP-ALPHA
 **All acceptance criteria met.**
 **Documentation complete and accurate.**
 **Code compiled without errors.**
-**Docker container deployed and stable.**
+**Native Linux server process deployed and stable.**
 
 **RoP Rites of Passage conversion from ROM 2.4 is production-ready.**
 

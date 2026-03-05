@@ -388,13 +388,13 @@ Related Commands:  {G (green) with {x resets
 
 ### Color Processing
 
-**Color Code Handler:** `src/comm.c` - `colour()` function (line 2490)
+**Color Code Handler:** `src/comm.c` - `colour()` function
 
 **Color Application:**
-- `send_to_char()` - Line 2063 (checks PLR_COLOUR flag)
-- `page_to_char()` - Line 2183 (paging system)
+- `send_to_char()` - checks `PLR_COLOUR` before applying ANSI conversion
+- `page_to_char()` - applies color-aware paging output
 
-**Color Definitions:** `src/merc.h` (lines 200-215)
+**Color Definitions:** `src/merc.h` (Lope color constants and mapping macros)
 
 ### PLR_COLOUR Flag
 

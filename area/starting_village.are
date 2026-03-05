@@ -1,0 +1,115 @@
+#AREA
+starting_village.are~
+Starting Village~
+{ 1 15} RoP     New Player Starting Grounds~
+18400 18449
+
+#MOBILES
+#0
+
+#OBJECTS
+#0
+
+#ROOMS
+#18400
+Village Gate~
+You stand at the worn stone gate of the Starting Village. Wooden palisades
+ring the settlement, and a simple lantern marks the way for new arrivals.
+A broad path continues east into the village heart, while the western road
+returns to the old Midgaard crossroads.
+~
+0 D 1
+D1
+The village square lies to the east.
+~
+~
+0 -1 18401
+D3
+The old road leads west toward Midgaard.
+~
+~
+0 -1 3001
+S
+#18401
+Village Square~
+This open square is the center of village life. Fresh water barrels, supply
+crates, and weathered signposts are arranged around a small stone marker.
+Paths branch north, east, and west from here.
+~
+0 D 1
+D3
+The village gate is to the west.
+~
+~
+0 -1 18400
+D0
+A quiet training yard is to the north.
+~
+~
+0 -1 18402
+D1
+A mentor's hall stands to the east.
+~
+~
+0 -1 18403
+S
+#18402
+Training Yard~
+A compact training yard provides a safe place for recruits to learn the
+basics of movement, combat stance, and command usage before they leave
+for the wider world.
+~
+0 D 3
+D2
+The village square lies to the south.
+~
+~
+0 -1 18401
+S
+#18403
+Mentor Hall~
+Candles and chalkboards line this modest hall. Veteran mentors offer
+direction to new adventurers: train in the yard, review your sect path,
+then depart for Midgaard when prepared.
+~
+0 D 3
+D3
+The village square is to the west.
+~
+~
+0 -1 18401
+D1
+A stone waypoint arch leads east toward the world road.
+~
+~
+0 -1 18404
+S
+#18404
+Pilgrim Waypoint~
+A weathered arch marks the final step out of the starter grounds. Beyond,
+the road widens toward Midgaard and the contested frontier beyond.
+~
+0 D 0
+D3
+The mentor hall lies back to the west.
+~
+~
+0 -1 18403
+D1
+The world road opens into Midgaard.
+~
+~
+0 -1 3001
+S
+#0
+
+#RESETS
+S
+
+#SHOPS
+0
+
+#SPECIALS
+S
+
+#$

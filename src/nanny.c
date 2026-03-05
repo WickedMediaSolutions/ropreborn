@@ -50,6 +50,7 @@
 #include <stdarg.h>                /* printf_to_char */
 
 #include "merc.h"
+#include "config.h"
 #include "interp.h"
 #include "recycle.h"
 #include "tables.h"
@@ -530,12 +531,18 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
                     return;
             }
 
-            strcpy (buf, "Select a class [");
-            for (iClass = 0; iClass < MAX_CLASS; iClass++)
+            strcpy (buf, "Select a profession [");
             {
-                if (iClass > 0)
+                bool first_class = TRUE;
+            for (iClass = 0; iClass < MAX_PROFESSION; iClass++)
+            {
+                if (profession_table[iClass].name == NULL || profession_table[iClass].name[0] == '\0')
+                    continue;
+                if (!first_class)
                     strcat (buf, " ");
-                strcat (buf, class_table[iClass].name);
+                strcat (buf, profession_table[iClass].name);
+                first_class = FALSE;
+            }
             }
             strcat (buf, "]: ");
             write_to_buffer (d, buf, 0);
@@ -560,7 +567,18 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
             wiznet (log_buf, NULL, NULL, WIZ_SITES, 0, get_trust (ch));
 
             write_to_buffer (d, "\n\r", 2);
-            send_to_desc ("Select a sect (1-8): ", d);
+            {
+                char sect_buf[512];
+                int i;
+                strcpy(sect_buf, "Available sects:\n\r");
+                for (i = 0; i < MAX_SECT; i++) {
+                    char line[128];
+                    snprintf(line, sizeof(line), "%d) %s - %s\n\r", i+1, sect_table[i].name, sect_table[i].description ? sect_table[i].description : "");
+                    strcat(sect_buf, line);
+                }
+                strcat(sect_buf, "Select a sect (1-8): ");
+                send_to_desc(sect_buf, d);
+            }
             d->connected = CON_SELECT_SECT;
             break;
 
@@ -588,7 +606,9 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
             write_to_buffer (d, "\n\r", 0);
 
             group_add (ch, "rom basics", FALSE);
-            group_add (ch, class_table[ch->class].base_group, FALSE);
+            group_add (ch,
+                       get_profession (ch) != NULL ? get_profession (ch)->base_group : class_table[ch->class].base_group,
+                       FALSE);
             ch->pcdata->learned[gsn_recall] = 50;
             send_to_desc ("Do you wish to customize this character?\n\r", d);
             send_to_desc
@@ -610,15 +630,21 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
             }
             
             ch->sect_number = sect_choice - 1;
+
+            if (sect_table[ch->sect_number].base_group != NULL
+                && sect_table[ch->sect_number].base_group[0] != '\0')
+            {
+                group_add (ch, sect_table[ch->sect_number].base_group, FALSE);
+            }
             
             /* Set alignment based on sect */
             if (sect_table[ch->sect_number].alignment == 1)
             {
-                ch->alignment = 750;
+                ch->alignment = 1000;
             }
             else if (sect_table[ch->sect_number].alignment == -1)
             {
-                ch->alignment = -750;
+                ch->alignment = -1000;
             }
             else
             {
@@ -627,9 +653,58 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
             
             write_to_buffer (d, "\n\r", 0);
             send_to_desc ("Perfect! Continue...\n\r", d);
-            d->connected = CON_DEFAULT_CHOICE;
+            // Begin stat allocation step (customization)
+            send_to_desc ("You may now allocate your starting stat points.\n\r", d);
+            send_to_desc ("Type the stat you wish to increase (str, dex, con, wis, int) or 'done' when finished.\n\r", d);
+            ch->pcdata->stat_points = 10; // Example: 10 points to spend
+            d->connected = CON_ROP_STAT_ALLOCATION;
+            break;
         }
-        break;
+
+        case CON_ROP_STAT_ALLOCATION:
+            if (ch->pcdata->stat_points <= 0 || !str_cmp(argument, "done")) {
+                send_to_desc("Stat allocation complete.\n\r", d);
+                ch->gen_data = new_gen_data();
+                ch->gen_data->points_chosen = ch->pcdata->points;
+                do_function(ch, &do_help, "group header");
+                list_group_costs(ch);
+                write_to_buffer(d, "You already have the following skills:\n\r", 0);
+                do_function(ch, &do_skills, "");
+                do_function(ch, &do_help, "menu choice");
+                d->connected = CON_GEN_GROUPS;
+                break;
+            }
+
+            if (!str_cmp(argument, "str")) {
+                ch->perm_stat[STAT_STR]++;
+                ch->pcdata->stat_points--;
+                send_to_desc("Increased Strength. ", d);
+            } else if (!str_cmp(argument, "dex")) {
+                ch->perm_stat[STAT_DEX]++;
+                ch->pcdata->stat_points--;
+                send_to_desc("Increased Dexterity. ", d);
+            } else if (!str_cmp(argument, "con")) {
+                ch->perm_stat[STAT_CON]++;
+                ch->pcdata->stat_points--;
+                send_to_desc("Increased Constitution. ", d);
+            } else if (!str_cmp(argument, "wis")) {
+                ch->perm_stat[STAT_WIS]++;
+                ch->pcdata->stat_points--;
+                send_to_desc("Increased Wisdom. ", d);
+            } else if (!str_cmp(argument, "int")) {
+                ch->perm_stat[STAT_INT]++;
+                ch->pcdata->stat_points--;
+                send_to_desc("Increased Intelligence. ", d);
+            } else {
+                send_to_desc("Type a stat to increase (str, dex, con, wis, int) or 'done'.\n\r", d);
+            }
+
+            {
+                char statbuf[256];
+                snprintf(statbuf, sizeof(statbuf), "Points left: %d\n\rSTR: %d  DEX: %d  CON: %d  WIS: %d  INT: %d\n\r", ch->pcdata->stat_points, ch->perm_stat[STAT_STR], ch->perm_stat[STAT_DEX], ch->perm_stat[STAT_CON], ch->perm_stat[STAT_WIS], ch->perm_stat[STAT_INT]);
+                send_to_desc(statbuf, d);
+            }
+            break;
 
         case CON_DEFAULT_CHOICE:
             write_to_buffer (d, "\n\r", 2);
@@ -650,7 +725,8 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
                     break;
                 case 'n':
                 case 'N':
-                    group_add (ch, class_table[ch->class].default_group,
+                    group_add (ch,
+                               get_profession (ch) != NULL ? get_profession (ch)->default_group : class_table[ch->class].default_group,
                                TRUE);
                     write_to_buffer (d, "\n\r", 2);
                     write_to_buffer (d,
@@ -764,9 +840,6 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
             char_list = ch;
             d->connected = CON_PLAYING;
             reset_char (ch);
-            
-            /* Show the character's current location */
-            do_function (ch, &do_look, "auto");
             break;
 
 		/* states for new note system, (c)1995-96 erwin@pip.dknet.dk */
@@ -812,9 +885,6 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
             d->connected = CON_PLAYING;
             reset_char (ch);
 
-            /* Show the character's current location */
-            do_function (ch, &do_look, "auto");
-
             if (ch->level == 0)
             {
 		if(mud_ansicolor)
@@ -822,7 +892,7 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
 		if(mud_telnetga)
 			SET_BIT (ch->comm, COMM_TELNET_GA);
 
-                ch->perm_stat[class_table[ch->class].attr_prime] += 3;
+                ch->perm_stat[get_profession (ch) != NULL ? get_profession (ch)->attr_prime : class_table[ch->class].attr_prime] += 3;
 
                 ch->level = 1;
                 ch->exp = exp_per_level (ch, ch->pcdata->points);
@@ -839,7 +909,10 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
                 obj_to_char (create_object (get_obj_index (OBJ_VNUM_MAP), 0),
                              ch);
 
-                char_to_room (ch, get_room_index (ROOM_VNUM_SCHOOL));
+                if (get_room_index (ROOM_VNUM_STARTING_VILLAGE) != NULL)
+                    char_to_room (ch, get_room_index (ROOM_VNUM_STARTING_VILLAGE));
+                else
+                    char_to_room (ch, get_room_index (ROOM_VNUM_SCHOOL));
                 send_to_char ("\n\r", ch);
                 do_function (ch, &do_help, "newbie info");
                 send_to_char ("\n\r", ch);

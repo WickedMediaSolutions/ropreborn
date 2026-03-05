@@ -5,19 +5,22 @@ QuickMUD is derived from ROM 2.4b6, Merc 2.1 and DikuMUD
 
 QuickMUD / ROM is a "[multi-user dungeon](https://en.wikipedia.org/wiki/MUD)", a text-based MMORPG. ROM is well-known for its fast-paced and exciting combat system. It also happens to be the initial codebase for [Carrion Fields](http://www.carrionfields.net/), the greatest MUD of all time.
 
-## Docker Image
+## Native Linux Quick Start (Recommended)
 
-You can run the pre-built docker image with the following command:
+Build and run directly on Linux (including Chromebook Penguin):
 
-```docker run -d -p 4000:4000 avinson/rom```
+```bash
+cd src
+make -f Makefile.linux clean
+make -f Makefile.linux rom
+cp rom ../area/rom
+cd ..
+./startup
+```
 
-After that, connect like this:
+Connect with:
 
 ```telnet localhost 4000```
-
-If you have docker-compose available, a simple `docker-compose up` will start the
-container and mount the player and log directories for easier saving/editing of
-player files.
 
 ## First Immortal
 

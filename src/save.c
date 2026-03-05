@@ -108,7 +108,9 @@ void save_char_obj (CHAR_DATA * ch)
     FILE *fp;
 
     if (IS_NPC (ch))
+    {
         return;
+    }
 
 	/*
 	 * Fix by Edwin. JR -- 10/15/00
@@ -189,8 +191,9 @@ void fwrite_char (CHAR_DATA * ch, FILE * fp)
         fprintf (fp, "LnD  %s~\n", ch->long_descr);
     if (ch->description[0] != '\0')
         fprintf (fp, "Desc %s~\n", ch->description);
-    if (ch->prompt != NULL || !str_cmp (ch->prompt, "<%hhp %mm %vmv> ")
-        || !str_cmp (ch->prompt, "{c<%hhp %mm %vmv>{x "))
+    if (ch->prompt != NULL
+        && (str_cmp (ch->prompt, "<%hhp %mm %vmv> ")
+            || str_cmp (ch->prompt, "{c<%hhp %mm %vmv>{x ")))
         fprintf (fp, "Prom %s~\n", ch->prompt);
     fprintf (fp, "Race %s~\n", pc_race_table[ch->race].name);
     if (ch->clan)
@@ -219,11 +222,13 @@ void fwrite_char (CHAR_DATA * ch, FILE * fp)
         fprintf (fp, "Silv %ld\n", ch->silver);
     else
         fprintf (fp, "Silv %d\n", 0);
-    fprintf (fp, "Sect %d~\n", ch->sect_number);
-    fprintf (fp, "Warp %d~\n", ch->warpoint);
-    fprintf (fp, "PnkR %d~\n", ch->profession_rank);
-    fprintf (fp, "Rmrt %d~\n", ch->remort_count);
-    fprintf (fp, "RmBa %d %d %d %d %d~\n", ch->remort_hp_bonus, ch->remort_move_bonus,
+    fprintf (fp, "Sect %d\n", ch->sect_number);
+    fprintf (fp, "Warp %d\n", ch->warpoint);
+    fprintf (fp, "WpVi %ld\n", ch->last_warpoint_victim);
+    fprintf (fp, "WpTm %ld\n", (long) ch->last_warpoint_time);
+    fprintf (fp, "PnkR %d\n", ch->profession_rank);
+    fprintf (fp, "Rmrt %d\n", ch->remort_count);
+    fprintf (fp, "RmBa %d %d %d %d %d\n", ch->remort_hp_bonus, ch->remort_move_bonus,
              ch->remort_skill_slots, ch->remort_no_food ? 1 : 0, ch->remort_no_drink ? 1 : 0);
     fprintf (fp, "Exp  %d\n", ch->exp);
     if (ch->act != 0)
@@ -279,6 +284,7 @@ void fwrite_char (CHAR_DATA * ch, FILE * fp)
             fprintf (fp, "Bout %s~\n", ch->pcdata->bamfout);
         fprintf (fp, "Titl %s~\n", ch->pcdata->title);
         fprintf (fp, "Pnts %d\n", ch->pcdata->points);
+        fprintf (fp, "StatPoints %d\n", ch->pcdata->stat_points);
         fprintf (fp, "TSex %d\n", ch->pcdata->true_sex);
         fprintf (fp, "LLev %d\n", ch->pcdata->last_level);
         fprintf (fp, "HMVP %d %d %d\n", ch->pcdata->perm_hit,
@@ -808,7 +814,7 @@ bool load_char_obj (DESCRIPTOR_DATA * d, char *name)
     if ((fp = fopen (strsave, "r")) != NULL)
     {
         fclose (fp);
-        sprintf (buf, "gzip -dfq %s", strsave);
+        snprintf (buf, sizeof (buf), "gzip -dfq %.89s", strsave);
         system (buf);
     }
 #endif
@@ -894,9 +900,22 @@ bool load_char_obj (DESCRIPTOR_DATA * d, char *name)
     if (found && ch->version < 2)
     {                            /* need to add the new skills */
         group_add (ch, "rom basics", FALSE);
-        group_add (ch, class_table[ch->class].base_group, FALSE);
-        group_add (ch, class_table[ch->class].default_group, TRUE);
+        group_add (ch,
+                   get_profession (ch) != NULL ? get_profession (ch)->base_group : class_table[ch->class].base_group,
+                   FALSE);
+        group_add (ch,
+                   get_profession (ch) != NULL ? get_profession (ch)->default_group : class_table[ch->class].default_group,
+                   TRUE);
         ch->pcdata->learned[gsn_recall] = 50;
+    }
+
+    if (found && ch->sect_number >= 0 && ch->sect_number < MAX_SECT)
+    {
+        if (sect_table[ch->sect_number].base_group != NULL
+            && sect_table[ch->sect_number].base_group[0] != '\0')
+        {
+            group_add (ch, sect_table[ch->sect_number].base_group, FALSE);
+        }
     }
 
     /* fix levels */
@@ -1019,6 +1038,10 @@ void fread_char (CHAR_DATA * ch, FILE * fp)
 
         switch (UPPER (word[0]))
         {
+            case '~':
+                fMatch = TRUE;
+                break;
+
             case '*':
                 fMatch = TRUE;
                 fread_to_eol (fp);
@@ -1417,6 +1440,7 @@ void fread_char (CHAR_DATA * ch, FILE * fp)
                 break;
 
             case 'S':
+                KEY ("StatPoints", ch->pcdata->stat_points, fread_number (fp));
                 KEY ("SavingThrow", ch->saving_throw, fread_number (fp));
                 KEY ("Save", ch->saving_throw, fread_number (fp));
                 KEY ("Scro", ch->lines, fread_number (fp));
@@ -1490,6 +1514,8 @@ void fread_char (CHAR_DATA * ch, FILE * fp)
                 KEY ("Wimpy", ch->wimpy, fread_number (fp));
                 KEY ("Wimp", ch->wimpy, fread_number (fp));
                 KEY ("Warp", ch->warpoint, fread_number (fp));
+                KEY ("WpVi", ch->last_warpoint_victim, fread_number (fp));
+                KEY ("WpTm", ch->last_warpoint_time, fread_number (fp));
                 KEY ("Wizn", ch->wiznet, fread_flag (fp));
                 break;
         }

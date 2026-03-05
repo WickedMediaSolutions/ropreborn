@@ -45,6 +45,93 @@
  */
 void say_spell args ((CHAR_DATA * ch, int sn));
 
+enum
+{
+    SECT_AETHELHELM = 0,
+    SECT_KIRI = 1,
+    SECT_BAALZOM = 2,
+    SECT_ISHTA = 3,
+    SECT_ZOD = 4,
+    SECT_JALAAL = 5,
+    SECT_XIX = 6,
+    SECT_TALICE = 7
+};
+
+static bool is_offensive_spell_target (int spell_target)
+{
+    return (spell_target == TAR_CHAR_OFFENSIVE
+            || spell_target == TAR_OBJ_CHAR_OFF);
+}
+
+static bool is_support_spell_target (int spell_target)
+{
+    return (spell_target == TAR_CHAR_DEFENSIVE
+            || spell_target == TAR_CHAR_SELF
+            || spell_target == TAR_OBJ_CHAR_DEF);
+}
+
+static int get_sect_mana_scale (CHAR_DATA * ch, int spell_target)
+{
+    if (ch == NULL || IS_NPC (ch))
+        return 100;
+
+    if (ch->sect_number < 0 || ch->sect_number >= MAX_SECT)
+        return 100;
+
+    switch (ch->sect_number)
+    {
+        default:
+            return 100;
+        case SECT_AETHELHELM:
+            return is_support_spell_target (spell_target) ? 95 : 100;
+        case SECT_KIRI:
+            return is_support_spell_target (spell_target) ? 92 : 100;
+        case SECT_BAALZOM:
+            return 90;
+        case SECT_ISHTA:
+            return is_support_spell_target (spell_target) ? 88 : 100;
+        case SECT_ZOD:
+            return is_offensive_spell_target (spell_target) ? 98 : 100;
+        case SECT_JALAAL:
+            return is_offensive_spell_target (spell_target) ? 95 : 100;
+        case SECT_XIX:
+            return is_offensive_spell_target (spell_target) ? 105 : 100;
+        case SECT_TALICE:
+            return 95;
+    }
+}
+
+static int get_sect_cast_bonus (CHAR_DATA * ch, int spell_target)
+{
+    if (ch == NULL || IS_NPC (ch))
+        return 0;
+
+    if (ch->sect_number < 0 || ch->sect_number >= MAX_SECT)
+        return 0;
+
+    switch (ch->sect_number)
+    {
+        default:
+            return 0;
+        case SECT_AETHELHELM:
+            return is_support_spell_target (spell_target) ? 2 : 0;
+        case SECT_KIRI:
+            return is_support_spell_target (spell_target) ? 2 : 0;
+        case SECT_BAALZOM:
+            return 1;
+        case SECT_ISHTA:
+            return is_support_spell_target (spell_target) ? 3 : 0;
+        case SECT_ZOD:
+            return is_offensive_spell_target (spell_target) ? 3 : 0;
+        case SECT_JALAAL:
+            return is_offensive_spell_target (spell_target) ? 2 : 0;
+        case SECT_XIX:
+            return is_offensive_spell_target (spell_target) ? 4 : 0;
+        case SECT_TALICE:
+            return is_support_spell_target (spell_target) ? 2 : 0;
+    }
+}
+
 /* imported functions */
 bool remove_obj args ((CHAR_DATA * ch, int iWear, bool fReplace));
 void wear_obj args ((CHAR_DATA * ch, OBJ_DATA * obj, bool fReplace));
@@ -74,9 +161,12 @@ int find_spell (CHAR_DATA * ch, const char *name)
 {
     /* finds a spell the character can cast if possible */
     int sn, found = -1;
+    int class_index;
 
     if (IS_NPC (ch))
         return skill_lookup (name);
+
+    class_index = rop_effective_class_index (ch->class);
 
     for (sn = 0; sn < MAX_SKILL; sn++)
     {
@@ -87,7 +177,7 @@ int find_spell (CHAR_DATA * ch, const char *name)
         {
             if (found == -1)
                 found = sn;
-            if (ch->level >= skill_table[sn].skill_level[ch->class]
+            if (ch->level >= skill_table[sn].skill_level[class_index]
                 && ch->pcdata->learned[sn] > 0)
                 return sn;
         }
@@ -193,8 +283,8 @@ void say_spell (CHAR_DATA * ch, int sn)
             length = 1;
     }
 
-    sprintf (buf2, "$n utters the words, '%s'.", buf);
-    sprintf (buf, "$n utters the words, '%s'.", skill_table[sn].name);
+    snprintf (buf2, sizeof (buf2), "$n utters the words, '%.4580s'.", buf);
+    snprintf (buf, sizeof (buf), "$n utters the words, '%.4580s'.", skill_table[sn].name);
 
     for (rch = ch->in_room->people; rch; rch = rch->next_in_room)
     {
@@ -215,6 +305,7 @@ void say_spell (CHAR_DATA * ch, int sn)
 bool saves_spell (int level, CHAR_DATA * victim, int dam_type)
 {
     int save;
+    const struct profession_type *profession;
 
     save = 50 + (victim->level - level) * 5 - victim->saving_throw * 2;
     if (IS_AFFECTED (victim, AFF_BERSERK))
@@ -232,7 +323,10 @@ bool saves_spell (int level, CHAR_DATA * victim, int dam_type)
             break;
     }
 
-    if (!IS_NPC (victim) && class_table[victim->class].fMana)
+    profession = get_profession (victim);
+    if (!IS_NPC (victim)
+        && ((profession != NULL && profession->mana_mult > 0)
+            || (profession == NULL && class_table[victim->class].fMana)))
         save = 9 * save / 10;
     save = URANGE (5, save, 95);
     return number_percent () < save;
@@ -306,8 +400,11 @@ void do_cast (CHAR_DATA * ch, char *argument)
     OBJ_DATA *obj;
     void *vo;
     int mana;
+    int cast_level;
+    int sect_mana_scale;
     int sn;
     int target;
+    int class_index;
 
     /*
      * Switched NPC's can cast spells, but others can't.
@@ -317,6 +414,7 @@ void do_cast (CHAR_DATA * ch, char *argument)
 
     target_name = one_argument (argument, arg1);
     one_argument (target_name, arg2);
+    class_index = rop_effective_class_index (ch->class);
 
     if (arg1[0] == '\0')
     {
@@ -329,7 +427,7 @@ void do_cast (CHAR_DATA * ch, char *argument)
                                                        && (ch->level <
                                                            skill_table
                                                            [sn].skill_level
-                                                           [ch->class]
+                                                           [class_index]
                                                            || ch->
                                                            pcdata->learned[sn]
                                                            == 0)))
@@ -344,12 +442,12 @@ void do_cast (CHAR_DATA * ch, char *argument)
         return;
     }
 
-    if (ch->level + 2 == skill_table[sn].skill_level[ch->class])
+    if (ch->level + 2 == skill_table[sn].skill_level[class_index])
         mana = 50;
     else
         mana = UMAX (skill_table[sn].min_mana,
                      100 / (2 + ch->level -
-                            skill_table[sn].skill_level[ch->class]));
+                            skill_table[sn].skill_level[class_index]));
 
     /*
      * Locate targets.
@@ -535,6 +633,16 @@ void do_cast (CHAR_DATA * ch, char *argument)
             break;
     }
 
+    sect_mana_scale = get_sect_mana_scale (ch, skill_table[sn].target);
+    if (sect_mana_scale != 100)
+        mana = UMAX (1, mana * sect_mana_scale / 100);
+
+    {
+        int event_mana_scale = rop_world_event_mana_scale_percent ();
+        if (event_mana_scale != 100)
+            mana = UMAX (1, mana * event_mana_scale / 100);
+    }
+
     if (!IS_NPC (ch) && ch->mana < mana)
     {
         send_to_char ("You don't have enough mana.\n\r", ch);
@@ -555,11 +663,37 @@ void do_cast (CHAR_DATA * ch, char *argument)
     else
     {
         ch->mana -= mana;
-        if (IS_NPC (ch) || class_table[ch->class].fMana)
-            /* class has spells */
-            (*skill_table[sn].spell_fun) (sn, ch->level, ch, vo, target);
+        if (IS_NPC (ch)
+            || ((get_profession (ch) != NULL && get_profession (ch)->mana_mult > 0)
+                || (get_profession (ch) == NULL && class_table[ch->class].fMana)))
+            cast_level = ch->level;
         else
-            (*skill_table[sn].spell_fun) (sn, 3 * ch->level / 4, ch, vo, target);
+            cast_level = 3 * ch->level / 4;
+
+        cast_level += get_sect_cast_bonus (ch, skill_table[sn].target);
+
+        if (!IS_NPC (ch)
+            && target == TARGET_CHAR
+            && victim != NULL
+            && !IS_NPC (victim)
+            && ch->sect_number >= 0 && ch->sect_number < MAX_SECT
+            && victim->sect_number >= 0 && victim->sect_number < MAX_SECT)
+        {
+            if (skill_table[sn].target == TAR_CHAR_OFFENSIVE
+                && ch->sect_number != victim->sect_number)
+            {
+                cast_level += 2;
+            }
+            else if ((skill_table[sn].target == TAR_CHAR_DEFENSIVE
+                      || skill_table[sn].target == TAR_CHAR_SELF
+                      || skill_table[sn].target == TAR_OBJ_CHAR_DEF)
+                     && ch->sect_number == victim->sect_number)
+            {
+                cast_level += 1;
+            }
+        }
+
+        (*skill_table[sn].spell_fun) (sn, cast_level, ch, vo, target);
         check_improve (ch, sn, TRUE, 1);
     }
 

@@ -310,13 +310,13 @@ botcheck <character>
 - Rank recalculation on logon: <1 second
 
 **Monitoring Points**:
-- Docker CPU %: <30% at 10 players, <60% at 20 players
+- CPU %: <30% at 10 players, <60% at 20 players
 - Memory: <300MB baseline, +20MB per player
 - Combat update loop: target 100-200ms (4 PULSE_TICK)
 - Save file I/O: <500ms per character save
 
 **Verification**:
-- [ ] Monitor Docker stats during 10-player scenario game
+- [ ] Monitor process stats during 10-player scenario game
 - [ ] Check CPU stays below 30%
 - [ ] Monitor memory stays under 300MB
 - [ ] Create 1000 warpoint transactions in script
@@ -389,12 +389,12 @@ botcheck <character>
 **Known Limitations**:
 - Profession balance based on ROM 2.4 combat system (may need tuning)
 - Warpoint thresholds estimated from 1998-2006 archives (community feedback needed)
-- Performance targets assume Linux container (Windows may vary)
+- Performance targets assume native Linux runtime (host hardware may vary)
 - World events placeholder (future implementation)
 
 **Go-Live Checklist**:
 - [x] All code compiles without errors
-- [x] Docker container runs successfully
+- [x] Native Linux server runs successfully
 - [x] Character persistence tested
 - [x] Multi-login detection working
 - [x] Freeze/ban system tested
@@ -408,4 +408,4 @@ botcheck <character>
 
 ---
 
-**Next Steps for Live**: Deploy docker image, monitor first week of player activity, gather community feedback on balance, adjust parameters as needed.
+**Next Steps for Live**: Deploy native Linux service, monitor first week of player activity, gather community feedback on balance, adjust parameters as needed.

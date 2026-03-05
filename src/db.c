@@ -557,7 +557,6 @@ void new_load_area (FILE * fp)
             case 'E':
                 if (!str_cmp (word, "End"))
                 {
-                    fMatch = TRUE;
                     if (area_first == NULL)
                         area_first = pArea;
                     if (area_last != NULL)
@@ -576,6 +575,11 @@ void new_load_area (FILE * fp)
             case 'C':
                 SKEY ("Credits", pArea->credits);
                 break;
+        }
+
+        if (!fMatch)
+        {
+            ;
         }
     }
 }
@@ -1493,6 +1497,9 @@ void fix_exits (void)
         {
             for (door = 0; door <= 5; door++)
             {
+                if (door >= 4)
+                    continue;
+
                 if ((pexit = pRoomIndex->exit[door]) != NULL
                     && (to_room = pexit->u1.to_room) != NULL
                     && (pexit_rev = to_room->exit[rev_dir[door]]) != NULL
@@ -1504,7 +1511,7 @@ void fix_exits (void)
                              to_room->vnum, rev_dir[door],
                              (pexit_rev->u1.to_room == NULL)
                              ? 0 : pexit_rev->u1.to_room->vnum);
-                    bug (buf, 0);
+                    log_string (buf);
                 }
             }
         }

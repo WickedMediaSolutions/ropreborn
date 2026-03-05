@@ -1,88 +1,71 @@
-# ROM MUD 2.4 Development Environment Setup - Complete
+# ROM MUD 2.4 Development Environment Setup (Linux/Chromebook Penguin)
 
-## ✅ Status: RUNNING
+## Current Environment
 
-The ROM MUD 2.4 codebase has been successfully compiled and is running in Docker on your Windows system.
+- **Platform**: Linux (Chromebook Penguin)
+- **Runtime**: Native host process (no Docker)
+- **Default Port**: `4000`
+- **Code Paths**: `src/`, `area/`, `startup`
 
-### Server Status
-- **Status**: ✅ Running
-- **Port**: 4000 (accessible on `localhost:4000`)
-- **Container**: `rom-mud-server`
-- **Platform**: Docker on Windows (Ubuntu 14.04 image)
+---
 
-### Latest Server Log
-```
-Tue Mar  3 09:25:04 2026 :: ROM is ready to rock on port 4000 (0.0.0.0).
-Tue Mar  3 09:25:04 2026 :: IMC: Loading IMC2 network data...
-Tue Mar  3 09:25:04 2026 :: IMC2 network data loaded. Autoconnect not set.
-```
+## Native Build & Run
 
-### Areas Loaded
-All 47 areas loaded successfully including:
-- immort, midgaard, plains, astral, draconia, moria, olympus, pyramid, and more...
-
-## Files Modified
-
-### 1. **docker-compose.yml**
-- Updated to use the locally built `rom-mud:latest` image
-- Added proper volume mounts for log files, player data, and area files
-- Container named `rom-mud-server`
-
-### 2. **Dockerfile**
-- Builds from Ubuntu 14.04
-- Installs build-essential and csh
-- Creates docker-startup.sh wrapper for proper script execution
-- Compiles ROM MUD with IMC2 support enabled
-- Exposes port 4000
-
-### 3. **docker-startup.sh** (New)
-- Bash wrapper script to properly run the csh startup logic
-- Manages log file rotation
-- Handles server restart on shutdown signals
-
-## Development Ready
-
-You can now:
-1. **Modify source code** in `e:\mud\rom24-quickmud\src\`
-2. **Rebuild the image**: `docker build -t rom-mud:latest .`
-3. **Restart the server**: `docker-compose restart`
-4. **View logs**: `docker logs rom-mud-server` or check `./log/` directory
-5. **Connect clients**: Connect to `localhost:4000` to test
-
-## Next Steps for Rites of Passage MUD
-
-The codebase is now ready for your modifications:
-- Modify C source files in `src/` directory
-- Create custom areas in `area/` directory
-- Configure server settings in `area/qmconfig.rc`
-- Rebuild and test changes in the Docker container
-
-## Docker Commands Reference
+### 1) Build the server binary
 
 ```bash
-# View running containers
-docker ps
+cd src
+make -f Makefile.linux clean
+make -f Makefile.linux rom
+cp rom ../area/rom
+```
 
-# View server logs
-docker logs rom-mud-server --tail 50
+### 2) Start the server loop
 
-# Restart the server
-docker-compose restart
+```bash
+./startup
+```
 
-# Stop all services
-docker-compose down
+The `startup` script rotates logs and restarts the server process unless `shutdown.txt` exists.
 
-# Rebuild the image
-docker build -t rom-mud:latest .
+### 3) Connect a client
 
-# Start services
-docker-compose up -d
-
-# Connect to running container for debugging
-docker exec -it rom-mud-server bash
+```bash
+telnet localhost 4000
 ```
 
 ---
-**Setup completed**: March 3, 2026
-**Environment**: Windows 11 + Docker Desktop 29.1.3
-**Base Image**: ubuntu:14.04 (ROM 2.4 compatible)
+
+## Logs & Process Checks (Native)
+
+```bash
+# Recent logs
+ls -1 log | tail
+
+# Tail latest server log
+tail -f log/*.log
+
+# Confirm listener on port 4000
+ss -ltnp | grep :4000
+```
+
+---
+
+## Known Build Compatibility Note
+
+If compilation fails on modern Linux due to old system prototypes, ensure your local branch includes current compatibility fixes in `src/comm.c` (legacy `gettimeofday` declaration removed for Linux builds).
+
+---
+
+## Development Workflow
+
+1. Edit C sources in `src/`
+2. Rebuild with `make -f Makefile.linux rom`
+3. Copy binary to `area/rom`
+4. Restart via `shutdown` in-game, then run `./startup` again
+5. Validate behavior and logs in `log/`
+
+---
+
+**Last updated**: March 4, 2026
+**Environment target**: Linux (Chromebook Penguin), no Docker

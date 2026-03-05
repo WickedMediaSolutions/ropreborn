@@ -208,7 +208,7 @@
 ### Deployment
 - [ ] Code pushed to main branch
 - [ ] Build pipeline runs successfully
-- [ ] Docker image builds if applicable
+- [ ] Native build/deploy workflow passes
 - [ ] Environment variables configured
 - [ ] Database/storage location confirmed
 

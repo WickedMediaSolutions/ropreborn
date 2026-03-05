@@ -622,8 +622,6 @@ world-builder/
 │   ├── package.json
 │   └── .env
 │
-├── docker-compose.yml (optional - backend service)
-├── Dockerfile (optional - containerize builder)
 └── README.md
 ```
 
@@ -678,25 +676,7 @@ npm start
 # Edits area/ files directly on disk
 ```
 
-### Option 2: Docker Container
-
-```dockerfile
-FROM node:18-alpine
-
-WORKDIR /app
-
-# Install frontend & backend deps
-COPY frontend/package.json .
-RUN npm install
-
-COPY backend/package.json .
-RUN npm install
-
-# Start both services
-CMD ["npm", "run", "start:both"]
-```
-
-### Option 3: Web Service (For Team Collaboration)
+### Option 2: Web Service (For Team Collaboration)
 - Deploy backend to server
 - Authenticated user accounts
 - Multi-user editing with conflict resolution

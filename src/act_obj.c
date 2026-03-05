@@ -38,6 +38,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "merc.h"
+#include "config.h"
 #include "interp.h"
 
 /*
@@ -61,6 +62,7 @@ args ((CHAR_DATA * ch, CHAR_DATA * keeper, char *argument));
 bool can_loot (CHAR_DATA * ch, OBJ_DATA * obj)
 {
     CHAR_DATA *owner, *wch;
+    bool owner_only_protected;
 
     if (IS_IMMORTAL (ch))
         return TRUE;
@@ -68,13 +70,31 @@ bool can_loot (CHAR_DATA * ch, OBJ_DATA * obj)
     if (!obj->owner || obj->owner == NULL)
         return TRUE;
 
+    owner_only_protected = (obj->item_type == ITEM_CONTAINER && obj->value[4] == 1);
+
+    if (obj->item_type == ITEM_CORPSE_PC)
+    {
+        if (!str_cmp (ch->name, obj->owner))
+            return TRUE;
+
+        if (obj->timer > CORPSE_OWNER_LOCK_TICKS)
+            return FALSE;
+    }
+
+    if (owner_only_protected)
+        return !str_cmp (ch->name, obj->owner);
+
     owner = NULL;
     for (wch = char_list; wch != NULL; wch = wch->next)
         if (!str_cmp (wch->name, obj->owner))
             owner = wch;
 
     if (owner == NULL)
+    {
+        if (obj->item_type == ITEM_CORPSE_PC)
+            return (obj->timer <= CORPSE_OWNER_LOCK_TICKS);
         return TRUE;
+    }
 
     if (!str_cmp (ch->name, owner->name))
         return TRUE;
@@ -264,6 +284,14 @@ void do_get (CHAR_DATA * ch, char *argument)
         if ((container = get_obj_here (ch, arg2)) == NULL)
         {
             act ("I see no $T here.", ch, NULL, arg2, TO_CHAR);
+            return;
+        }
+
+        if (container->owner != NULL
+            && container->owner[0] != '\0'
+            && !can_loot (ch, container))
+        {
+            send_to_char ("You cannot access that right now.\n\r", ch);
             return;
         }
 

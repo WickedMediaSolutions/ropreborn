@@ -752,7 +752,7 @@
   - 50+ NPCs in tight area (check lag)
   - 1000+ warpoint-generating kills in 1 hour (check decay performance)
   - Daily/hourly update functions (warpoint decay, rank recalc)
-- [ ] Monitor CPU/memory usage via Docker
+- [ ] Monitor CPU/memory usage via `ps -o pid,%cpu,%mem,cmd -C rom`
 - [ ] Optimize if needed (cache calculations, batch updates)
 
 ### Task 12.10: Documentation & Handoff

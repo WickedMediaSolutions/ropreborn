@@ -319,6 +319,8 @@ CHAR_DATA *new_char (void)
     ch->remort_skill_slots = 0;             /* No extra skill slots */
     ch->remort_no_food = FALSE;             /* Needs food */
     ch->remort_no_drink = FALSE;            /* Needs drink */
+    ch->last_warpoint_victim = 0;           /* No anti-farm victim tracking */
+    ch->last_warpoint_time = 0;             /* No anti-farm timestamp */
 
     return ch;
 }
@@ -374,7 +376,7 @@ PC_DATA *new_pcdata (void)
 {
     int alias;
 
-    static PC_DATA pcdata_zero;
+    static PC_DATA pcdata_zero = {0};
     PC_DATA *pcdata;
 
     if (pcdata_free == NULL)
@@ -386,6 +388,7 @@ PC_DATA *new_pcdata (void)
     }
 
     *pcdata = pcdata_zero;
+    pcdata->stat_points = 0;
 
     for (alias = 0; alias < MAX_ALIAS; alias++)
     {
