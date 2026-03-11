@@ -53,4 +53,40 @@ echo -e "$START_ICON Starting Web UI..."
 tmux kill-session -t webui 2>/dev/null || true
 tmux new-session -d -s webui 'cd world-builder/frontend && npm start'
 
-echo -e "$OK_ICON Deployment complete. Use ./stop.sh to stop all services."
+
+# --- Service Verification and Info ---
+sleep 2
+
+# Check MUD (ROM) server (default port 4000)
+MUD_PORT=4000
+MUD_STATUS=$(ss -ltn 2>/dev/null | grep ":$MUD_PORT " || netstat -an 2>/dev/null | grep ":$MUD_PORT ")
+if [[ -n "$MUD_STATUS" ]]; then
+	echo -e "$OK_ICON MUD server running on port $MUD_PORT"
+else
+	echo -e "$ERR_ICON MUD server not detected on port $MUD_PORT (check logs)"
+fi
+
+# Check World Builder backend (Node.js, port 5000)
+BACKEND_PORT=5000
+BACKEND_STATUS=$(ss -ltn 2>/dev/null | grep ":$BACKEND_PORT " || netstat -an 2>/dev/null | grep ":$BACKEND_PORT ")
+if [[ -n "$BACKEND_STATUS" ]]; then
+	echo -e "$OK_ICON World Builder backend running: http://localhost:$BACKEND_PORT/api"
+else
+	echo -e "$ERR_ICON World Builder backend not detected on port $BACKEND_PORT (check logs)"
+fi
+
+# Check Web UI (frontend, default React port 3000)
+FRONTEND_PORT=3000
+FRONTEND_STATUS=$(ss -ltn 2>/dev/null | grep ":$FRONTEND_PORT " || netstat -an 2>/dev/null | grep ":$FRONTEND_PORT ")
+if [[ -n "$FRONTEND_STATUS" ]]; then
+	echo -e "$OK_ICON Web UI running: http://localhost:$FRONTEND_PORT/"
+else
+	echo -e "$ERR_ICON Web UI not detected on port $FRONTEND_PORT (check logs)"
+fi
+
+echo -e "\n$OK_ICON Deployment complete.\n"
+echo "Connect to your services:"
+echo "  MUD (telnet):      telnet <host> $MUD_PORT"
+echo "  World Builder API: http://<host>:$BACKEND_PORT/api"
+echo "  Web UI:            http://<host>:$FRONTEND_PORT/"
+echo -e "\nUse ./stop.sh to stop all services."
