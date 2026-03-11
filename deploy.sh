@@ -38,20 +38,36 @@ else
 	echo -e "$OK_ICON No build needed."
 fi
 
+
 # Start MUD in tmux session 'mud'
 echo -e "$START_ICON Starting MUD server..."
 tmux kill-session -t mud 2>/dev/null || true
 tmux new-session -d -s mud 'cd area && ./rom'
+sleep 1
+if ! tmux has-session -t mud 2>/dev/null; then
+	echo -e "$ERR_ICON Failed to start MUD server in tmux."
+	exit 1
+fi
 
 # Start world builder in tmux session 'world'
 echo -e "$START_ICON Starting World Builder..."
 tmux kill-session -t world 2>/dev/null || true
 tmux new-session -d -s world 'cd world-builder/backend && npm start'
+sleep 1
+if ! tmux has-session -t world 2>/dev/null; then
+	echo -e "$ERR_ICON Failed to start World Builder backend in tmux."
+	exit 1
+fi
 
 # Start web UI in tmux session 'webui'
 echo -e "$START_ICON Starting Web UI..."
 tmux kill-session -t webui 2>/dev/null || true
 tmux new-session -d -s webui 'cd world-builder/frontend && npm start'
+sleep 1
+if ! tmux has-session -t webui 2>/dev/null; then
+	echo -e "$ERR_ICON Failed to start Web UI in tmux."
+	exit 1
+fi
 
 
 # --- Service Verification and Info ---
