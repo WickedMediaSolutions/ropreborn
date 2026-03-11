@@ -129,7 +129,7 @@ int get_homeland_start_vnum(CHAR_DATA *ch)
         : ROOM_VNUM_OBSIDIAN_TOWER_START;
 }
 
-RID *get_homeland_recall_room(CHAR_DATA *ch)
+ROOM_INDEX_DATA *get_homeland_recall_room(CHAR_DATA *ch)
 {
     CHAR_DATA *who = ch;
     ROOM_INDEX_DATA *location;
