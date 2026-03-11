@@ -3,7 +3,6 @@ wyvern.are~
 Wyvern's Tower~
 { 5 30} Tyrst   Wyvern's Tower~
 1600 1799
-
 #MOBILES
 #1601
 oldstyle killer frog~
@@ -17,9 +16,7 @@ ABFG 0 -300 0
 5 0 2d6+60 2d9+100 1d6+1 none
 5 5 5 9
 EFNU 0 0 0
-stand stand none 1
-0 0 medium 0
-#1601
+#1602
 oldstyle angry gargoyle~
 an angry gargoyle~
 An angry gargoyle glares at you.
@@ -33,9 +30,7 @@ ACFG 0 -600 0
 EFNU 0 0 0
 stand stand male 25
 0 0 medium 0
-#1604
- #1603
- #1603
+#1603
 An elite gargoyle guards this room against intrusion.
 ~
 He snarls at you and says LEAVE OR DIE!
@@ -119,7 +114,6 @@ stand stand male 110
 0 0 medium 0
 #1610
 oldstyle burly minotaur~
-#1602
 A burly minotaur watches you solemnly.
 ~
 This powerful creature wonders whether to kill you or not ...
