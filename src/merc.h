@@ -2426,7 +2426,7 @@ void     set_title           args( ( CHAR_DATA *ch, char *title ) );
 /* act_move.c */
 void     move_char           args( ( CHAR_DATA *ch, int door, bool follow ) );
 int      get_homeland_start_vnum args( ( CHAR_DATA *ch ) );
-RID *    get_homeland_recall_room args( ( CHAR_DATA *ch ) );
+ROOM_INDEX_DATA *get_homeland_recall_room args( ( CHAR_DATA *ch ) );
 
 /* act_obj.c */
 bool     can_loot            args( ( CHAR_DATA *ch, OBJ_DATA *obj ) );
