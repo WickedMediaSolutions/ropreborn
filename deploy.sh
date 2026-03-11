@@ -25,6 +25,7 @@ else
 fi
 
 # Only build if there was an update
+
 echo -e "$BUILD_ICON Checking if build is needed..."
 if [[ $UPDATED -eq 1 ]]; then
 	echo -e "$BUILD_ICON Building... (hidden output)"
@@ -85,6 +86,7 @@ fi
 # Check World Builder backend (Node.js, port 5000)
 BACKEND_PORT=5000
 BACKEND_STATUS=$(ss -ltn 2>/dev/null | grep ":$BACKEND_PORT " || netstat -an 2>/dev/null | grep ":$BACKEND_PORT ")
+
 if [[ -n "$BACKEND_STATUS" ]]; then
 	echo -e "$OK_ICON World Builder backend running: http://localhost:$BACKEND_PORT/api"
 else
@@ -94,6 +96,7 @@ fi
 # Check Web UI (frontend, default React port 3000)
 FRONTEND_PORT=3000
 FRONTEND_STATUS=$(ss -ltn 2>/dev/null | grep ":$FRONTEND_PORT " || netstat -an 2>/dev/null | grep ":$FRONTEND_PORT ")
+
 if [[ -n "$FRONTEND_STATUS" ]]; then
 	echo -e "$OK_ICON Web UI running: http://localhost:$FRONTEND_PORT/"
 else
@@ -104,6 +107,7 @@ fi
 # Get hostname and LAN IP
 HOSTNAME=$(hostname)
 LAN_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
+
 if [[ -z "$LAN_IP" ]]; then
 	LAN_IP=$(ip addr show | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | cut -d'/' -f1 | head -n1)
 fi
@@ -114,3 +118,24 @@ echo "  MUD (telnet):      telnet $HOSTNAME $MUD_PORT   or   telnet $LAN_IP $MUD
 echo "  World Builder API: http://$HOSTNAME:$BACKEND_PORT/api   or   http://$LAN_IP:$BACKEND_PORT/api"
 echo "  Web UI:            http://$HOSTNAME:$FRONTEND_PORT/   or   http://$LAN_IP:$FRONTEND_PORT/"
 echo -e "\nUse ./stop.sh to stop all services."
+
+divider() {
+	echo -e "\033[1;34m============================================================\033[0m"
+}
+
+divider
+echo -e "\033[1;32m$OK_ICON DEPLOYMENT COMPLETE\033[0m\n"
+
+echo -e "\033[1;36m🌐 Service URLs:\033[0m"
+echo -e "  \033[1;33mMUD (telnet):\033[0m      telnet $HOSTNAME $MUD_PORT   |   telnet $LAN_IP $MUD_PORT"
+echo -e "  \033[1;33mWorld Builder API:\033[0m http://$HOSTNAME:$BACKEND_PORT/api   |   http://$LAN_IP:$BACKEND_PORT/api"
+echo -e "  \033[1;33mWeb UI:\033[0m            http://$HOSTNAME:$FRONTEND_PORT/   |   http://$LAN_IP:$FRONTEND_PORT/\n"
+
+divider
+echo -e "\033[1;36m🖥️  TMUX Attach Commands:\033[0m"
+echo -e "  \033[1;33mMUD:\033[0m      tmux attach -t mud"
+echo -e "  \033[1;33mBackend:\033[0m  tmux attach -t world"
+echo -e "  \033[1;33mFrontend:\033[0m tmux attach -t webui\n"
+
+divider
+echo -e "\033[1;36m🛑 To stop all services: ./stop.sh\033[0m\n"
