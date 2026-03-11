@@ -84,9 +84,17 @@ else
 	echo -e "$ERR_ICON Web UI not detected on port $FRONTEND_PORT (check logs)"
 fi
 
+
+# Get hostname and LAN IP
+HOSTNAME=$(hostname)
+LAN_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
+if [[ -z "$LAN_IP" ]]; then
+	LAN_IP=$(ip addr show | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | cut -d'/' -f1 | head -n1)
+fi
+
 echo -e "\n$OK_ICON Deployment complete.\n"
 echo "Connect to your services:"
-echo "  MUD (telnet):      telnet <host> $MUD_PORT"
-echo "  World Builder API: http://<host>:$BACKEND_PORT/api"
-echo "  Web UI:            http://<host>:$FRONTEND_PORT/"
+echo "  MUD (telnet):      telnet $HOSTNAME $MUD_PORT   or   telnet $LAN_IP $MUD_PORT"
+echo "  World Builder API: http://$HOSTNAME:$BACKEND_PORT/api   or   http://$LAN_IP:$BACKEND_PORT/api"
+echo "  Web UI:            http://$HOSTNAME:$FRONTEND_PORT/   or   http://$LAN_IP:$FRONTEND_PORT/"
 echo -e "\nUse ./stop.sh to stop all services."
