@@ -1,0 +1,886 @@
+#AREA
+white_tower.are~
+Addair White Tower~
+{ 1 15} Addair White Tower~
+9800 9899
+
+#MOBILES
+#9800
+white marshal trainer~
+the White Tower marshal~
+The White Tower marshal stands ready to train new heroes.
+~
+A veteran of Addair's defenses, the marshal watches every recruit with calm,
+measured focus.
+~
+human~
+ABGJKTb 0 700 0
+30 10 1d1+999 1d1+999 2d4+30 beating
+-10 -10 -10 -10
+0 0 0 0
+stand stand male 0
+0 0 medium 0
+#9801
+white quartermaster armorer~
+the White Tower quartermaster~
+The quartermaster checks armor straps and buckles.
+~
+The quartermaster smiles and gestures to a wall of beginner armor sets.
+~
+human~
+ABGQ 0 700 0
+20 8 1d1+500 1d1+500 1d4+20 punch
+-5 -5 -5 -5
+0 0 0 0
+stand stand female 0
+0 0 medium 0
+#9802
+white weaponsmith~
+the White Tower weaponsmith~
+A weaponsmith polishes simple training weapons.
+~
+The weaponsmith keeps beginner steel balanced and safe for training.
+~
+human~
+ABGT 0 700 0
+20 8 1d1+500 1d1+500 1d4+20 punch
+-5 -5 -5 -5
+0 0 0 0
+stand stand male 0
+0 0 medium 0
+#9803
+white provisioner~
+the White Tower provisioner~
+The provisioner arranges travel rations and waterskins.
+~
+The provisioner keeps fresh supplies ready for every new adventurer.
+~
+human~
+ABG 0 700 0
+18 6 1d1+350 1d1+350 1d4+15 punch
+-2 -2 -2 -2
+0 0 0 0
+stand stand female 0
+0 0 medium 0
+#9804
+white initiate guardian~
+a White Tower initiate~
+A White Tower initiate practices measured strikes here.
+~
+The initiate is focused but patient, offering a fair first challenge.
+~
+human~
+ABG 0 650 0
+2 0 2d6+20 2d4+20 1d4+0 slash
+8 8 8 8
+0 0 0 0
+stand stand male 20
+0 0 medium 0
+#9805
+white sentry~
+a White Tower sentry~
+A White Tower sentry patrols this floor in silence.
+~
+The sentry carries duty in every step and tests passing trainees.
+~
+human~
+ABG 0 650 0
+5 1 3d7+35 3d4+30 1d6+1 slash
+6 6 6 7
+0 0 0 0
+stand stand female 35
+0 0 medium 0
+#9806
+white defender~
+a White Tower defender~
+A White Tower defender waits for challengers.
+~
+The defender's shield is scarred from countless training bouts.
+~
+human~
+ABG 0 650 0
+8 2 4d8+50 4d4+40 1d7+2 bash
+4 4 4 6
+0 0 0 0
+stand stand male 50
+0 0 medium 0
+#9807
+white knight~
+a White Tower knight~
+A White Tower knight studies your footing before engaging.
+~
+The knight offers no mercy, but no cruelty either.
+~
+human~
+ABG 0 650 0
+11 3 5d9+70 5d4+50 2d4+2 slash
+2 2 2 5
+0 0 0 0
+stand stand female 80
+0 0 medium 0
+#9808
+white warden~
+a White Tower warden~
+A White Tower warden guards the apex stair.
+~
+The warden is the final trial before recruits leave the tower.
+~
+human~
+ABG 0 650 0
+14 4 6d10+95 6d4+60 2d5+3 slash
+0 0 0 4
+0 0 0 0
+stand stand male 120
+0 0 medium 0
+#0
+
+#OBJECTS
+#9810
+white training sword~
+a white training sword~
+A white training sword is ready on the rack.~
+steel~
+weapon UN AN
+sword 1 6 slash 0
+0 40 90 P
+A
+18 1
+#9811
+white trainee dagger~
+a white trainee dagger~
+A white trainee dagger sits neatly in a sheath.~
+steel~
+weapon UN AN
+dagger 1 4 pierce 0
+0 10 70 P
+A
+18 1
+#9816
+white trainee mace~
+a white trainee mace~
+A white trainee mace rests beside the other practice weapons.~
+steel~
+weapon UN AN
+mace 1 6 pound 0
+0 45 80 P
+A
+18 1
+#9812
+white trainee vest~
+a white trainee vest~
+A white trainee vest hangs from a peg.~
+leather~
+armor UN AD
+1 1 1 0 0
+0 30 85 P
+#9813
+white trainee shield~
+a white trainee shield~
+A white trainee shield rests beside the wall.~
+wood~
+armor UN AJ
+1 1 1 0 0
+0 30 85 P
+#9814
+travel ration~
+a travel ration~
+A wrapped travel ration is stacked here.~
+food~
+food UN A
+15 15 0 0 0
+0 2 10 P
+#9815
+waterskin~
+a waterskin~
+A filled waterskin lies here.~
+leather~
+drink UN A
+10 10 'water' 0 0
+0 3 12 P
+#9820
+initiate's shortblade~
+an initiate's shortblade~
+An initiate's shortblade has been left behind.~
+steel~
+weapon U AN
+sword 1 6 slash 0
+3 35 140 P
+A
+18 1
+#9821
+sentry cap~
+a sentry cap~
+A sentry cap lies near the stair.~
+leather~
+armor U AE
+2 1 1 0 0
+5 15 150 P
+#9822
+defender's mail~
+a defender's mail shirt~
+A defender's mail shirt is here, marked with white thread.~
+chain~
+armor U AD
+3 2 2 0 0
+8 55 260 P
+#9823
+knight greaves~
+a pair of knight greaves~
+A pair of knight greaves waits here.~
+steel~
+armor U AF
+3 2 2 0 0
+11 40 320 P
+#9824
+warden's longsword~
+a warden's longsword~
+A warden's longsword gleams in pale light.~
+steel~
+weapon U AN
+sword 2 6 slash 0
+14 55 430 P
+A
+18 2
+#9825
+initiate's cudgel~
+an initiate's cudgel~
+An initiate's cudgel has been set aside after a drill.~
+wood~
+weapon U AN
+mace 1 6 pound 0
+3 30 140 P
+A
+18 1
+#9826
+sentry's mace~
+a sentry's mace~
+A sentry's mace lies near the stair.~
+steel~
+weapon U AN
+mace 1 7 pound 0
+5 35 150 P
+A
+18 1
+#9827
+defender's hammer~
+a defender's hammer~
+A defender's hammer has been left near a shield rack.~
+steel~
+weapon U AN
+mace 2 4 pound 0
+8 50 260 P
+A
+18 1
+#9828
+knight's morningstar~
+a knight's morningstar~
+A knight's morningstar rests here in careful balance.~
+steel~
+weapon U AN
+mace 2 5 pound 0
+11 40 320 P
+A
+18 2
+#9829
+warden's sanctifier~
+a warden's sanctifier~
+A warden's sanctifier glints with polished silver edges.~
+steel~
+weapon U AN
+mace 2 6 pound 0
+14 50 430 P
+A
+18 2
+#9830
+initiate's focus~
+an initiate's focus~
+An initiate's focus staff has been left against the wall.~
+wood~
+weapon U AN
+staff 1 5 pound 0
+3 30 140 P
+A
+18 1
+#9831
+sentry's rod~
+a sentry's rod~
+A sentry's rod rests in easy reach beside the stair.~
+wood~
+weapon U AN
+staff 1 6 pound 0
+5 35 150 P
+A
+18 1
+#9832
+defender's stave~
+a defender's stave~
+A defender's stave lies here, polished by repeated handling.~
+wood~
+weapon U AN
+staff 2 4 pound 0
+8 45 260 P
+A
+18 1
+#9833
+knight's channeling staff~
+a knight's channeling staff~
+A knight's channeling staff hums with contained discipline.~
+wood~
+weapon U AN
+staff 2 5 pound 0
+11 40 320 P
+A
+18 2
+#9834
+warden's battle staff~
+a warden's battle staff~
+A warden's battle staff gleams with pale runes.~
+wood~
+weapon U AN
+staff 2 6 pound 0
+14 50 430 P
+A
+18 2
+#9835
+initiate's stiletto~
+an initiate's stiletto~
+An initiate's stiletto lies here, slim and easy to hide.~
+steel~
+weapon U AN
+dagger 1 5 pierce 0
+3 25 140 P
+A
+18 1
+#9836
+sentry's dirk~
+a sentry's dirk~
+A sentry's dirk glints faintly near the stair.~
+steel~
+weapon U AN
+dagger 1 6 pierce 0
+5 30 150 P
+A
+18 1
+#9837
+defender's knife~
+a defender's knife~
+A defender's knife has been left within quick reach.~
+steel~
+weapon U AN
+dagger 2 3 pierce 0
+8 40 260 P
+A
+18 1
+#9838
+knight's poniard~
+a knight's poniard~
+A knight's poniard rests here in a fitted sheath.~
+steel~
+weapon U AN
+dagger 2 4 pierce 0
+11 35 320 P
+A
+18 2
+#9839
+warden's shadowblade~
+a warden's shadowblade~
+A warden's shadowblade lies here, perfectly balanced.~
+steel~
+weapon U AN
+dagger 2 5 pierce 0
+14 45 430 P
+A
+18 2
+#9840
+white brigandine~
+a white brigandine~
+A white brigandine hangs here, reinforced for hard training.~
+steel~
+armor U AD
+3 3 2 0 0
+5 45 190 P
+A
+13 10
+#9841
+white knight harness~
+a white knight harness~
+A white knight harness is displayed here.~
+steel~
+armor U AD
+4 4 3 0 0
+10 55 330 P
+A
+13 20
+#9842
+white warden plate~
+a white warden plate~
+A white warden plate gleams with polished rivets.~
+steel~
+armor U AD
+5 5 4 0 0
+14 65 450 P
+A
+13 30
+#9843
+white acolyte vestments~
+white acolyte vestments~
+White acolyte vestments are arranged with care here.~
+cloth~
+armor U AD
+2 3 3 0 0
+5 30 185 P
+A
+12 10
+#9844
+white consecrated raiment~
+white consecrated raiment~
+White consecrated raiment hangs in crisp folds here.~
+cloth~
+armor U AD
+3 4 4 0 0
+10 35 325 P
+A
+12 20
+#9845
+white sanctifier robes~
+white sanctifier robes~
+White sanctifier robes shimmer softly in the light.~
+cloth~
+armor U AD
+4 5 5 0 0
+14 40 445 P
+A
+12 30
+#9846
+white channeler's robe~
+a white channeler's robe~
+A white channeler's robe has been folded neatly here.~
+cloth~
+armor U AD
+2 2 3 0 0
+5 25 180 P
+A
+12 15
+#9847
+white spellwoven mantle~
+a white spellwoven mantle~
+A white spellwoven mantle is draped over a stand.~
+cloth~
+armor U AD
+3 3 4 0 0
+10 30 320 P
+A
+12 30
+#9848
+white archmage shroud~
+a white archmage shroud~
+A white archmage shroud glimmers with subtle threads.~
+cloth~
+armor U AD
+4 4 5 0 0
+14 35 440 P
+A
+12 45
+#9849
+white shadow leathers~
+white shadow leathers~
+White shadow leathers rest here, soft and flexible.~
+leather~
+armor U AD
+3 2 3 0 0
+5 30 180 P
+A
+14 10
+#9850
+white dusk wraps~
+white dusk wraps~
+White dusk wraps lie here, cut for silence and speed.~
+leather~
+armor U AD
+4 3 4 0 0
+10 35 320 P
+A
+14 20
+#9851
+white nightstalker leathers~
+white nightstalker leathers~
+White nightstalker leathers are laid out in careful order.~
+leather~
+armor U AD
+5 4 5 0 0
+14 40 440 P
+A
+14 30
+#9852
+white war gauntlets~
+a pair of white war gauntlets~
+A pair of white war gauntlets rests here.~
+steel~
+armor U AH
+2 1 1 0 0
+5 25 170 P
+A
+13 10
+#9853
+white veteran gauntlets~
+a pair of white veteran gauntlets~
+A pair of white veteran gauntlets is displayed here.~
+steel~
+armor U AH
+3 2 2 0 0
+10 35 300 P
+A
+13 20
+#9854
+white conqueror gauntlets~
+a pair of white conqueror gauntlets~
+A pair of white conqueror gauntlets gleams with polished plates.~
+steel~
+armor U AH
+4 3 3 0 0
+14 45 430 P
+A
+13 30
+#9855
+white prayer circlet~
+a white prayer circlet~
+A white prayer circlet rests on a velvet stand.~
+silver~
+armor U AE
+1 2 2 0 0
+5 25 170 P
+A
+12 10
+#9856
+white oracle circlet~
+a white oracle circlet~
+A white oracle circlet glows faintly with holy etching.~
+silver~
+armor U AE
+2 3 3 0 0
+10 35 300 P
+A
+12 20
+#9857
+white high-priest circlet~
+a white high-priest circlet~
+A white high-priest circlet shines in pale light.~
+silver~
+armor U AE
+3 4 4 0 0
+14 45 430 P
+A
+12 30
+#9858
+white initiate cloak~
+a white initiate cloak~
+A white initiate cloak is folded neatly here.~
+cloth~
+armor U AK
+1 1 2 0 0
+5 20 160 P
+A
+12 15
+#9859
+white arcanist cloak~
+a white arcanist cloak~
+A white arcanist cloak hangs beside a lamp.~
+cloth~
+armor U AK
+2 2 3 0 0
+10 30 290 P
+A
+12 30
+#9860
+white archmage cloak~
+a white archmage cloak~
+A white archmage cloak glimmers with subtle runes.~
+cloth~
+armor U AK
+3 3 4 0 0
+14 40 420 P
+A
+12 45
+#9861
+white scout boots~
+a pair of white scout boots~
+A pair of white scout boots waits near the rack.~
+leather~
+armor U AG
+2 1 2 0 0
+5 20 160 P
+A
+14 10
+#9862
+white stalker boots~
+a pair of white stalker boots~
+A pair of white stalker boots lies here, light and silent.~
+leather~
+armor U AG
+3 2 3 0 0
+10 30 290 P
+A
+14 20
+#9863
+white shadowrunner boots~
+a pair of white shadowrunner boots~
+A pair of white shadowrunner boots is arranged for quick draws.~
+leather~
+armor U AG
+4 3 4 0 0
+14 40 420 P
+A
+14 30
+#0
+
+#ROOMS
+#9800
+Hall of Light, White Tower~
+You stand in the White Tower's entry hall in Addair. White stone, silver lamps,
+and clear banners mark this as a refuge for good-aligned adventurers beginning
+their path. Stairs rise through the heart of the tower.
+~
+0 CDR 0
+H 150
+M 150
+D0
+A broad stair leads upward into the trial floors.
+~
+~
+0 0 9805
+D1
+An arched doorway leads to the training hall.
+~
+~
+0 0 9801
+D2
+A stocked doorway opens to the provision room.
+~
+~
+0 0 9804
+D3
+A side chamber displays beginner weapons.
+~
+~
+0 0 9802
+D4
+A side chamber displays beginner armor.
+~
+~
+0 0 9803
+D5
+A reinforced gate descends to the sealed lower entrance.
+~
+~
+0 0 9810
+S
+#9801
+White Tower Training Hall~
+Training circles are painted across this polished floor. Recruits practice,
+recover, and improve before climbing the combat stairs.
+~
+0 CDR 0
+D3
+The hall of light lies west.
+~
+~
+0 0 9800
+S
+#9802
+White Tower Arsenal~
+Simple blades and practice weapons line the walls in careful rows.
+~
+0 CDR 0
+D1
+The hall of light lies east.
+~
+~
+0 0 9800
+S
+#9803
+White Tower Armory~
+Light armor sets are arranged by size for novice defenders of Addair.
+~
+0 CDR 0
+D5
+The hall of light lies down.
+~
+~
+0 0 9800
+S
+#9804
+White Tower Refectory~
+Travel bread, jerky, and clean water are prepared for first journeys.
+~
+0 CDR 0
+D0
+The hall of light lies north.
+~
+~
+0 0 9800
+S
+#9805
+First Trial Floor~
+This first combat floor gives level 1 to 3 adventurers room to learn pacing,
+positioning, and survival.
+~
+0 DR 0
+D4
+The second floor rises above.
+~
+~
+0 0 9806
+D5
+The hall of light waits below.
+~
+~
+0 0 9800
+S
+#9806
+Second Trial Floor~
+This floor is tuned for level 4 to 6 trainees who are ready for harder hits
+and cleaner execution.
+~
+0 DR 0
+D4
+The third floor rises above.
+~
+~
+0 0 9807
+D5
+The first floor is below.
+~
+~
+0 0 9805
+S
+#9807
+Third Trial Floor~
+A broad ring marks this floor for level 7 to 9 combat drills and longer fights.
+~
+0 DR 0
+D4
+The fourth floor rises above.
+~
+~
+0 0 9808
+D5
+The second floor is below.
+~
+~
+0 0 9806
+S
+#9808
+Fourth Trial Floor~
+This floor tests level 10 to 12 adventurers with steadier foes and fewer errors.
+~
+0 DR 0
+D4
+The apex floor rises above.
+~
+~
+0 0 9809
+D5
+The third floor is below.
+~
+~
+0 0 9807
+S
+#9809
+Apex Trial Floor~
+The highest active floor of the White Tower challenges level 13 to 15 recruits
+before they move into the wider world.
+~
+0 DR 0
+D5
+The fourth floor is below.
+~
+~
+0 0 9808
+S
+#9810
+Sealed Base Gate~
+At the base of the White Tower, a reinforced gate marks the future homeland
+connection point. For now, only the way back up is open.
+~
+0 CDR 0
+D4
+The hall of light is above.
+~
+~
+0 0 9800
+S
+#0
+
+#RESETS
+M 0 9800   1 9801  1	* the White Tower marshal
+M 0 9801   1 9803  1	* the White Tower quartermaster
+G 1 9812  -1     	*   a white trainee vest
+G 1 9813  -1     	*   a white trainee shield
+G 1 9840  -1     	*   a white brigandine
+G 1 9841  -1     	*   a white knight harness
+G 1 9842  -1     	*   a white warden plate
+G 1 9843  -1     	*   white acolyte vestments
+G 1 9844  -1     	*   white consecrated raiment
+G 1 9845  -1     	*   white sanctifier robes
+G 1 9846  -1     	*   a white channeler's robe
+G 1 9847  -1     	*   a white spellwoven mantle
+G 1 9848  -1     	*   a white archmage shroud
+G 1 9849  -1     	*   white shadow leathers
+G 1 9850  -1     	*   white dusk wraps
+G 1 9851  -1     	*   white nightstalker leathers
+G 1 9852  -1     	*   a pair of white war gauntlets
+G 1 9853  -1     	*   a pair of white veteran gauntlets
+G 1 9854  -1     	*   a pair of white conqueror gauntlets
+G 1 9855  -1     	*   a white prayer circlet
+G 1 9856  -1     	*   a white oracle circlet
+G 1 9857  -1     	*   a white high-priest circlet
+G 1 9858  -1     	*   a white initiate cloak
+G 1 9859  -1     	*   a white arcanist cloak
+G 1 9860  -1     	*   a white archmage cloak
+G 1 9861  -1     	*   a pair of white scout boots
+G 1 9862  -1     	*   a pair of white stalker boots
+G 1 9863  -1     	*   a pair of white shadowrunner boots
+M 0 9802   1 9802  1	* the White Tower weaponsmith
+G 1 9810  -1     	*   a white training sword
+G 1 9811  -1     	*   a white trainee dagger
+G 1 9816  -1     	*   a white trainee mace
+G 1 9825  -1     	*   an initiate's cudgel
+G 1 9826  -1     	*   a sentry's mace
+G 1 9827  -1     	*   a defender's hammer
+G 1 9828  -1     	*   a knight's morningstar
+G 1 9829  -1     	*   a warden's sanctifier
+G 1 9830  -1     	*   an initiate's focus
+G 1 9831  -1     	*   a sentry's rod
+G 1 9832  -1     	*   a defender's stave
+G 1 9833  -1     	*   a knight's channeling staff
+G 1 9834  -1     	*   a warden's battle staff
+G 1 9835  -1     	*   an initiate's stiletto
+G 1 9836  -1     	*   a sentry's dirk
+G 1 9837  -1     	*   a defender's knife
+G 1 9838  -1     	*   a knight's poniard
+G 1 9839  -1     	*   a warden's shadowblade
+M 0 9803   1 9804  1	* the White Tower provisioner
+G 1 9814  -1     	*   a travel ration
+G 1 9815  -1     	*   a waterskin
+M 0 9804   2 9805  2	* a White Tower initiate
+E 1 9820  -1   16	*   an initiate's shortblade
+M 0 9805   2 9806  2	* a White Tower sentry
+E 1 9821  -1    6	*   a sentry cap
+M 0 9806   2 9807  2	* a White Tower defender
+E 1 9822  -1    5	*   a defender's mail shirt
+M 0 9807   2 9808  2	* a White Tower knight
+E 1 9823  -1    7	*   a pair of knight greaves
+M 0 9808   2 9809  2	* a White Tower warden
+E 1 9824  -1   16	*   a warden's longsword
+S
+
+#SHOPS
+9801  9  0  0  0  0 	 110 70 	 0 23 	* the White Tower quartermaster
+9802  5  0  0  0  0 	 110 70 	 0 23 	* the White Tower weaponsmith
+9803  19 17  0  0  0 	 105 60 	 0 23 	* the White Tower provisioner
+0
+
+#SPECIALS
+S
+
+#$

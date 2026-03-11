@@ -109,13 +109,50 @@ int size_lookup (const char *name)
 /* returns race number */
 int race_lookup (const char *name)
 {
+    static const struct
+    {
+        const char *alias;
+        const char *canonical;
+    } race_aliases[] = {
+        {"stone-giant", "giant"},
+        {"stone giant", "giant"},
+        {"half-elf", "elf"},
+        {"half elf", "elf"},
+        {"azer", "dwarf"},
+        {"atomie", "faerie"},
+        {"wild-elf", "elf"},
+        {"wild elf", "elf"},
+        {"high-elf", "elf"},
+        {"high elf", "elf"},
+        {"dryad", "elf"},
+        {"dragonkin", "dragon"},
+        {"svirfneblin", "gnome"},
+        {"duergar", "dwarf"},
+        {"half-orc", "orc"},
+        {"half orc", "orc"},
+        {"hobgoblin", "goblin"},
+        {"skaven", "gnoll"},
+        {"ogre", "troll"},
+        {"illithid", "void-touched"},
+        {"lich", "undead"},
+        {"kenku", "aarakocra"},
+        {"revenant", "undead"},
+        {NULL, NULL}
+    };
     int race;
+    int i;
 
     for (race = 0; race_table[race].name != NULL; race++)
     {
         if (LOWER (name[0]) == LOWER (race_table[race].name[0])
             && !str_prefix (name, race_table[race].name))
             return race;
+    }
+
+    for (i = 0; race_aliases[i].alias != NULL; i++)
+    {
+        if (!str_prefix (name, race_aliases[i].alias))
+            return race_lookup (race_aliases[i].canonical);
     }
 
     return 0;
@@ -153,15 +190,22 @@ HELP_DATA *help_lookup (char *keyword)
 {
     HELP_DATA *pHelp;
     char temp[MIL], argall[MIL];
+    size_t cur_len, rem;
 
     argall[0] = '\0';
 
     while (keyword[0] != '\0')
     {
         keyword = one_argument (keyword, temp);
+        cur_len = strlen (argall);
+        if (cur_len + 1 >= sizeof (argall))
+            break;
+
         if (argall[0] != '\0')
             strcat (argall, " ");
-        strcat (argall, temp);
+
+        rem = sizeof (argall) - strlen (argall) - 1;
+        strncat (argall, temp, rem);
     }
 
     for (pHelp = help_first; pHelp != NULL; pHelp = pHelp->next)

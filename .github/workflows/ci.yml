@@ -1,0 +1,33 @@
+name: Build and Validate
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: sudo apt-get update ; sudo apt-get install -y build-essential
+
+      - name: Build MUD
+        run: make
+
+  area-integrity:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check area vnum overlaps
+        shell: pwsh
+        run: ./tools/check-area-overlaps.ps1

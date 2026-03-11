@@ -1287,6 +1287,9 @@ struct    kill_data
 #define ROOM_VNUM_TEMPLE   3001
 #define ROOM_VNUM_ALTAR    3054
 #define ROOM_VNUM_SCHOOL   3700
+#define ROOM_VNUM_WHITE_TOWER_START 9800
+#define ROOM_VNUM_OBSIDIAN_TOWER_START 9900
+#define HARDWIRED_ADMIN_NAME "God"
 #define ROOM_VNUM_BALANCE  4500
 #define ROOM_VNUM_CIRCLE   4400
 #define ROOM_VNUM_DEMISE   4201
@@ -2422,6 +2425,8 @@ void     set_title           args( ( CHAR_DATA *ch, char *title ) );
 
 /* act_move.c */
 void     move_char           args( ( CHAR_DATA *ch, int door, bool follow ) );
+int      get_homeland_start_vnum args( ( CHAR_DATA *ch ) );
+RID *    get_homeland_recall_room args( ( CHAR_DATA *ch ) );
 
 /* act_obj.c */
 bool     can_loot            args( ( CHAR_DATA *ch, OBJ_DATA *obj ) );

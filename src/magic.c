@@ -4595,11 +4595,16 @@ void spell_word_of_recall (int sn, int level, CHAR_DATA * ch, void *vo,
     if (IS_NPC (victim))
         return;
 
-    if ((location = get_room_index (ROOM_VNUM_TEMPLE)) == NULL)
+    location = get_homeland_recall_room(victim);
+
+    if (location == NULL)
     {
         send_to_char ("You are completely lost.\n\r", victim);
         return;
     }
+
+    if (victim->in_room == location)
+        return;
 
     if (IS_SET (victim->in_room->room_flags, ROOM_NO_RECALL) ||
         IS_AFFECTED (victim, AFF_CURSE))
@@ -4611,7 +4616,7 @@ void spell_word_of_recall (int sn, int level, CHAR_DATA * ch, void *vo,
     if (victim->fighting != NULL)
         stop_fighting (victim, TRUE);
 
-    ch->move /= 2;
+    victim->move /= 2;
     act ("$n disappears.", victim, NULL, NULL, TO_ROOM);
     char_from_room (victim);
     char_to_room (victim, location);

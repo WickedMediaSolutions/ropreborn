@@ -1931,10 +1931,12 @@ void do_whois (CHAR_DATA * ch, char *argument)
 
     output = new_buf ();
 
+
     for (d = descriptor_list; d != NULL; d = d->next)
     {
         CHAR_DATA *wch;
         char const *class;
+        char const *race;
 
         if (d->connected != CON_PLAYING || !can_see (ch, d->character))
             continue;
@@ -1948,8 +1950,8 @@ void do_whois (CHAR_DATA * ch, char *argument)
         {
             found = TRUE;
 
-            /* work out the printing */
             class = class_table[wch->class].who_name;
+            race = wch->race < MAX_PC_RACE ? pc_race_table[wch->race].who_name : "     ";
             switch (wch->level)
             {
                 case MAX_LEVEL - 0:
@@ -1981,20 +1983,21 @@ void do_whois (CHAR_DATA * ch, char *argument)
                     break;
             }
 
-            /* a little formatting */
-            sprintf (buf, "[%2d %6s %s] %s%s%s%s%s%s%s%s\n\r",
-                     wch->level,
-                     wch->race <
-                     MAX_PC_RACE ? pc_race_table[wch->
-                                                 race].who_name : "     ",
-                     class, wch->incog_level >= LEVEL_HERO ? "(Incog) " : "",
-                     wch->invis_level >= LEVEL_HERO ? "(Wizi) " : "",
-                     clan_table[wch->clan].who_name, IS_SET (wch->comm,
-                                                             COMM_AFK) ?
-                     "[AFK] " : "", IS_SET (wch->act,
-                                            PLR_KILLER) ? "(KILLER) " : "",
-                     IS_SET (wch->act, PLR_THIEF) ? "(THIEF) " : "",
-                     wch->name, IS_NPC (wch) ? "" : wch->pcdata->title);
+            // Match do_who: show (race/class) next to name
+            sprintf (buf, "[{W%2d{x {G%6s{x {Y%s{x %s%s%s%s%s%s{C%s{x {D(%s/%s){x{W%s{x\n\r",
+                wch->level,
+                race,
+                class,
+                wch->incog_level >= LEVEL_HERO ? "(Incog) " : "",
+                wch->invis_level >= LEVEL_HERO ? "(Wizi) " : "",
+                wch->invis_level >= LEVEL_HERO ? "" : clan_table[wch->clan].who_name,
+                IS_SET (wch->comm, COMM_AFK) ? "{R[AFK]{x " : "",
+                IS_SET (wch->act, PLR_KILLER) ? "{R(KILLER){x " : "",
+                IS_SET (wch->act, PLR_THIEF) ? "{R(THIEF){x " : "",
+                wch->name,
+                race,
+                class,
+                IS_NPC (wch) ? "" : wch->pcdata->title);
             add_buf (output, buf);
         }
     }
@@ -2203,7 +2206,7 @@ void do_who (CHAR_DATA * ch, char *argument)
         /*
          * Format it up.
          */
-        sprintf (buf, "{C[{W%2d{C] {G%6s{x {Y%s{x %s%s%s%s%s%s{C%s{x{W%s{x\n\r",
+        sprintf (buf, "{C[{W%2d{C] {G%6s{x {Y%s{x %s%s%s%s%s%s{C%s{x {D(%s/%s){x{W%s{x\n\r",
                  wch->level,
                  wch->race < MAX_PC_RACE ? pc_race_table[wch->race].who_name
                  : "     ",
@@ -2214,7 +2217,10 @@ void do_who (CHAR_DATA * ch, char *argument)
                  IS_SET (wch->comm, COMM_AFK) ? "{R[AFK]{x " : "",
                  IS_SET (wch->act, PLR_KILLER) ? "{R(KILLER){x " : "",
                  IS_SET (wch->act, PLR_THIEF) ? "{R(THIEF){x " : "",
-                 wch->name, IS_NPC (wch) ? "" : wch->pcdata->title);
+             wch->name,
+             wch->race < MAX_PC_RACE ? pc_race_table[wch->race].who_name : "Unknown",
+             class,
+             IS_NPC (wch) ? "" : wch->pcdata->title);
         add_buf (output, buf);
     }
 

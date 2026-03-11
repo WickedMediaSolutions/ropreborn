@@ -1574,7 +1574,7 @@ void do_recall (CHAR_DATA * ch, char *argument)
 
     act ("$n prays for transportation!", ch, 0, 0, TO_ROOM);
 
-    if ((location = get_room_index (ROOM_VNUM_TEMPLE)) == NULL)
+    if ((location = get_homeland_recall_room(ch)) == NULL)
     {
         send_to_char ("You are completely lost.\n\r", ch);
         return;

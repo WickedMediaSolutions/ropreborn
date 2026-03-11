@@ -1,0 +1,885 @@
+#AREA
+obsidian_tower.are~
+The Obsidian Tower~
+{ 1 15} The Obsidian Tower~
+9900 9999
+
+#MOBILES
+#9900
+obsidian marshal trainer~
+the Obsidian Tower marshal~
+The Obsidian Tower marshal sizes up every new initiate.
+~
+A veteran of ruthless campaigns, the marshal drills discipline into all who
+enter.
+~
+orc~
+ABGJKTb 0 -700 0
+30 10 1d1+999 1d1+999 2d4+30 beating
+-10 -10 -10 -10
+0 0 0 0
+stand stand male 0
+0 0 medium 0
+#9901
+obsidian quartermaster armorer~
+the Obsidian Tower quartermaster~
+The quartermaster checks each plate seam for weakness.
+~
+The quartermaster gestures toward stacks of practical battlefield armor.
+~
+dwarf~
+ABGQ 0 -700 0
+20 8 1d1+500 1d1+500 1d4+20 punch
+-5 -5 -5 -5
+0 0 0 0
+stand stand female 0
+0 0 medium 0
+#9902
+obsidian weaponsmith~
+the Obsidian Tower weaponsmith~
+A weaponsmith balances blades for brutal close combat.
+~
+The weaponsmith favors sturdy steel over ornament.
+~
+orc~
+ABGT 0 -700 0
+20 8 1d1+500 1d1+500 1d4+20 punch
+-5 -5 -5 -5
+0 0 0 0
+stand stand male 0
+0 0 medium 0
+#9903
+obsidian provisioner~
+the Obsidian Tower provisioner~
+The provisioner packs rations for hard marches.
+~
+The provisioner offers dry meat, black bread, and clean water.
+~
+goblin~
+ABG 0 -700 0
+18 6 1d1+350 1d1+350 1d4+15 punch
+-2 -2 -2 -2
+0 0 0 0
+stand stand female 0
+0 0 medium 0
+#9904
+obsidian initiate guardian~
+an Obsidian Tower initiate~
+An Obsidian Tower initiate circles you in a measured stance.
+~
+The initiate is dangerous but controlled, built as a fair first test.
+~
+orc~
+ABG 0 -650 0
+2 0 2d6+20 2d4+20 1d4+0 slash
+8 8 8 8
+0 0 0 0
+stand stand male 20
+0 0 medium 0
+#9905
+obsidian sentry~
+an Obsidian Tower sentry~
+An Obsidian Tower sentry watches the stairs without blinking.
+~
+The sentry has drilled this route so long every step is precise.
+~
+dwarf~
+ABG 0 -650 0
+5 1 3d7+35 3d4+30 1d6+1 slash
+6 6 6 7
+0 0 0 0
+stand stand female 35
+0 0 medium 0
+#9906
+obsidian defender~
+an Obsidian Tower defender~
+An Obsidian Tower defender braces for your approach.
+~
+The defender's shield bears gouges from endless training rounds.
+~
+troll~
+ABG 0 -650 0
+8 2 4d8+50 4d4+40 1d7+2 bash
+4 4 4 6
+0 0 0 0
+stand stand male 50
+0 0 medium 0
+#9907
+obsidian knight~
+an Obsidian Tower knight~
+An Obsidian Tower knight studies your reach and timing.
+~
+The knight fights with strict control and no wasted movement.
+~
+undead~
+ABG 0 -650 0
+11 3 5d9+70 5d4+50 2d4+2 slash
+2 2 2 5
+0 0 0 0
+stand stand female 80
+0 0 medium 0
+#9908
+obsidian warden~
+an Obsidian Tower warden~
+An Obsidian Tower warden guards the apex stair.
+~
+The warden is the final trial before initiates are released below.
+~
+minotaur~
+ABG 0 -650 0
+14 4 6d10+95 6d4+60 2d5+3 slash
+0 0 0 4
+0 0 0 0
+stand stand male 120
+0 0 medium 0
+#0
+
+#OBJECTS
+#9910
+obsidian training sword~
+an obsidian training sword~
+An obsidian training sword rests in a weapon stand.~
+steel~
+weapon UN AN
+sword 1 6 slash 0
+0 40 90 P
+A
+18 1
+#9911
+obsidian trainee dagger~
+an obsidian trainee dagger~
+An obsidian trainee dagger lies near a sharpening block.~
+steel~
+weapon UN AN
+dagger 1 4 pierce 0
+0 10 70 P
+A
+18 1
+#9916
+obsidian trainee mace~
+an obsidian trainee mace~
+An obsidian trainee mace rests beside the training blades.~
+steel~
+weapon UN AN
+mace 1 6 pound 0
+0 45 80 P
+A
+18 1
+#9912
+obsidian trainee vest~
+an obsidian trainee vest~
+An obsidian trainee vest hangs from an iron hook.~
+leather~
+armor UN AD
+1 1 1 0 0
+0 30 85 P
+#9913
+obsidian trainee shield~
+an obsidian trainee shield~
+An obsidian trainee shield leans against the wall.~
+wood~
+armor UN AJ
+1 1 1 0 0
+0 30 85 P
+#9914
+trail ration~
+a trail ration~
+A tightly wrapped trail ration is stacked here.~
+food~
+food UN A
+15 15 0 0 0
+0 2 10 P
+#9915
+black waterskin~
+a black waterskin~
+A black waterskin lies here, freshly filled.~
+leather~
+drink UN A
+10 10 'water' 0 0
+0 3 12 P
+#9920
+initiate's blade~
+an initiate's blade~
+An initiate's blade has been dropped here.~
+steel~
+weapon U AN
+sword 1 6 slash 0
+3 35 140 P
+A
+18 1
+#9921
+sentry helm~
+a sentry helm~
+A sentry helm lies near the stair.~
+leather~
+armor U AE
+2 1 1 0 0
+5 15 150 P
+#9922
+defender's mail~
+a defender's mail shirt~
+A defender's mail shirt lies here, reinforced with dark rings.~
+chain~
+armor U AD
+3 2 2 0 0
+8 55 260 P
+#9923
+knight greaves~
+a pair of knight greaves~
+A pair of knight greaves waits here.~
+steel~
+armor U AF
+3 2 2 0 0
+11 40 320 P
+#9924
+warden's longsword~
+a warden's longsword~
+A warden's longsword reflects the low red light.~
+steel~
+weapon U AN
+sword 2 6 slash 0
+14 55 430 P
+A
+18 2
+#9925
+initiate's cudgel~
+an initiate's cudgel~
+An initiate's cudgel has been dropped beside a training mark.~
+wood~
+weapon U AN
+mace 1 6 pound 0
+3 30 140 P
+A
+18 1
+#9926
+sentry's mace~
+a sentry's mace~
+A sentry's mace lies near the stair.~
+steel~
+weapon U AN
+mace 1 7 pound 0
+5 35 150 P
+A
+18 1
+#9927
+defender's hammer~
+a defender's hammer~
+A defender's hammer rests near scarred shield drills.~
+steel~
+weapon U AN
+mace 2 4 pound 0
+8 50 260 P
+A
+18 1
+#9928
+knight's morningstar~
+a knight's morningstar~
+A knight's morningstar rests here in disciplined order.~
+steel~
+weapon U AN
+mace 2 5 pound 0
+11 40 320 P
+A
+18 2
+#9929
+warden's sanctifier~
+a warden's sanctifier~
+An iron-dark warden's sanctifier rests here.~
+steel~
+weapon U AN
+mace 2 6 pound 0
+14 50 430 P
+A
+18 2
+#9930
+initiate's focus~
+an initiate's focus~
+An initiate's focus staff has been dropped beside a training mark.~
+wood~
+weapon U AN
+staff 1 5 pound 0
+3 30 140 P
+A
+18 1
+#9931
+sentry's rod~
+a sentry's rod~
+A sentry's rod rests beside the stair in strict order.~
+wood~
+weapon U AN
+staff 1 6 pound 0
+5 35 150 P
+A
+18 1
+#9932
+defender's stave~
+a defender's stave~
+A defender's stave lies here, nicked from hard drills.~
+wood~
+weapon U AN
+staff 2 4 pound 0
+8 45 260 P
+A
+18 1
+#9933
+knight's channeling staff~
+a knight's channeling staff~
+A knight's channeling staff rests here in disciplined order.~
+wood~
+weapon U AN
+staff 2 5 pound 0
+11 40 320 P
+A
+18 2
+#9934
+warden's battle staff~
+a warden's battle staff~
+A warden's battle staff hums with restrained force.~
+wood~
+weapon U AN
+staff 2 6 pound 0
+14 50 430 P
+A
+18 2
+#9935
+initiate's stiletto~
+an initiate's stiletto~
+An initiate's stiletto lies here, narrow and practical.~
+steel~
+weapon U AN
+dagger 1 5 pierce 0
+3 25 140 P
+A
+18 1
+#9936
+sentry's dirk~
+a sentry's dirk~
+A sentry's dirk glints near the stair.~
+steel~
+weapon U AN
+dagger 1 6 pierce 0
+5 30 150 P
+A
+18 1
+#9937
+defender's knife~
+a defender's knife~
+A defender's knife has been left within a quick draw.~
+steel~
+weapon U AN
+dagger 2 3 pierce 0
+8 40 260 P
+A
+18 1
+#9938
+knight's poniard~
+a knight's poniard~
+A knight's poniard lies here in a fitted sheath.~
+steel~
+weapon U AN
+dagger 2 4 pierce 0
+11 35 320 P
+A
+18 2
+#9939
+warden's shadowblade~
+a warden's shadowblade~
+A warden's shadowblade rests here in perfect balance.~
+steel~
+weapon U AN
+dagger 2 5 pierce 0
+14 45 430 P
+A
+18 2
+#9940
+obsidian brigandine~
+an obsidian brigandine~
+An obsidian brigandine hangs here, built for brutal drills.~
+steel~
+armor U AD
+3 3 2 0 0
+5 45 190 P
+A
+13 10
+#9941
+obsidian knight harness~
+an obsidian knight harness~
+An obsidian knight harness is displayed here.~
+steel~
+armor U AD
+4 4 3 0 0
+10 55 330 P
+A
+13 20
+#9942
+obsidian warden plate~
+an obsidian warden plate~
+An obsidian warden plate reflects the red light.~
+steel~
+armor U AD
+5 5 4 0 0
+14 65 450 P
+A
+13 30
+#9943
+obsidian acolyte vestments~
+obsidian acolyte vestments~
+Obsidian acolyte vestments are folded here in severe lines.~
+cloth~
+armor U AD
+2 3 3 0 0
+5 30 185 P
+A
+12 10
+#9944
+obsidian consecrated raiment~
+obsidian consecrated raiment~
+Obsidian consecrated raiment hangs here in dark folds.~
+cloth~
+armor U AD
+3 4 4 0 0
+10 35 325 P
+A
+12 20
+#9945
+obsidian sanctifier robes~
+obsidian sanctifier robes~
+Obsidian sanctifier robes shimmer with a muted sheen.~
+cloth~
+armor U AD
+4 5 5 0 0
+14 40 445 P
+A
+12 30
+#9946
+obsidian channeler's robe~
+an obsidian channeler's robe~
+An obsidian channeler's robe has been folded with care.~
+cloth~
+armor U AD
+2 2 3 0 0
+5 25 180 P
+A
+12 15
+#9947
+obsidian spellwoven mantle~
+an obsidian spellwoven mantle~
+An obsidian spellwoven mantle is draped over a stand.~
+cloth~
+armor U AD
+3 3 4 0 0
+10 30 320 P
+A
+12 30
+#9948
+obsidian archmage shroud~
+an obsidian archmage shroud~
+An obsidian archmage shroud glints with subtle threadwork.~
+cloth~
+armor U AD
+4 4 5 0 0
+14 35 440 P
+A
+12 45
+#9949
+obsidian shadow leathers~
+obsidian shadow leathers~
+Obsidian shadow leathers lie here, soft and flexible.~
+leather~
+armor U AD
+3 2 3 0 0
+5 30 180 P
+A
+14 10
+#9950
+obsidian dusk wraps~
+obsidian dusk wraps~
+Obsidian dusk wraps are laid here for quick movement.~
+leather~
+armor U AD
+4 3 4 0 0
+10 35 320 P
+A
+14 20
+#9951
+obsidian nightstalker leathers~
+obsidian nightstalker leathers~
+Obsidian nightstalker leathers are arranged with efficient care.~
+leather~
+armor U AD
+5 4 5 0 0
+14 40 440 P
+A
+14 30
+#9952
+obsidian war gauntlets~
+a pair of obsidian war gauntlets~
+A pair of obsidian war gauntlets lies here, dark and heavy.~
+steel~
+armor U AH
+2 1 1 0 0
+5 25 170 P
+A
+13 10
+#9953
+obsidian veteran gauntlets~
+a pair of obsidian veteran gauntlets~
+A pair of obsidian veteran gauntlets is displayed here.~
+steel~
+armor U AH
+3 2 2 0 0
+10 35 300 P
+A
+13 20
+#9954
+obsidian conqueror gauntlets~
+a pair of obsidian conqueror gauntlets~
+A pair of obsidian conqueror gauntlets reflects the red torchlight.~
+steel~
+armor U AH
+4 3 3 0 0
+14 45 430 P
+A
+13 30
+#9955
+obsidian prayer circlet~
+an obsidian prayer circlet~
+An obsidian prayer circlet rests in a lacquered tray.~
+silver~
+armor U AE
+1 2 2 0 0
+5 25 170 P
+A
+12 10
+#9956
+obsidian oracle circlet~
+an obsidian oracle circlet~
+An obsidian oracle circlet glints with severe etching.~
+silver~
+armor U AE
+2 3 3 0 0
+10 35 300 P
+A
+12 20
+#9957
+obsidian high-priest circlet~
+an obsidian high-priest circlet~
+An obsidian high-priest circlet gleams with dark polish.~
+silver~
+armor U AE
+3 4 4 0 0
+14 45 430 P
+A
+12 30
+#9958
+obsidian initiate cloak~
+an obsidian initiate cloak~
+An obsidian initiate cloak hangs in rigid folds.~
+cloth~
+armor U AK
+1 1 2 0 0
+5 20 160 P
+A
+12 15
+#9959
+obsidian arcanist cloak~
+an obsidian arcanist cloak~
+An obsidian arcanist cloak rests beside runed chalk marks.~
+cloth~
+armor U AK
+2 2 3 0 0
+10 30 290 P
+A
+12 30
+#9960
+obsidian archmage cloak~
+an obsidian archmage cloak~
+An obsidian archmage cloak shimmers with muted runes.~
+cloth~
+armor U AK
+3 3 4 0 0
+14 40 420 P
+A
+12 45
+#9961
+obsidian scout boots~
+a pair of obsidian scout boots~
+A pair of obsidian scout boots lies ready by the wall.~
+leather~
+armor U AG
+2 1 2 0 0
+5 20 160 P
+A
+14 10
+#9962
+obsidian stalker boots~
+a pair of obsidian stalker boots~
+A pair of obsidian stalker boots waits here, soft and silent.~
+leather~
+armor U AG
+3 2 3 0 0
+10 30 290 P
+A
+14 20
+#9963
+obsidian shadowrunner boots~
+a pair of obsidian shadowrunner boots~
+A pair of obsidian shadowrunner boots is arranged for quick pursuit.~
+leather~
+armor U AG
+4 3 4 0 0
+14 40 420 P
+A
+14 30
+#0
+
+#ROOMS
+#9900
+Hall of Shadow, Obsidian Tower~
+You stand in the Obsidian Tower's central hall. Black stone, iron braziers,
+and crimson banners mark this as the homeland start for evil-aligned players.
+Stairs climb through the tower's internal trial floors.
+~
+0 CDR 0
+H 150
+M 150
+D0
+A broad stair leads upward into the trial floors.
+~
+~
+0 0 9905
+D1
+An arched doorway leads to the training hall.
+~
+~
+0 0 9901
+D2
+A stocked doorway opens to the provision room.
+~
+~
+0 0 9904
+D3
+A side chamber displays beginner weapons.
+~
+~
+0 0 9902
+D4
+A side chamber displays beginner armor.
+~
+~
+0 0 9903
+D5
+A reinforced gate descends to the sealed lower entrance.
+~
+~
+0 0 9910
+S
+#9901
+Obsidian Tower Training Hall~
+Training circles are carved into this black floor. Initiates gather here to
+train and practice before climbing into combat tiers.
+~
+0 CDR 0
+D3
+The hall of shadow lies west.
+~
+~
+0 0 9900
+S
+#9902
+Obsidian Tower Arsenal~
+Simple blades and practical arms line these racks in disciplined order.
+~
+0 CDR 0
+D1
+The hall of shadow lies east.
+~
+~
+0 0 9900
+S
+#9903
+Obsidian Tower Armory~
+Beginner armor sets are arranged for recruits entering their first campaigns.
+~
+0 CDR 0
+D5
+The hall of shadow lies down.
+~
+~
+0 0 9900
+S
+#9904
+Obsidian Tower Refectory~
+Dry rations and water are prepared for long drills and early patrols.
+~
+0 CDR 0
+D0
+The hall of shadow lies north.
+~
+~
+0 0 9900
+S
+#9905
+First Trial Floor~
+This first combat floor gives level 1 to 3 initiates room to build confidence
+and basic combat rhythm.
+~
+0 DR 0
+D4
+The second floor rises above.
+~
+~
+0 0 9906
+D5
+The hall of shadow waits below.
+~
+~
+0 0 9900
+S
+#9906
+Second Trial Floor~
+This floor is tuned for level 4 to 6 initiates ready for tighter execution.
+~
+0 DR 0
+D4
+The third floor rises above.
+~
+~
+0 0 9907
+D5
+The first floor is below.
+~
+~
+0 0 9905
+S
+#9907
+Third Trial Floor~
+A broad ring marks this floor for level 7 to 9 training bouts.
+~
+0 DR 0
+D4
+The fourth floor rises above.
+~
+~
+0 0 9908
+D5
+The second floor is below.
+~
+~
+0 0 9906
+S
+#9908
+Fourth Trial Floor~
+This floor tests level 10 to 12 initiates with stronger, steadier opponents.
+~
+0 DR 0
+D4
+The apex floor rises above.
+~
+~
+0 0 9909
+D5
+The third floor is below.
+~
+~
+0 0 9907
+S
+#9909
+Apex Trial Floor~
+The highest active floor of the Obsidian Tower challenges level 13 to 15
+initiates before they are sent into the wider world.
+~
+0 DR 0
+D5
+The fourth floor is below.
+~
+~
+0 0 9908
+S
+#9910
+Sealed Base Gate~
+At the base of the Obsidian Tower, a reinforced gate marks the future homeland
+connection point. For now, only the way back up is open.
+~
+0 CDR 0
+D4
+The hall of shadow is above.
+~
+~
+0 0 9900
+S
+#0
+
+#RESETS
+M 0 9900   1 9901  1	* the Obsidian Tower marshal
+M 0 9901   1 9903  1	* the Obsidian Tower quartermaster
+G 1 9912  -1     	*   an obsidian trainee vest
+G 1 9913  -1     	*   an obsidian trainee shield
+G 1 9940  -1     	*   an obsidian brigandine
+G 1 9941  -1     	*   an obsidian knight harness
+G 1 9942  -1     	*   an obsidian warden plate
+G 1 9943  -1     	*   obsidian acolyte vestments
+G 1 9944  -1     	*   obsidian consecrated raiment
+G 1 9945  -1     	*   obsidian sanctifier robes
+G 1 9946  -1     	*   an obsidian channeler's robe
+G 1 9947  -1     	*   an obsidian spellwoven mantle
+G 1 9948  -1     	*   an obsidian archmage shroud
+G 1 9949  -1     	*   obsidian shadow leathers
+G 1 9950  -1     	*   obsidian dusk wraps
+G 1 9951  -1     	*   obsidian nightstalker leathers
+G 1 9952  -1     	*   a pair of obsidian war gauntlets
+G 1 9953  -1     	*   a pair of obsidian veteran gauntlets
+G 1 9954  -1     	*   a pair of obsidian conqueror gauntlets
+G 1 9955  -1     	*   an obsidian prayer circlet
+G 1 9956  -1     	*   an obsidian oracle circlet
+G 1 9957  -1     	*   an obsidian high-priest circlet
+G 1 9958  -1     	*   an obsidian initiate cloak
+G 1 9959  -1     	*   an obsidian arcanist cloak
+G 1 9960  -1     	*   an obsidian archmage cloak
+G 1 9961  -1     	*   a pair of obsidian scout boots
+G 1 9962  -1     	*   a pair of obsidian stalker boots
+G 1 9963  -1     	*   a pair of obsidian shadowrunner boots
+M 0 9902   1 9902  1	* the Obsidian Tower weaponsmith
+G 1 9910  -1     	*   an obsidian training sword
+G 1 9911  -1     	*   an obsidian trainee dagger
+G 1 9916  -1     	*   an obsidian trainee mace
+G 1 9925  -1     	*   an initiate's cudgel
+G 1 9926  -1     	*   a sentry's mace
+G 1 9927  -1     	*   a defender's hammer
+G 1 9928  -1     	*   a knight's morningstar
+G 1 9929  -1     	*   a warden's sanctifier
+G 1 9930  -1     	*   an initiate's focus
+G 1 9931  -1     	*   a sentry's rod
+G 1 9932  -1     	*   a defender's stave
+G 1 9933  -1     	*   a knight's channeling staff
+G 1 9934  -1     	*   a warden's battle staff
+G 1 9935  -1     	*   an initiate's stiletto
+G 1 9936  -1     	*   a sentry's dirk
+G 1 9937  -1     	*   a defender's knife
+G 1 9938  -1     	*   a knight's poniard
+G 1 9939  -1     	*   a warden's shadowblade
+M 0 9903   1 9904  1	* the Obsidian Tower provisioner
+G 1 9914  -1     	*   a trail ration
+G 1 9915  -1     	*   a black waterskin
+M 0 9904   2 9905  2	* an Obsidian Tower initiate
+E 1 9920  -1   16	*   an initiate's blade
+M 0 9905   2 9906  2	* an Obsidian Tower sentry
+E 1 9921  -1    6	*   a sentry helm
+M 0 9906   2 9907  2	* an Obsidian Tower defender
+E 1 9922  -1    5	*   a defender's mail shirt
+M 0 9907   2 9908  2	* an Obsidian Tower knight
+E 1 9923  -1    7	*   a pair of knight greaves
+M 0 9908   2 9909  2	* an Obsidian Tower warden
+E 1 9924  -1   16	*   a warden's longsword
+S
+
+#SHOPS
+9901  9  0  0  0  0 	 110 70 	 0 23 	* the Obsidian Tower quartermaster
+9902  5  0  0  0  0 	 110 70 	 0 23 	* the Obsidian Tower weaponsmith
+9903  19 17  0  0  0 	 105 60 	 0 23 	* the Obsidian Tower provisioner
+0
+
+#SPECIALS
+S
+
+#$

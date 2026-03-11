@@ -4142,8 +4142,15 @@ void do_sockets (CHAR_DATA * ch, char *argument)
     char buf[2 * MAX_STRING_LENGTH];
     char buf2[MAX_STRING_LENGTH];
     char arg[MAX_INPUT_LENGTH];
+    char const *name;
+    char const *class_name;
+    char const *race_name;
+    CHAR_DATA *who;
     DESCRIPTOR_DATA *d;
     int count;
+    int bufcap = sizeof(buf);
+    int buflen = 0;
+    int n;
 
     count = 0;
     buf[0] = '\0';
@@ -4156,11 +4163,28 @@ void do_sockets (CHAR_DATA * ch, char *argument)
                 || (d->original && is_name (arg, d->original->name))))
         {
             count++;
-            sprintf (buf + strlen (buf), "[%3d %2d] %s@%s\n\r",
-                     d->descriptor,
-                     d->connected,
-                     d->original ? d->original->name :
-                     d->character ? d->character->name : "(none)", d->host);
+            who = d->original ? d->original : d->character;
+            name = who != NULL ? who->name : "(none)";
+            class_name = (who != NULL && who->class >= 0 && who->class < MAX_CLASS)
+                ? class_table[who->class].who_name
+                : "?";
+            race_name = (who != NULL && who->race >= 0 && who->race < MAX_PC_RACE)
+                ? pc_race_table[who->race].who_name
+                : "?";
+
+            n = snprintf(buf + buflen, bufcap - buflen,
+                "[%3d %2d] %s (%s/%s)@%s\n\r",
+                d->descriptor,
+                d->connected,
+                name,
+                class_name,
+                race_name,
+                d->host);
+            if (n < 0 || n >= bufcap - buflen) {
+                // Truncated or error, stop appending
+                break;
+            }
+            buflen += n;
         }
     }
     if (count == 0)
@@ -4169,8 +4193,11 @@ void do_sockets (CHAR_DATA * ch, char *argument)
         return;
     }
 
-    sprintf (buf2, "%d user%s\n\r", count, count == 1 ? "" : "s");
-    strcat (buf, buf2);
+    snprintf(buf2, sizeof(buf2), "%d user%s\n\r", count, count == 1 ? "" : "s");
+    if ((int)strlen(buf2) < bufcap - buflen)
+        strcat(buf, buf2);
+    else
+        strncat(buf, buf2, bufcap - buflen - 1);
     page_to_char (buf, ch);
     return;
 }
