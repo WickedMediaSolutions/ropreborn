@@ -380,7 +380,6 @@ stand stand none 0
 
 #OBJECTS
 #1601
-E
 rusty cleaver~
 a rusty cleaver~
 A rusty cleaver lies on a counter top.~
@@ -388,6 +387,9 @@ oldstyle~
 weapon 0 AN
 dagger 1 6 chop 0
 1 20 230 P
+E
+rusty cleaver~
+A rusty cleaver lies on a counter top.~
 #1602
 fine mace~
 the fine mace~
