@@ -16,27 +16,35 @@ human~
 ABFG 0 -300 0
 5 0 2d6+60 2d9+100 1d6+1 none
 5 5 5 9
-stand stand none
-0 0
-medium
-0
-#1602
-oldstyle angry gargoyle~
-an angry gargoyle~
-An angry gargoyle glares at you.~
-He looks ready to attack!~
-human~
-ACFG 0 -600
-10 0 2d7+121 5d9+100 2d4+2 none
-1 1 1 8
 EFNU 0 0 0
 stand stand none 0
 0 0 medium 0
+#1602
+oldstyle angry gargoyle~
+an angry gargoyle~
+An angry gargoyle glares at you.
+~
+He looks ready to attack!
+~
+human~
+ACFG 0 -600 0
+10 0 2d7+121 5d9+100 2d4+2 none
+1 1 1 8
+EFNU 0 0 0
+#1603
+An elite gargoyle guards this room against intrusion.
+~
+He snarls at you and says LEAVE OR DIE!
+~
+human~
+ABC 0 -600 0
+12 0 2d10+150 6d9+100 1d10+3 none
+0 0 0 8
+EFNU 0 0 0
+stand stand male 40
+0 0 medium 0
 #1605
 oldstyle gargoyle shaman~
-oldstyle gargoyle shaman~
-oldstyle gruesome ogre~
-oldstyle evil wight~
 the gargoyle shaman~
 The gargoyle shaman is here, preparing to do battle.
 ~
@@ -44,6 +52,7 @@ She says 'I can SEE you! I have been waiting ...'.
 ~
 human~
 ABCGQ DF -900 0
+13 0 2d10+170 13d9+100 1d10+3 none
 -1 -1 -1 7
 EIKU 0 0 0
 stand stand female 150
@@ -57,6 +66,8 @@ The plant looks something like a Venus fly-trap, only MUCH larger.
 ~
 human~
 ABFG 0 0 0
+9 0 2d6+110 4d9+100 1d8+2 none
+2 2 2 8
 EFNU 0 0 0
 stand stand none 0
 0 0 medium 0
@@ -68,8 +79,6 @@ A huge, gruesome ogre is sprawled here, gnawing some strange meat.
 It thinks that perhaps you would make a better meal.
 ~
 human~
-oldstyle carnivorous plant~
-oldstyle shadow~
 ABCFG 0 -200 0
 10 0 2d7+121 5d9+100 2d4+2 none
 1 1 1 8
@@ -79,26 +88,32 @@ sit stand none 60
 #1608
 oldstyle shadow~
 a shadow~
+A dark shadow moves about the room.
+~
+The Shadow is vaguely humanoid. Two glowing pinpoints look at you.
 ~
 human~
 ACFG BDF -1000 0
 10 0 2d7+121 5d9+100 2d4+2 none
 1 1 1 8
 EFNU 0 0 0
+stand stand none 45
 0 0 medium 0
+#1609
 oldstyle evil wight~
 an evil wight~
-oldstyle black pudding~
 An evil wight lurks in the shadows!
-oldstyle ancient wyvern~
 ~
 He glares at you savagely and charges!
 ~
 human~
 ABCFG DF -1000 0
 12 0 2d10+150 6d9+100 1d10+3 none
+0 0 0 8
 EFNU 0 0 0
+stand stand male 110
 0 0 medium 0
+#1610
 oldstyle burly minotaur~
 A burly minotaur watches you solemnly.
 ~
@@ -108,6 +123,7 @@ human~
 ACG D -600 0
 14 0 2d10+190 7d9+100 1d12+3 none
 -1 -1 -1 8
+EFNU 0 0 0
 stand stand male 75
 0 0 medium 0
 #1612
@@ -115,24 +131,27 @@ oldstyle savage minotaur~
 the savage minotaur~
 A bloodthirsty minotaur slowly counts his loot
 ~
+He looks up at you and screams 'SO! Coming to steal my hoard!'
 ~
 human~
 ABCFG D -600 0
-oldstyle burly minotaur~
 15 0 3d9+208 7d9+100 2d6+3 none
 -2 -2 -2 7
+EFNU 0 0 0
 stand stand male 0
 0 0 medium 0
 #1613
 oldstyle minotaur captain~
 the captain~
+Sitting here in this room is the Minotaur Captain.
 ~
 He looks at you, and a sinister grin slowly spreads on his face ...
 ~
+human~
 ABCFG D -900 0
 17 0 3d9+258 8d9+100 3d4+4 none
 -3 -3 -3 7
-oldstyle spectre~
+EFNU 0 0 0
 stand stand male 0
 0 0 medium 0
 #1614
@@ -141,9 +160,10 @@ the black pudding~
 A huge black pudding fills the center of the room!!
 ~
 It is a huge black blob that oozes about the room. Its heading toward YOU!
+~
+human~
 ACFG 0 -1000 0
 15 0 3d9+208 7d9+100 2d6+3 none
-oldstyle minotaur captain~
 -2 -2 -2 7
 EFNU 0 0 0
 stand stand none 0
@@ -152,10 +172,13 @@ stand stand none 0
 oldstyle lesser golem~
 a lesser golem~
 A lesser Golem stands guarding the entrance.
+~
 The golem appears to be made of some kind of clay, enchanted to come to life!
 ~
 human~
 ABG D 0 0
+16 0 3d9+233 8d9+100 2d6+4 none
+-2 -2 -2 7
 EFNU 0 0 0
 stand stand none 0
 0 0 medium 0
@@ -164,10 +187,9 @@ oldstyle ancient wyvern~
 the ancient wyvern~
 An enormous, ancient wyvern stares down at your tiny form...
 ~
-#1602
+It thunders loudly 'I must protect my Master's wealth!'
 ~
 human~
-oldstyle lesser golem~
 ACFG DF -1000 0
 18 0 3d9+283 9d9+100 2d7+4 none
 -3 -3 -3 7
@@ -176,6 +198,7 @@ stand rest male 0
 0 0 medium 0
 #1617
 oldstyle spectre~
+the spectre~
 A spectre has begun to materialize in front of you!
 ~
 Terror fills your heart as you view this master of the undead.
@@ -365,6 +388,7 @@ oldstyle~
 weapon 0 AN
 dagger 1 6 chop 0
 1 20 230 P
+E
 rusty cleaver~
 A rusty cleaver lies on a counter top.~
 #1602
@@ -375,7 +399,6 @@ oldstyle~
 weapon G AN
 mace 2 6 pound 0
 10 110 570 P
-oldstyle elite gargoyle~
 A
 18 1
 #1603
