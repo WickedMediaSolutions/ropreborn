@@ -29,22 +29,6 @@ ACFG 0 -600 0
 10 0 2d7+121 5d9+100 2d4+2 none
 1 1 1 8
 EFNU 0 0 0
-stand stand male 25
-0 0 medium 0
-#1602
-oldstyle angry gargoyle~
-an angry gargoyle~
-An angry gargoyle glares at you.
-~
-He looks ready to attack!
-~
-human~
-ACFG 0 -600 0
-10 0 2d7+121 5d9+100 2d4+2 none
-1 1 1 8
-EFNU 0 0 0
-stand stand male 25
-0 0 medium 0
 #1603
 An elite gargoyle guards this room against intrusion.
 ~
